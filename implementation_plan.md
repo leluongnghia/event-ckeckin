@@ -1,6 +1,6 @@
 # Kế Hoạch Triển Khai: Hệ Thống Event Check-in SaaS
 
-Bản kế hoạch này tổng hợp toàn bộ kiến trúc hệ thống, chiến lược tối ưu hóa hiệu năng phía Frontend, và hệ thống Prompt từng bước để cung cấp cho Vertex AI (hoặc các AI LLM khác) nhằm sinh code chuẩn xác theo từng phase.
+Bản kế hoạch này tổng hợp toàn bộ kiến trúc hệ thống, chiến lược tối ưu hóa hiệu năng phía Frontend, và hệ thống Prompt từng bước để cung cấp cho Google AI Studio (hoặc các AI LLM khác) nhằm sinh code chuẩn xác theo từng phase.
 
 ## Tổng Quan Kiến Trúc (Architecture)
 
@@ -20,7 +20,7 @@ Giải pháp xử lý mượt mà khi người dùng thao tác với lượng da
 
 ---
 
-## Các Phase Phát Triển & Master Prompts cho Vertex AI
+## Các Phase Phát Triển & Master Prompts cho Google AI Studio
 
 Dưới đây là các câu lệnh (Prompt) chuẩn để bạn trực tiếp đưa vào AI cho từng module, đảm bảo mô hình sinh ra code sạch, không bị quá tải.
 
