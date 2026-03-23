@@ -296,7 +296,17 @@ export default function Settings() {
                 />
               </div>
             </div>
-            <p className="text-[10px] lg:text-xs text-stone-400 italic">Cấu hình ZNS để gửi vé mời và thông báo qua Zalo cho khách mời.</p>
+            <p className="text-[10px] lg:text-xs text-stone-500 italic">Cấu hình ZNS để gửi vé mời và thông báo qua Zalo cho khách mời.</p>
+            
+            <div className="mt-3 bg-blue-50 p-4 rounded-xl border border-blue-100 text-xs text-stone-700 space-y-2">
+              <p className="font-bold text-blue-900 border-b border-blue-200 pb-1 inline-block mb-1">Hướng dẫn lấy Zalo Access Token & ZNS Template ID:</p>
+              <ol className="list-decimal list-inside space-y-1.5 ml-1">
+                <li>Truy cập <a href="https://developers.zalo.me/" target="_blank" rel="noreferrer" className="text-blue-600 font-semibold hover:underline">Zalo for Developers</a> và tạo Ứng dụng mới.</li>
+                <li>Vào mục <strong>Tài liệu ZNS</strong> để liên kết Zalo Official Account (OA) của bạn.</li>
+                <li>Tạo và xin xét duyệt <strong>Mẫu tin nhắn (Template)</strong> trên hệ thống Zalo Cloud.</li>
+                <li>Lấy <strong>Access Token</strong> của OA và <strong>Template ID</strong> (VD: 301234) dán vào đây để gửi vé tự động.</li>
+              </ol>
+            </div>
           </div>
 
           <div className="space-y-4 md:col-span-2 pt-6 border-t border-stone-100">
@@ -308,7 +318,16 @@ export default function Settings() {
               <input type="password" placeholder="SMTP Password (App Password)" value={eventData.smtpPass || ''} onChange={(e) => setEventData({...eventData, smtpPass: e.target.value})} className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl" />
               <input type="email" placeholder="Email người gửi (From Email)" value={eventData.smtpFrom || ''} onChange={(e) => setEventData({...eventData, smtpFrom: e.target.value})} className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl md:col-span-2" />
             </div>
-            <p className="text-[10px] lg:text-xs text-stone-400 italic">Sử dụng SMTP riêng để tăng tỷ lệ vào hộp thư đến.</p>
+            <p className="text-[10px] lg:text-xs text-stone-500 italic">Sử dụng SMTP riêng để tăng tỷ lệ thư được vào Inbox, tránh mục Spam.</p>
+            
+            <div className="mt-3 bg-stone-100 p-4 rounded-xl border border-stone-200 text-xs text-stone-700 space-y-2">
+              <p className="font-bold text-stone-900 border-b border-stone-300 pb-1 inline-block mb-1">Hướng dẫn cấu hình gửi mail siêu tốc bằng Gmail (Miễn phí):</p>
+              <ol className="list-decimal list-inside space-y-1.5 ml-1">
+                <li><strong>SMTP Host:</strong> <code className="bg-white px-1 py-0.5 rounded text-rose-500 font-mono">smtp.gmail.com</code> và <strong>SMTP Port:</strong> <code className="bg-white px-1 py-0.5 rounded text-rose-500 font-mono">587</code>.</li>
+                <li><strong>SMTP User:</strong> Địa chỉ Gmail của bạn làm mail vãng lai gửi đi.</li>
+                <li><strong>SMTP Password:</strong> BẮT BUỘC dùng <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noreferrer" className="text-emerald-600 font-bold hover:underline">Mật khẩu Ứng dụng (App password)</a> 16 chữ số do Google cấp, <em>không được dùng mật khẩu chính</em>. <br/><span className="ml-5 text-[10px] text-stone-500">(Lưu ý: Bạn phải bật Xác minh 2 bước của tài khoản Google thì mới tạo được).</span></li>
+              </ol>
+            </div>
           </div>
         </div>
 
