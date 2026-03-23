@@ -4,6 +4,7 @@ import { Mail, Send, Loader2, CheckCircle2, AlertCircle, Search, Clock } from 'l
 import { collection, onSnapshot, query, updateDoc, doc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import axios from 'axios';
+import PageGuide from '../components/PageGuide';
 
 interface Attendee {
   id: string;
@@ -82,6 +83,10 @@ export default function EmailCampaign() {
 
   return (
     <div className="space-y-8">
+      <PageGuide 
+        title="Gửi Email Vé Mời Hàng Loạt"
+        description="Phát hành vé điện tử qua Email cho toàn bộ khách hàng chỉ với 1 thao tác. Hệ thống tự động nhận diện và chỉ gửi cho những ai chưa từng nhận vé."
+      />
       <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="space-y-2">
           <h3 className="text-2xl font-bold text-stone-900">Chiến dịch gửi vé mời</h3>

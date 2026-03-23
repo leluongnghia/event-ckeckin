@@ -5,6 +5,7 @@ import { collection, query, onSnapshot, addDoc, deleteDoc, doc, updateDoc, serve
 import { db } from '../firebase';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
+import PageGuide from '../components/PageGuide';
 
 const SessionCard: React.FC<{ session: any, eventId: string, onEdit: (s: any) => void, onDelete: (id: string) => Promise<void> }> = ({ session, eventId, onEdit, onDelete }) => {
   const [attendanceCount, setAttendanceCount] = useState(0);
@@ -146,6 +147,10 @@ export default function Sessions() {
 
   return (
     <div className="space-y-8 max-w-6xl mx-auto">
+      <PageGuide 
+        title="Quản lý phiên nhánh (Sessions) / Lớp học con"
+        description="Dùng khi sự kiện có nhiều khu khai mạc song song hoặc chia ca học, vòng phòng họp riêng tư. Bạn có thể tạo các phiên này để điểm danh tập con sau khi họ đã vào cửa chính."
+      />
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Calendar className="w-8 h-8 text-emerald-600" />

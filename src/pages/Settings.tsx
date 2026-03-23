@@ -4,6 +4,7 @@ import { Settings as SettingsIcon, Save, Calendar, MapPin, Type, Bell, Loader2, 
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType, auth } from '../firebase';
 import { GoogleGenAI } from '@google/genai';
+import PageGuide from '../components/PageGuide';
 
 export default function Settings() {
   const { eventId = 'default-event' } = useParams();
@@ -139,6 +140,10 @@ export default function Settings() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 lg:space-y-8">
+      <PageGuide 
+        title="Cấu hình & Nâng cao"
+        description="Tinh chỉnh toàn bộ thông số sự kiện, cập nhật chương trình (Agenda) cũng như kết nối các hệ thống tự động hoá: Email do thám (SMTP), Zalo tin nhắn (ZNS) và Robot thông báo Telegram."
+      />
       <div className="bg-white p-5 lg:p-8 rounded-2xl lg:rounded-3xl border border-stone-200 shadow-sm space-y-6 lg:space-y-8">
         <div className="flex items-center gap-3 border-b border-stone-100 pb-4 lg:pb-6">
           <SettingsIcon className="w-5 h-5 lg:w-6 lg:h-6 text-emerald-600" />

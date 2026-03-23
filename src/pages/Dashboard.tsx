@@ -9,6 +9,7 @@ import Markdown from 'react-markdown';
 import { motion } from 'motion/react';
 
 import { useParams } from 'react-router-dom';
+import PageGuide from '../components/PageGuide';
 
 const StatCard = ({ title, value, icon: Icon, color }: { title: string, value: string | number, icon: any, color: string }) => (
   <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
@@ -157,6 +158,10 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8">
+      <PageGuide 
+        title="Tổng quan bảng điều khiển (Dashboard)"
+        description="Nơi bạn có thể theo dõi tỷ lệ khách mời đã check-in theo thời gian thực, xem thống kê nhanh, và sử dụng AI để phân tích dữ liệu tham gia sự kiện."
+      />
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
         <div className="space-y-1">
           <h1 className="text-2xl lg:text-4xl font-black text-stone-900 tracking-tight">{eventSettings?.name || 'Dashboard'}</h1>

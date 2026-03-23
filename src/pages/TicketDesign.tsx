@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Palette, Save, Loader2, QrCode, Type, Layout as LayoutIcon, Image as ImageIcon, Upload, X } from 'lucide-react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
+import PageGuide from '../components/PageGuide';
 
 const FONTS = [
   { name: 'Inter', value: "'Inter', sans-serif" },
@@ -113,6 +114,10 @@ export default function TicketDesign() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
+      <PageGuide 
+        title="Thiết kế vé mời"
+        description="Tuỳ chỉnh giao diện vé mời QR Code của bạn tại đây. Thay đổi thông điệp, màu sắc, font chữ và hình nền sao cho phù hợp với bộ nhận diện của sự kiện."
+      />
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Palette className="w-8 h-8 text-emerald-600" />

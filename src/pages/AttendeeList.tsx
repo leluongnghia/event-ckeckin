@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Filter, Download, Plus, Mail, Trash2, Loader2, QrCode, X, Edit2, FileSpreadsheet, Link as LinkIcon, FileText, Eye, CheckSquare, Square, Zap } from 'lucide-react';
+import { Search, Filter, Download, Plus, Mail, Trash2, Loader2, QrCode, X, Edit2, FileSpreadsheet, Link as LinkIcon, FileText, Eye, CheckSquare, Square, Zap, Users } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
@@ -24,6 +24,7 @@ interface Attendee {
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { Star, MessageCircle } from 'lucide-react';
 import { sendZaloNotification } from '../utils/notifications';
+import PageGuide from '../components/PageGuide';
 
 export default function AttendeeList() {
   const { eventId = 'default-event' } = useParams();
@@ -392,6 +393,45 @@ export default function AttendeeList() {
 
   return (
     <div className="space-y-6">
+      {/* Giới thiệu tính năng */}
+      <div className="bg-white p-6 lg:p-8 rounded-2xl lg:rounded-3xl border border-stone-200 shadow-sm space-y-5 relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
+          <Users className="w-48 h-48 text-emerald-900" />
+        </div>
+        <div className="relative z-10 flex items-center gap-3">
+          <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
+            <Users className="w-6 h-6" />
+          </div>
+          <h3 className="text-xl lg:text-2xl font-bold text-stone-900">Tính năng Quản lý Khách mời</h3>
+        </div>
+        
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4 text-sm text-stone-600">
+          <div className="flex items-start gap-2.5">
+            <CheckSquare className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+            <p><span className="font-bold text-stone-800">Tìm kiếm & Theo dõi:</span> Quản lý toàn bộ danh sách xem ai đã đến và ai chưa đến theo thời gian thực.</p>
+          </div>
+          <div className="flex items-start gap-2.5">
+            <CheckSquare className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+            <p><span className="font-bold text-stone-800">Thêm thủ công / Import:</span> Bổ sung khách lẻ nhanh chóng hoặc nhập hàng loạt từ danh sách Excel có sẵn.</p>
+          </div>
+          <div className="flex items-start gap-2.5">
+            <CheckSquare className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+            <p><span className="font-bold text-stone-800">Tạo mã QR & Vé mời:</span> Tạo ngay vé check-in kèm QR tự động, hỗ trợ tải về hoặc in trực tiếp.</p>
+          </div>
+          <div className="flex items-start gap-2.5">
+            <CheckSquare className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+            <p><span className="font-bold text-stone-800">Gửi tự động Zalo ZNS:</span> Gắn kết tức thì và tự động gửi thông báo vé mời qua Zalo cá nhân của khách.</p>
+          </div>
+          <div className="flex items-start gap-2.5">
+            <CheckSquare className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+            <p><span className="font-bold text-stone-800">Link Check-in / Đăng ký:</span> Lấy link điền form đăng ký online hoặc link cho PG lấy máy quét soát vé.</p>
+          </div>
+          <div className="flex items-start gap-2.5">
+            <CheckSquare className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+            <p><span className="font-bold text-stone-800">Khách VIP & Báo cáo:</span> Đánh dấu khách VIP, lọc và xuất dữ liệu thống kê ra file Excel chuẩn.</p>
+          </div>
+        </div>
+      </div>
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div className="relative flex-1 w-full lg:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />

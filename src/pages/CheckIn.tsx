@@ -6,6 +6,7 @@ import { collection, query, where, getDocs, updateDoc, doc, serverTimestamp, add
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { motion, AnimatePresence } from 'motion/react';
 import { sendTelegramNotification, sendZaloNotification } from '../utils/notifications';
+import PageGuide from '../components/PageGuide';
 
 interface Attendee {
   id: string;
@@ -248,6 +249,10 @@ export default function CheckIn() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6 lg:space-y-8">
+      <PageGuide 
+        title="Cổng Kiểm duyệt điểm danh (Check-in)"
+        description="Mở trang này trên thiết bị có camera để nhân viên tiến hành quét mã QR. Hệ thống sẽ tức thời đối chiếu và lưu trạng thái thành công, đồng thời cảnh báo nếu vé không hợp lệ."
+      />
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div className="text-left">
           <h3 className="text-xl lg:text-2xl font-bold text-stone-900">Quét mã QR Check-in</h3>
