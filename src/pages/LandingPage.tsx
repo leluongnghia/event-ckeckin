@@ -1,203 +1,382 @@
 import React from 'react';
-import { QrCode, CheckCircle2, Users, Mail, ShieldCheck, ArrowRight, Sparkles, Zap, Smartphone, LayoutDashboard, MessageCircle, Map, BarChart } from 'lucide-react';
+import { QrCode, CheckCircle2, Users, Mail, ShieldCheck, ArrowRight, Sparkles, Zap, Smartphone, LayoutDashboard, MessageCircle, BarChart, Clock, Star, ChevronRight, Check } from 'lucide-react';
 import { motion } from 'motion/react';
 import { auth } from '../firebase';
 import { Link } from 'react-router-dom';
+
+const DASHBOARD_IMG = 'https://images.unsplash.com/photo-1591115765373-5207764f72e7?q=80&w=1480&auto=format&fit=crop';
+const CHECKIN_IMG = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1480&auto=format&fit=crop';
+const QR_IMG = 'https://images.unsplash.com/photo-1607082349566-187342175e2f?q=80&w=800&auto=format&fit=crop';
+const CROWD_IMG = 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1480&auto=format&fit=crop';
+
+const stats = [
+  { label: 'Sự kiện đã xử lý', value: '2,500+' },
+  { label: 'Khách mời đã check-in', value: '500K+' },
+  { label: 'Thời gian check-in TB', value: '< 2 giây' },
+  { label: 'Khách hàng hài lòng', value: '99.8%' },
+];
+
+const features = [
+  {
+    icon: QrCode,
+    color: 'emerald',
+    title: 'Check-in QR Code siêu tốc',
+    desc: 'Quét mã QR trong chưa tới 2 giây, hỗ trợ hoàn toàn chế độ ngoại tuyến khi mạng chập chờn trong ngày sự kiện.',
+    img: QR_IMG,
+  },
+  {
+    icon: Users,
+    color: 'blue',
+    title: 'Quản lý khách mời toàn diện',
+    desc: 'Nhập danh sách hàng loạt từ Excel, phân loại khách VIP, theo dõi trạng thái check-in trực tiếp thời gian thực.',
+    img: CHECKIN_IMG,
+  },
+  {
+    icon: Mail,
+    color: 'violet',
+    title: 'Gửi vé tự động đa kênh',
+    desc: 'Phân phối vé QR điện tử qua Email, Zalo ZNS, nhận thông báo VIP tức thì qua Telegram ngay khi có khách quan trọng vào.',
+    img: CROWD_IMG,
+  },
+];
+
+const howItWorks = [
+  { step: '01', title: 'Tạo sự kiện', desc: 'Điền thông tin sự kiện, ngày giờ, địa điểm và tùy chỉnh mẫu vé mời theo thương hiệu của bạn.' },
+  { step: '02', title: 'Nhập danh sách khách', desc: 'Import từ Excel hoặc thêm từng người. Hệ thống tự động tạo mã QR cá nhân hóa cho mỗi khách mời.' },
+  { step: '03', title: 'Gửi vé tự động', desc: 'Một cú nhấn, toàn bộ vé QR được phân phối đến inbox email hoặc Zalo của khách mời.' },
+  { step: '04', title: 'Check-in bằng camera', desc: 'Dùng bất kỳ thiết bị nào có camera, hướng vào mã QR, xác nhận trong chưa tới 2 giây.' },
+];
+
+const plans = [
+  {
+    name: 'Miễn phí',
+    price: '0đ',
+    period: 'mãi mãi',
+    color: 'stone',
+    features: ['1 sự kiện / tháng', '50 khách mời / sự kiện', 'Check-in QR cơ bản', 'Báo cáo tổng quan'],
+  },
+  {
+    name: 'Chuyên nghiệp',
+    price: '299K',
+    period: '/ tháng',
+    color: 'emerald',
+    popular: true,
+    features: ['Sự kiện không giới hạn', '1,000 khách mời / sự kiện', 'Gửi Email & Zalo auto', 'Báo cáo chi tiết AI', 'Thông báo VIP Telegram', 'Hỗ trợ ưu tiên'],
+  },
+  {
+    name: 'Doanh nghiệp',
+    price: 'Liên hệ',
+    period: '',
+    color: 'stone',
+    features: ['Không giới hạn mọi thứ', 'Check-in kiosk tablet', 'Tích hợp API riêng', 'White-label thương hiệu', 'SLA 99.9% uptime', 'Hỗ trợ 24/7'],
+  },
+];
+
+const testimonials = [
+  { name: 'Nguyễn Thị Lan', role: 'Giám đốc Sự kiện, TechCorp VN', avatar: 'L', text: 'EventCheck giúp chúng tôi check-in 800 khách trong 20 phút đầu. Trước đây làm thủ công mất cả buổi sáng. Tuyệt vời!' },
+  { name: 'Trần Văn Minh', role: 'Founder, EventPro Agency', avatar: 'M', text: 'Tính năng gửi vé Zalo ZNS là thứ chúng tôi chờ đợi từ lâu. Tỷ lệ mở vé tăng lên 94% so với chỉ gửi email.' },
+  { name: 'Phạm Thu Hà', role: 'Marketing Manager, Startup Hub', avatar: 'H', text: 'Dashboard thời gian thực cực kỳ hữu ích. Ban lãnh đạo nhìn số khách check-in live mà không cần hỏi nhân viên liên tục.' },
+];
+
+function FeatureCard({ feature, index }: { feature: typeof features[0]; index: number }) {
+  const Icon = feature.icon;
+  const isReversed = index % 2 !== 0;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1 }}
+      className={`flex flex-col ${isReversed ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-10 lg:gap-20`}
+    >
+      <div className="flex-1 space-y-5">
+        <div className={`inline-flex items-center gap-2 px-4 py-2 bg-${feature.color}-50 text-${feature.color}-700 rounded-full text-sm font-bold border border-${feature.color}-100`}>
+          <Icon className="w-4 h-4" />
+          Tính năng nổi bật
+        </div>
+        <h3 className="text-3xl lg:text-4xl font-black text-stone-900 tracking-tight leading-tight">{feature.title}</h3>
+        <p className="text-stone-500 text-lg font-medium leading-relaxed">{feature.desc}</p>
+        <Link to="/auth" className="inline-flex items-center gap-2 text-emerald-600 font-bold hover:gap-3 transition-all">
+          Dùng thử miễn phí <ArrowRight className="w-4 h-4" />
+        </Link>
+      </div>
+      <div className="flex-1 relative">
+        <div className="absolute -inset-4 bg-emerald-500/10 blur-3xl rounded-[3rem] -z-10" />
+        <img src={feature.img} alt={feature.title} className="w-full rounded-[2rem] shadow-2xl object-cover aspect-[4/3]" />
+      </div>
+    </motion.div>
+  );
+}
 
 export default function LandingPage() {
   const user = auth.currentUser;
 
   return (
-    <div className="min-h-screen bg-stone-50 font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-white font-sans overflow-x-hidden">
+
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-stone-200 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-emerald-600 rounded-xl">
-              <QrCode className="w-6 h-6 text-white" />
+      <nav className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-md border-b border-stone-100 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 bg-emerald-600 rounded-xl shadow-lg shadow-emerald-500/30">
+              <QrCode className="w-5 h-5 text-white" />
             </div>
-            <span className="text-2xl font-black text-stone-900 tracking-tight">EventCheck</span>
+            <span className="text-xl font-black text-stone-900 tracking-tight">EventCheck</span>
           </div>
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm font-bold text-stone-600 hover:text-emerald-600 transition-colors">Tính năng</a>
-            <a href="#pricing" className="text-sm font-bold text-stone-600 hover:text-emerald-600 transition-colors">Bảng giá</a>
+            <a href="#features" className="text-sm font-semibold text-stone-500 hover:text-emerald-600 transition-colors">Tính năng</a>
+            <a href="#how-it-works" className="text-sm font-semibold text-stone-500 hover:text-emerald-600 transition-colors">Quy trình</a>
+            <a href="#pricing" className="text-sm font-semibold text-stone-500 hover:text-emerald-600 transition-colors">Bảng giá</a>
+          </div>
+          <div className="flex items-center gap-3">
             {user ? (
-              <Link 
-                to="/dashboard"
-                className="px-6 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-sm hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-900/20 flex items-center gap-2"
-              >
-                <LayoutDashboard className="w-4 h-4" />
-                Vào Dashboard
+              <Link to="/dashboard" className="px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-sm hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/30 flex items-center gap-2">
+                <LayoutDashboard className="w-4 h-4" /> Dashboard
               </Link>
             ) : (
-              <Link 
-                to="/auth"
-                className="px-6 py-2.5 bg-stone-900 text-white rounded-xl font-bold text-sm hover:bg-stone-800 transition-all shadow-lg shadow-stone-900/20"
-              >
-                Đăng nhập
-              </Link>
+              <>
+                <Link to="/auth" className="hidden md:block text-sm font-bold text-stone-600 hover:text-stone-900 transition-colors">Đăng nhập</Link>
+                <Link to="/auth" className="px-5 py-2.5 bg-stone-900 text-white rounded-xl font-bold text-sm hover:bg-stone-800 transition-all shadow-lg shadow-stone-900/20">
+                  Bắt đầu miễn phí →
+                </Link>
+              </>
             )}
           </div>
-          <button 
-            onClick={() => window.location.href = '/auth'}
-            className="md:hidden p-2 text-stone-600"
-          >
-            <Zap className="w-6 h-6" />
-          </button>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="pt-32 md:pt-40 pb-16 md:pb-20 px-4">
-        <div className="max-w-7xl mx-auto text-center space-y-6 md:space-y-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-emerald-50 text-emerald-700 rounded-full text-xs md:text-sm font-bold border border-emerald-100"
-          >
-            <Sparkles className="w-3.5 h-3.5 md:w-4 md:h-4" />
-            Giải pháp quản lý sự kiện 4.0
-          </motion.div>
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-4xl sm:text-5xl md:text-7xl font-black text-stone-900 tracking-tight leading-[1.1] px-2"
-          >
-            Check-in sự kiện <br />
-            <span className="text-emerald-600">Nhanh hơn, Thông minh hơn</span>
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="max-w-2xl mx-auto text-base md:text-xl text-stone-500 font-medium leading-relaxed px-4"
-          >
-            Tự động hóa quy trình check-in bằng QR Code, quản lý khách mời thời gian thực và phân tích dữ liệu bằng AI. Tất cả trong một nền tảng duy nhất.
-          </motion.p>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 pt-4 px-4"
-          >
-            {user ? (
-              <Link 
-                to="/dashboard"
-                className="w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 bg-emerald-600 text-white rounded-xl md:rounded-2xl font-black text-base md:text-lg hover:bg-emerald-700 transition-all shadow-2xl shadow-emerald-500/40 flex items-center justify-center gap-2 group"
-              >
-                Quay lại Dashboard
-                <ArrowRight className="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-1 transition-transform" />
+      {/* Hero */}
+      <section className="pt-28 md:pt-36 pb-16 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center space-y-6 max-w-4xl mx-auto">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-full text-sm font-bold border border-emerald-100">
+              <Sparkles className="w-4 h-4" /> Được tin dùng bởi 500+ doanh nghiệp Việt Nam
+            </motion.div>
+            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-5xl sm:text-6xl md:text-7xl font-black text-stone-900 tracking-tight leading-[1.05]">
+              Check-in sự kiện<br />
+              <span className="text-emerald-600">chuyên nghiệp & tự động</span>
+            </motion.h1>
+            <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-lg md:text-xl text-stone-500 font-medium leading-relaxed max-w-2xl mx-auto">
+              Gửi vé QR điện tử tốc độ cao, check-in bằng camera trong 2 giây, theo dõi khách mời thời gian thực. Từ 50 đến 50,000 khách — EventCheck xử lý tất cả.
+            </motion.p>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+              <Link to="/auth" className="w-full sm:w-auto px-8 py-4 bg-emerald-600 text-white rounded-2xl font-black text-lg hover:bg-emerald-700 transition-all shadow-2xl shadow-emerald-500/30 flex items-center justify-center gap-2 group">
+                Dùng thử miễn phí <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
-            ) : (
-              <Link 
-                to="/auth"
-                className="w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 bg-emerald-600 text-white rounded-xl md:rounded-2xl font-black text-base md:text-lg hover:bg-emerald-700 transition-all shadow-2xl shadow-emerald-500/40 flex items-center justify-center gap-2 group"
-              >
-                Bắt đầu miễn phí
-                <ArrowRight className="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            )}
-            {!user && (
-              <Link 
-                to="/auth"
-                className="w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 bg-white text-stone-900 border border-stone-200 rounded-xl md:rounded-2xl font-black text-base md:text-lg hover:bg-stone-50 transition-all shadow-sm flex items-center justify-center"
-              >
-                Xem bản Demo
-              </Link>
-            )}
-          </motion.div>
+              <a href="#how-it-works" className="w-full sm:w-auto px-8 py-4 bg-stone-100 text-stone-800 rounded-2xl font-bold text-lg hover:bg-stone-200 transition-all flex items-center justify-center gap-2">
+                Xem quy trình
+              </a>
+            </motion.div>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="flex items-center justify-center gap-6 pt-2 text-sm text-stone-400 font-medium">
+              <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-emerald-500" /> Miễn phí vĩnh viễn</span>
+              <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-emerald-500" /> Không cần thẻ tín dụng</span>
+              <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-emerald-500" /> Cài đặt trong 5 phút</span>
+            </motion.div>
+          </div>
 
-          {/* Dashboard Preview */}
-          <motion.div 
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="mt-12 md:mt-20 relative max-w-5xl mx-auto px-2"
-          >
-            <div className="absolute -inset-2 md:-inset-4 bg-emerald-500/10 blur-2xl md:blur-3xl rounded-[2rem] md:rounded-[3rem] -z-10" />
-            <img 
-              src="https://picsum.photos/seed/dashboard/1200/800" 
-              alt="Dashboard Preview" 
-              className="rounded-[1.5rem] md:rounded-[2.5rem] shadow-2xl border border-stone-200 w-full object-cover aspect-video"
-            />
+          {/* Hero Image */}
+          <motion.div initial={{ opacity: 0, y: 60 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="mt-14 relative">
+            <div className="absolute -inset-6 bg-gradient-to-b from-emerald-500/10 to-transparent blur-3xl rounded-[3rem] -z-10" />
+            <img src={CHECKIN_IMG} alt="Nhân viên check-in khách mời bằng QR Code tại sự kiện chuyên nghiệp" className="w-full rounded-[2rem] shadow-2xl border border-stone-200 object-cover max-h-[560px]" />
+            <div className="absolute top-6 right-6 bg-white/95 backdrop-blur-sm px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 border border-stone-100">
+              <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse" />
+              <span className="text-sm font-bold text-stone-800">1,248 khách đã check-in</span>
+            </div>
+            <div className="absolute bottom-6 left-6 bg-white/95 backdrop-blur-sm px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 border border-stone-100">
+              <Clock className="w-4 h-4 text-emerald-600" />
+              <span className="text-sm font-bold text-stone-800">Thời gian TB: 1.8 giây / khách</span>
+            </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Features */}
-      <section id="features" className="py-20 bg-white border-y border-stone-200 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 space-y-4">
-            <h2 className="text-3xl md:text-5xl font-black text-stone-900 tracking-tight">Tính năng vượt trội</h2>
-            <p className="text-stone-500 font-medium">Mọi thứ bạn cần để tổ chức một sự kiện thành công rực rỡ</p>
+      {/* Stats */}
+      <section className="py-14 bg-stone-900 px-4">
+        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
+          {stats.map((s, i) => (
+            <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="text-center">
+              <div className="text-3xl md:text-4xl font-black text-emerald-400">{s.value}</div>
+              <div className="text-stone-400 font-medium text-sm mt-1">{s.label}</div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* Features Detail */}
+      <section id="features" className="py-24 px-4">
+        <div className="max-w-6xl mx-auto space-y-28">
+          <div className="text-center space-y-3">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-full text-sm font-bold border border-emerald-100">
+              <Sparkles className="w-4 h-4" /> Tính năng cốt lõi
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black text-stone-900 tracking-tight">Mọi thứ bạn cần<br />trong một nền tảng</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {features.map((f, i) => <FeatureCard key={i} feature={f} index={i} />)}
+        </div>
+      </section>
+
+      {/* Feature Grid */}
+      <section className="py-20 bg-stone-50 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-14 space-y-3">
+            <h2 className="text-3xl md:text-4xl font-black text-stone-900">Còn rất nhiều tính năng khác</h2>
+            <p className="text-stone-500 font-medium">Được thiết kế đặc biệt cho nhà tổ chức sự kiện chuyên nghiệp Việt Nam</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { icon: QrCode, title: 'Check-in QR Code', desc: 'Quét mã QR siêu tốc, hỗ trợ cả chế độ ngoại tuyến khi mất mạng.' },
-              { icon: Users, title: 'Quản lý Khách mời', desc: 'Dễ dàng nhập danh sách, phân loại khách VIP và theo dõi trạng thái.' },
-              { icon: Mail, title: 'Thông báo Đa kênh', desc: 'Gửi vé mời qua Email, Zalo ZNS và thông báo VIP qua Telegram.' },
-              { icon: MessageCircle, title: 'Trợ lý Chatbot AI', desc: 'Hỗ trợ giải đáp thắc mắc về sự kiện 24/7 với AI thông minh.' },
-              { icon: Map, title: 'Tích hợp Bản đồ', desc: 'Tìm kiếm địa điểm thú vị gần sự kiện với Google Maps Grounding.' },
-              { icon: BarChart, title: 'Khảo sát Tự động', desc: 'Thu thập phản hồi khách mời và phân tích cảm xúc bằng AI.' },
-              { icon: ShieldCheck, title: 'Bảo mật & Phân tích', desc: 'Dữ liệu được mã hóa an toàn và báo cáo sự kiện thời gian thực.' },
-            ].map((feature, i) => (
-              <div key={i} className="p-8 bg-stone-50 rounded-[2rem] border border-stone-100 hover:border-emerald-200 hover:bg-emerald-50/30 transition-all group">
-                <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
-                  <feature.icon className="w-7 h-7 text-emerald-600" />
+              { icon: MessageCircle, title: 'Chatbot AI hỗ trợ', desc: 'Trả lời thắc mắc khách mời về sự kiện 24/7 mà không cần nhân sự.' },
+              { icon: BarChart, title: 'Báo cáo phân tích AI', desc: 'Tổng hợp dữ liệu sự kiện, phân tích xu hướng và gửi báo cáo tự động.' },
+              { icon: ShieldCheck, title: 'Thiết kế vé thương hiệu', desc: 'Tùy chỉnh mẫu vé điện tử theo màu sắc và logo thương hiệu của bạn.' },
+              { icon: Smartphone, title: 'Chế độ Kiosk tự phục vụ', desc: 'Khách mời tự quét vé trên màn hình kiosk, giảm tải nhân sự đón tiếp.' },
+              { icon: Zap, title: 'Quản lý phiên (Session)', desc: 'Theo dõi điểm danh từng phòng, từng session trong sự kiện nhiều ngày.' },
+              { icon: Star, title: 'Đăng ký vãng lai tại chỗ', desc: 'Đăng ký và check-in ngay lập tức cho khách không đăng ký trước.' },
+            ].map((f, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className="bg-white p-7 rounded-3xl border border-stone-200 hover:border-emerald-300 hover:shadow-lg transition-all group">
+                <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                  <f.icon className="w-6 h-6 text-emerald-600" />
                 </div>
-                <h3 className="text-xl font-bold text-stone-900 mb-3">{feature.title}</h3>
-                <p className="text-stone-500 font-medium leading-relaxed">{feature.desc}</p>
-              </div>
+                <h3 className="text-lg font-bold text-stone-900 mb-2">{f.title}</h3>
+                <p className="text-stone-500 text-sm font-medium leading-relaxed">{f.desc}</p>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-5xl mx-auto bg-stone-900 rounded-[3rem] p-12 md:p-20 text-center space-y-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/20 blur-[100px] rounded-full" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 blur-[100px] rounded-full" />
-          
-          <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight relative z-10">
-            Sẵn sàng nâng tầm <br /> sự kiện của bạn?
-          </h2>
-          <p className="text-stone-400 text-lg md:text-xl font-medium max-w-2xl mx-auto relative z-10">
-            Tham gia cùng hàng ngàn nhà tổ chức sự kiện chuyên nghiệp ngay hôm nay.
-          </p>
-          <div className="pt-4 relative z-10">
-            {user ? (
-              <Link 
-                to="/dashboard"
-                className="px-12 py-5 bg-emerald-600 text-white rounded-2xl font-black text-xl hover:bg-emerald-700 transition-all shadow-2xl shadow-emerald-500/20"
-              >
-                Vào Dashboard ngay
-              </Link>
-            ) : (
-              <Link 
-                to="/auth"
-                className="px-12 py-5 bg-emerald-600 text-white rounded-2xl font-black text-xl hover:bg-emerald-700 transition-all shadow-2xl shadow-emerald-500/20"
-              >
-                Bắt đầu ngay bây giờ
-              </Link>
-            )}
+      {/* How It Works */}
+      <section id="how-it-works" className="py-24 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16 space-y-3">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-full text-sm font-bold border border-emerald-100">
+              <CheckCircle2 className="w-4 h-4" /> Siêu đơn giản
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black text-stone-900 tracking-tight">Chạy trong 4 bước</h2>
+            <p className="text-stone-500 font-medium">Từ lúc tạo tài khoản đến check-in vị khách đầu tiên, chỉ mất 5 phút.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {howItWorks.map((step, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="relative">
+                {i < howItWorks.length - 1 && (
+                  <div className="hidden lg:block absolute top-8 left-[calc(100%-16px)] w-8 text-stone-200 z-10">
+                    <ChevronRight className="w-6 h-6" />
+                  </div>
+                )}
+                <div className="text-5xl font-black text-emerald-100 mb-4">{step.step}</div>
+                <h3 className="text-lg font-black text-stone-900 mb-2">{step.title}</h3>
+                <p className="text-stone-500 text-sm font-medium leading-relaxed">{step.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-20 bg-stone-900 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl md:text-4xl font-black text-white">Khách hàng nói gì về chúng tôi</h2>
+            <p className="text-stone-400 font-medium mt-3">Hơn 500 nhà tổ chức sự kiện đang tin dùng EventCheck mỗi ngày</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {testimonials.map((t, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="bg-white/5 border border-white/10 rounded-3xl p-8 space-y-4">
+                <div className="flex gap-1">{[...Array(5)].map((_, j) => <Star key={j} className="w-4 h-4 fill-amber-400 text-amber-400" />)}</div>
+                <p className="text-stone-300 font-medium leading-relaxed text-sm">"{t.text}"</p>
+                <div className="flex items-center gap-3 pt-2">
+                  <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center text-white font-black">{t.avatar}</div>
+                  <div>
+                    <div className="text-white font-bold text-sm">{t.name}</div>
+                    <div className="text-stone-500 text-xs">{t.role}</div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section id="pricing" className="py-24 px-4">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-14 space-y-3">
+            <h2 className="text-4xl md:text-5xl font-black text-stone-900 tracking-tight">Bảng giá đơn giản</h2>
+            <p className="text-stone-500 font-medium">Không phí ẩn. Không ràng buộc hợp đồng. Hủy bất kỳ lúc nào.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {plans.map((p, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className={`rounded-3xl p-8 border-2 relative ${p.popular ? 'border-emerald-500 bg-emerald-50' : 'border-stone-200 bg-white'}`}>
+                {p.popular && <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-emerald-600 text-white text-xs font-black rounded-full uppercase tracking-wider">Phổ biến nhất</div>}
+                <div className="mb-6">
+                  <h3 className="text-xl font-black text-stone-900">{p.name}</h3>
+                  <div className="mt-3 flex items-baseline gap-1">
+                    <span className="text-4xl font-black text-stone-900">{p.price}</span>
+                    <span className="text-stone-500 font-medium">{p.period}</span>
+                  </div>
+                </div>
+                <ul className="space-y-3 mb-8">
+                  {p.features.map((f, j) => (
+                    <li key={j} className="flex items-center gap-2 text-sm font-medium text-stone-700">
+                      <Check className="w-4 h-4 text-emerald-600 shrink-0" /> {f}
+                    </li>
+                  ))}
+                </ul>
+                <Link to="/auth" className={`w-full py-3.5 rounded-2xl font-bold text-center block transition-all ${p.popular ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-500/30' : 'bg-stone-900 text-white hover:bg-stone-800'}`}>
+                  Bắt đầu ngay
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-20 px-4 bg-stone-50">
+        <div className="max-w-4xl mx-auto bg-stone-900 rounded-[3rem] p-14 md:p-20 text-center space-y-8 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/20 blur-[120px] rounded-full" />
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-500/10 blur-[120px] rounded-full" />
+          <div className="relative z-10 space-y-6">
+            <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight">Sẵn sàng tổ chức sự kiện chuyên nghiệp?</h2>
+            <p className="text-stone-400 text-lg font-medium">Tham gia miễn phí ngay hôm nay. Không cần thẻ tín dụng.</p>
+            <Link to="/auth" className="inline-flex items-center gap-2 px-12 py-5 bg-emerald-600 text-white rounded-2xl font-black text-xl hover:bg-emerald-700 transition-all shadow-2xl shadow-emerald-500/20 group">
+              Bắt đầu miễn phí ngay <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-12 border-t border-stone-200 px-4">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="flex items-center gap-2">
-            <QrCode className="w-6 h-6 text-emerald-600" />
-            <span className="text-xl font-black text-stone-900 tracking-tight">EventCheck</span>
+      <footer className="py-14 border-t border-stone-200 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row items-start justify-between gap-10 mb-12">
+            <div className="space-y-4 max-w-xs">
+              <div className="flex items-center gap-2">
+                <div className="p-2 bg-emerald-600 rounded-xl"><QrCode className="w-5 h-5 text-white" /></div>
+                <span className="text-xl font-black text-stone-900">EventCheck</span>
+              </div>
+              <p className="text-stone-500 text-sm font-medium leading-relaxed">Nền tảng quản lý sự kiện và check-in thông minh số 1 Việt Nam.</p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-8 text-sm">
+              <div className="space-y-3">
+                <div className="font-black text-stone-900 uppercase tracking-widest text-xs">Sản phẩm</div>
+                {['Tính năng', 'Bảng giá', 'Lộ trình phát triển'].map(l => <a key={l} href="#" className="block text-stone-500 hover:text-stone-900 font-medium transition-colors">{l}</a>)}
+              </div>
+              <div className="space-y-3">
+                <div className="font-black text-stone-900 uppercase tracking-widest text-xs">Tài nguyên</div>
+                {['Hướng dẫn', 'Blog', 'Hỏi đáp'].map(l => <a key={l} href="#" className="block text-stone-500 hover:text-stone-900 font-medium transition-colors">{l}</a>)}
+              </div>
+              <div className="space-y-3">
+                <div className="font-black text-stone-900 uppercase tracking-widest text-xs">Liên hệ</div>
+                {['Zalo OA', 'Email hỗ trợ', 'Facebook'].map(l => <a key={l} href="#" className="block text-stone-500 hover:text-stone-900 font-medium transition-colors">{l}</a>)}
+              </div>
+            </div>
           </div>
-          <p className="text-stone-400 text-sm font-medium">© 2026 EventCheck SaaS. All rights reserved.</p>
-          <div className="flex items-center gap-6">
-            <a href="#" className="text-stone-400 hover:text-stone-900 transition-colors"><Zap className="w-5 h-5" /></a>
-            <a href="#" className="text-stone-400 hover:text-stone-900 transition-colors"><Smartphone className="w-5 h-5" /></a>
-            <a href="#" className="text-stone-400 hover:text-stone-900 transition-colors"><ShieldCheck className="w-5 h-5" /></a>
+          <div className="border-t border-stone-200 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-stone-400 text-sm font-medium">© 2026 EventCheck SaaS. Bảo lưu mọi quyền.</p>
+            <div className="flex items-center gap-6 text-sm text-stone-400">
+              <a href="#" className="hover:text-stone-900 font-medium transition-colors">Điều khoản</a>
+              <a href="#" className="hover:text-stone-900 font-medium transition-colors">Bảo mật</a>
+              <a href="#" className="hover:text-stone-900 font-medium transition-colors">Cookie</a>
+            </div>
           </div>
         </div>
       </footer>
