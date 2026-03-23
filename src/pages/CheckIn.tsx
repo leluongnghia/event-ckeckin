@@ -5,7 +5,7 @@ import { CheckCircle2, XCircle, Loader2, Printer, UserPlus, Star, X } from 'luci
 import { collection, query, where, getDocs, updateDoc, doc, serverTimestamp, addDoc, getDoc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { motion, AnimatePresence } from 'motion/react';
-import { sendTelegramNotification } from '../utils/notifications';
+import { sendTelegramNotification, sendZaloNotification } from '../utils/notifications';
 
 interface Attendee {
   id: string;
@@ -175,6 +175,23 @@ export default function CheckIn() {
                 eventSettings.telegramChatId,
                 telegramMessage
               );
+            }
+
+            // Send Zalo Notification
+            if (eventSettings.zaloAccessToken && eventSettings.zaloTemplateId) {
+                const phone = attendeeData.phone || '';
+                if (phone) {
+                    await sendZaloNotification(
+                        eventSettings.zaloTemplateId,
+                        eventSettings.zaloAccessToken,
+                        phone,
+                        {
+                            name: attendeeData.name,
+                            eventName: eventSettings.name,
+                            time: new Date().toLocaleString('vi-VN')
+                        }
+                    );
+                }
             }
           }
         } catch (error) {

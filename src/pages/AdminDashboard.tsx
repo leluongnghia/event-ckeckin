@@ -4,7 +4,7 @@ import { db, auth, handleFirestoreError, OperationType } from '../firebase';
 import { Users, Mail, ShieldCheck, Download, Search, Loader2, Calendar, LayoutGrid, Settings as SettingsIcon, ToggleLeft, ToggleRight, MessageSquareWarning } from 'lucide-react';
 import { motion } from 'motion/react';
 
-const ADMIN_EMAIL = 'leluongnghia90@gmail.com';
+const ADMIN_EMAILS = ['leluongnghia90@gmail.com', 'leluongnghia91@gmail.com'];
 
 function cn(...inputs: any[]) {
   return inputs.filter(Boolean).join(' ');
@@ -26,7 +26,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const fetchAllData = async () => {
-      if (auth.currentUser?.email !== ADMIN_EMAIL) {
+      if (!auth.currentUser?.email || !ADMIN_EMAILS.includes(auth.currentUser.email)) {
         setLoading(false);
         return;
       }
@@ -133,7 +133,7 @@ export default function AdminDashboard() {
     document.body.removeChild(link);
   };
 
-  if (auth.currentUser?.email !== ADMIN_EMAIL) {
+  if (!auth.currentUser?.email || !ADMIN_EMAILS.includes(auth.currentUser.email)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-stone-50 p-8">
         <div className="text-center space-y-4">

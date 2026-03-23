@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, query, where, onSnapshot, addDoc, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, addDoc, serverTimestamp, deleteDoc, doc, getDoc } from 'firebase/firestore';
 import { db, auth, handleFirestoreError, OperationType } from '../firebase';
 import { Plus, Calendar, Users, ArrowRight, Trash2, Loader2, LayoutGrid, List } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -111,9 +111,9 @@ export default function EventList() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="group relative bg-white rounded-[2rem] border border-stone-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all overflow-hidden"
+                className="bg-white rounded-[2rem] border border-stone-200 overflow-hidden hover:shadow-2xl hover:shadow-emerald-500/10 transition-all duration-300 group"
               >
-                <Link to={`/events/${event.id}`} className="block p-8">
+                <Link to={`/dashboard/events/${event.id}`} className="block p-8">
                   <div className="flex items-start justify-between mb-6">
                     <div className="p-4 bg-emerald-50 text-emerald-600 rounded-2xl group-hover:bg-emerald-600 group-hover:text-white transition-colors">
                       <Calendar className="w-6 h-6" />

@@ -16,7 +16,7 @@ import { auth, db } from '../firebase';
 import { QrCode, Mail, Lock, User, Phone, Building, ArrowRight, Loader2, CheckCircle2, ShieldCheck, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-const ADMIN_EMAIL = 'leluongnghia90@gmail.com';
+const ADMIN_EMAILS = ['leluongnghia90@gmail.com', 'leluongnghia91@gmail.com'];
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -57,7 +57,7 @@ export default function Auth() {
         const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
         if (!userDoc.exists()) {
           // If admin, skip verification and save profile immediately
-          if (auth.currentUser.email === ADMIN_EMAIL) {
+          if (auth.currentUser.email && ADMIN_EMAILS.includes(auth.currentUser.email)) {
             await setDoc(doc(db, 'users', auth.currentUser.uid), {
               name: auth.currentUser.displayName || 'Admin',
               email: auth.currentUser.email,

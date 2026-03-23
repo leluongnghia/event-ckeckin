@@ -12,7 +12,7 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const ADMIN_EMAIL = 'leluongnghia90@gmail.com';
+const ADMIN_EMAILS = ['leluongnghia90@gmail.com', 'leluongnghia91@gmail.com'];
 
 export default function Layout() {
   const { eventId } = useParams();
@@ -27,14 +27,14 @@ export default function Layout() {
   };
 
   const navItems = eventId ? [
-    { name: 'Dashboard', path: `/events/${eventId}`, icon: LayoutDashboard },
-    { name: 'Khách mời', path: `/events/${eventId}/attendees`, icon: Users },
-    { name: 'Thiết kế vé', path: `/events/${eventId}/design`, icon: Palette },
-    { name: 'Check-in', path: `/events/${eventId}/checkin`, icon: QrCode },
-    { name: 'Quản lý phiên', path: `/events/${eventId}/sessions`, icon: Calendar },
-    { name: 'Gửi Email', path: `/events/${eventId}/email`, icon: Mail },
+    { name: 'Dashboard', path: `/dashboard/events/${eventId}`, icon: LayoutDashboard },
+    { name: 'Khách mời', path: `/dashboard/events/${eventId}/attendees`, icon: Users },
+    { name: 'Thiết kế vé', path: `/dashboard/events/${eventId}/design`, icon: Palette },
+    { name: 'Check-in', path: `/dashboard/events/${eventId}/checkin`, icon: QrCode },
+    { name: 'Quản lý phiên', path: `/dashboard/events/${eventId}/sessions`, icon: Calendar },
+    { name: 'Gửi Email', path: `/dashboard/events/${eventId}/email`, icon: Mail },
     { name: 'Chế độ Kiosk', path: `/kiosk/${eventId}`, icon: LayoutGrid },
-    { name: 'Cài đặt', path: `/events/${eventId}/settings`, icon: Settings },
+    { name: 'Cài đặt', path: `/dashboard/events/${eventId}/settings`, icon: Settings },
   ] : [];
 
   const globalItems = [
@@ -44,8 +44,8 @@ export default function Layout() {
     { name: 'Góp ý & Báo lỗi', path: '/dashboard/feedback', icon: MessageSquareWarning },
   ];
 
-  if (user?.email === ADMIN_EMAIL) {
-    globalItems.push({ name: 'Admin Dashboard', path: '/admin', icon: ShieldCheck });
+  if (user?.email && ADMIN_EMAILS.includes(user.email)) {
+    globalItems.push({ name: 'Admin Dashboard', path: '/dashboard/admin', icon: ShieldCheck });
   }
 
   return (
