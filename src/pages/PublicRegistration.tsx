@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { QrCode, User, Mail, Building, Send, CheckCircle2, Loader2, X, Download, Calendar, Phone, MapPin, Info } from 'lucide-react';
+import { QrCode, User, Mail, Building, Send, CheckCircle2, Loader2, X, Download, Calendar, Phone, MapPin, Info, Clock } from 'lucide-react';
 import { collection, addDoc, query, where, getDocs, serverTimestamp, doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { motion } from 'motion/react';
@@ -245,6 +245,37 @@ export default function PublicRegistration() {
               </div>
             )}
           </div>
+
+          {/* Agenda */}
+          {Array.isArray(eventSettings?.agenda) && eventSettings.agenda.length > 0 && (
+            <div className="px-6 pb-4 border-b border-stone-100">
+              <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <Clock className="w-3.5 h-3.5" /> Chương trình sự kiện
+              </p>
+              <div className="relative">
+                {/* vertical line */}
+                <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-stone-100" />
+                <div className="space-y-4">
+                  {eventSettings.agenda.map((item: any, idx: number) => (
+                    <div key={idx} className="flex gap-4 items-start">
+                      <div className="w-6 h-6 rounded-full bg-emerald-100 border-2 border-emerald-400 shrink-0 flex items-center justify-center z-10">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                      </div>
+                      <div className="pb-1">
+                        {item.time && (
+                          <p className="text-xs text-emerald-600 font-bold mb-0.5">{item.time}</p>
+                        )}
+                        <p className="text-sm font-semibold text-stone-800">{item.title}</p>
+                        {item.desc && (
+                          <p className="text-xs text-stone-500 mt-0.5">{item.desc}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Registration Form */}
           <div className="p-6">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Settings as SettingsIcon, Save, Calendar, MapPin, Type, Bell, Loader2, QrCode, CheckCircle2, Mail, FileText, Send, Map as MapIcon, ExternalLink, Image as ImageIcon, X, Building } from 'lucide-react';
+import { Settings as SettingsIcon, Save, Calendar, MapPin, Type, Bell, Loader2, QrCode, CheckCircle2, Mail, FileText, Send, Map as MapIcon, ExternalLink, Image as ImageIcon, X, Building, ListOrdered, Plus, GripVertical, Clock } from 'lucide-react';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType, auth } from '../firebase';
 import { GoogleGenAI } from '@google/genai';
@@ -37,6 +37,7 @@ export default function Settings() {
   const [sendingReport, setSendingReport] = useState(false);
   const [mapResults, setMapResults] = useState<any[]>([]);
   const [searchingMap, setSearchingMap] = useState(false);
+  const [agenda, setAgenda] = useState<{ time: string; title: string; desc: string }[]>([]);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -44,7 +45,9 @@ export default function Settings() {
         const docRef = doc(db, 'events', eventId);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setEventData(prev => ({ ...prev, ...docSnap.data() }));
+          const data = docSnap.data();
+          setEventData(prev => ({ ...prev, ...data }));
+          if (Array.isArray(data.agenda)) setAgenda(data.agenda);
         }
       } catch (error) {
         console.error("Error fetching event", error);
@@ -58,7 +61,7 @@ export default function Settings() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await setDoc(doc(db, 'events', eventId), eventData);
+      await setDoc(doc(db, 'events', eventId), { ...eventData, agenda });
       alert("Đã lưu cài đặt sự kiện thành công!");
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, `events/${eventId}`);
@@ -317,6 +320,89 @@ export default function Settings() {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Agenda Section */}
+          <div className="space-y-4 md:col-span-2 pt-6 border-t border-stone-100">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ListOrdered className="w-4 h-4 text-emerald-600" />
+                <span className="text-sm font-bold text-stone-700">Agenda chương trình</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setAgenda([...agenda, { time: '', title: '', desc: '' }])}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-xl text-xs font-bold hover:bg-emerald-100 transition-all"
+              >
+                <Plus className="w-3.5 h-3.5" /> Thêm mục
+              </button>
+            </div>
+
+            {agenda.length === 0 ? (
+              <div className="bg-stone-50 border-2 border-dashed border-stone-200 rounded-2xl p-6 text-center">
+                <ListOrdered className="w-8 h-8 text-stone-300 mx-auto mb-2" />
+                <p className="text-xs text-stone-400">Chưa có mục agenda nào. Nhấn “Thêm mục” để bắt đầu.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {agenda.map((item, idx) => (
+                  <div key={idx} className="flex gap-3 items-start bg-stone-50 border border-stone-200 rounded-2xl p-4">
+                    <GripVertical className="w-4 h-4 text-stone-300 mt-3 shrink-0" />
+
+                    <div className="flex flex-col md:flex-row gap-3 flex-1">
+                      {/* Time */}
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Clock className="w-4 h-4 text-emerald-500" />
+                        <input
+                          type="time"
+                          className="w-28 px-3 py-2 bg-white border border-stone-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none"
+                          value={item.time}
+                          onChange={e => {
+                            const updated = [...agenda];
+                            updated[idx] = { ...updated[idx], time: e.target.value };
+                            setAgenda(updated);
+                          }}
+                        />
+                      </div>
+
+                      {/* Title + Desc */}
+                      <div className="flex-1 space-y-2">
+                        <input
+                          type="text"
+                          placeholder="Tiêu đề (ví dụ: Khai mạc sự kiện)"
+                          className="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none"
+                          value={item.title}
+                          onChange={e => {
+                            const updated = [...agenda];
+                            updated[idx] = { ...updated[idx], title: e.target.value };
+                            setAgenda(updated);
+                          }}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Mô tả ngắn (tuỳ chọn)"
+                          className="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none"
+                          value={item.desc}
+                          onChange={e => {
+                            const updated = [...agenda];
+                            updated[idx] = { ...updated[idx], desc: e.target.value };
+                            setAgenda(updated);
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setAgenda(agenda.filter((_, i) => i !== idx))}
+                      className="p-1.5 text-stone-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all shrink-0 mt-1"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="space-y-2 md:col-span-2">
