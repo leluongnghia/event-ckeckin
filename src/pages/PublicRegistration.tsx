@@ -61,8 +61,9 @@ export default function PublicRegistration() {
 
       // 3. Generate QR for immediate view
       try {
-        const qrResponse = await axios.post('/api/qr/generate', { data: attendeeData.qrCode });
-        setQrImage(qrResponse.data.qrImage);
+        const QRCode = (await import("qrcode")).default;
+        const url = await QRCode.toDataURL(attendeeData.qrCode);
+        setQrImage(url);
       } catch (qrErr) {
         console.error("QR generation error:", qrErr);
       }

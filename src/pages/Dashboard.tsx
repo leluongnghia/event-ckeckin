@@ -102,8 +102,9 @@ export default function Dashboard() {
     setIsPreviewOpen(true);
     setQrImage(null);
     try {
-      const response = await axios.post('/api/qr/generate', { data: attendee.qrCode });
-      setQrImage(response.data.qrImage);
+      const QRCode = (await import("qrcode")).default;
+      const url = await QRCode.toDataURL(attendee.qrCode);
+      setQrImage(url);
     } catch (error) {
       console.error("Failed to generate QR", error);
     }
