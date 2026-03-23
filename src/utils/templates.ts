@@ -44,7 +44,7 @@ export const TEMPLATES: InvitationTemplate[] = [
   {
     id: "minimal_clean",
     name: "Minimal Clean (Hội thảo)",
-    html: `<div style="width:100%;min-height:100%;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;background:#f5f5f5;"><div style="width:100%;max-width:400px;padding:50px 30px;background:#fff;color:#333;font-family:Arial, sans-serif;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.05);">
+    html: `<div style="width:100%;min-height:100%;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;"><div style="width:100%;max-width:400px;padding:50px 30px;background:#fff;color:#333;font-family:Arial, sans-serif;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.05);">
   <h2 style="font-size:1.5em;color:#111;margin-bottom:30px;">{{event_name}}</h2>
   <p>Xin chào <b style="color:#111;">{{name}}</b>,</p>
   <p style="color:#666;line-height:1.5;">Bạn được mời tham dự sự kiện của chúng tôi. Vui lòng xuất trình mã QR này tại cổng check-in.</p>

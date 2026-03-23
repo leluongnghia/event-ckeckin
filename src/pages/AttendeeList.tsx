@@ -876,7 +876,15 @@ export default function AttendeeList() {
               </>
             ) : (
               <div 
-                className="w-full relative min-h-[500px] flex items-center justify-center bg-white"
+                className="w-full relative min-h-[500px] flex items-stretch justify-stretch bg-white"
+              >
+                {eventSettings?.ticketBgImage && (
+                  <div className="absolute inset-0 z-0">
+                    <img src={eventSettings.ticketBgImage} alt="Background" className="w-full h-full object-cover opacity-50" />
+                    <div className="absolute inset-0 bg-white/30 backdrop-blur-[2px]" />
+                  </div>
+                )}
+                <div className="relative z-10 w-full min-h-[500px] flex items-center justify-center"
                 dangerouslySetInnerHTML={{
                   __html: renderTemplate(
                     TEMPLATES.find(t => t.id === eventSettings.ticketTemplateId)?.html || '',
@@ -890,7 +898,8 @@ export default function AttendeeList() {
                     }
                   )
                 }}
-              />
+                />
+              </div>
             )}
             </div>
 

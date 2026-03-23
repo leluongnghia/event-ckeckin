@@ -169,212 +169,212 @@ export default function TicketDesign() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Editor Side */}
-        {eventData.ticketTemplateId === 'default' && (
-          <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm space-y-8 animate-in fade-in zoom-in duration-300">
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
-                <Type className="w-4 h-4" /> Tiêu đề vé
-              </label>
-              <input
-                type="text"
-                className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
-                value={eventData.ticketTitle || ''}
-                onChange={(e) => setEventData({ ...eventData, ticketTitle: e.target.value })}
-                placeholder="Ví dụ: VÉ MỜI SỰ KIỆN"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
-                <LayoutIcon className="w-4 h-4" /> Phụ đề vé
-              </label>
-              <input
-                type="text"
-                className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
-                value={eventData.ticketSubtitle || ''}
-                onChange={(e) => setEventData({ ...eventData, ticketSubtitle: e.target.value })}
-                placeholder="Ví dụ: Hội thảo Công nghệ 2026"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
-                  <Palette className="w-4 h-4" /> Màu chủ đạo
-                </label>
-                <div className="flex gap-4 items-center">
-                  <input
-                    type="color"
-                    className="w-12 h-12 rounded-xl border border-stone-200 cursor-pointer p-1 bg-white"
-                    value={eventData.ticketColor || '#000000'}
-                    onChange={(e) => setEventData({ ...eventData, ticketColor: e.target.value })}
-                  />
+        <div className="space-y-6">
+          {eventData.ticketTemplateId === 'default' && (
+            <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm space-y-8 animate-in fade-in zoom-in duration-300">
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
+                    <Type className="w-4 h-4" /> Tiêu đề vé
+                  </label>
                   <input
                     type="text"
-                    className="flex-1 px-4 py-2 bg-stone-50 border border-stone-200 rounded-xl font-mono text-sm uppercase"
-                    value={eventData.ticketColor || ''}
-                    onChange={(e) => setEventData({ ...eventData, ticketColor: e.target.value })}
+                    className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                    value={eventData.ticketTitle || ''}
+                    onChange={(e) => setEventData({ ...eventData, ticketTitle: e.target.value })}
+                    placeholder="Ví dụ: VÉ MỜI SỰ KIỆN"
                   />
                 </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
-                  <Palette className="w-4 h-4" /> Màu chữ tên khách
-                </label>
-                <div className="flex gap-4 items-center">
-                  <input
-                    type="color"
-                    className="w-12 h-12 rounded-xl border border-stone-200 cursor-pointer p-1 bg-white"
-                    value={eventData.ticketNameColor || '#000000'}
-                    onChange={(e) => setEventData({ ...eventData, ticketNameColor: e.target.value })}
-                  />
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
+                    <LayoutIcon className="w-4 h-4" /> Phụ đề vé
+                  </label>
                   <input
                     type="text"
-                    className="flex-1 px-4 py-2 bg-stone-50 border border-stone-200 rounded-xl font-mono text-sm uppercase"
-                    value={eventData.ticketNameColor || ''}
-                    onChange={(e) => setEventData({ ...eventData, ticketNameColor: e.target.value })}
+                    className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                    value={eventData.ticketSubtitle || ''}
+                    onChange={(e) => setEventData({ ...eventData, ticketSubtitle: e.target.value })}
+                    placeholder="Ví dụ: Hội thảo Công nghệ 2026"
                   />
                 </div>
-              </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
-                  <Palette className="w-4 h-4" /> Màu nền thân vé
-                </label>
-                <div className="flex gap-4 items-center">
-                  <input
-                    type="color"
-                    className="w-12 h-12 rounded-xl border border-stone-200 cursor-pointer p-1 bg-white"
-                    value={eventData.ticketBodyBgColor || '#000000'}
-                    onChange={(e) => setEventData({ ...eventData, ticketBodyBgColor: e.target.value })}
-                  />
-                  <input
-                    type="text"
-                    className="flex-1 px-4 py-2 bg-stone-50 border border-stone-200 rounded-xl font-mono text-sm uppercase"
-                    value={eventData.ticketBodyBgColor || ''}
-                    onChange={(e) => setEventData({ ...eventData, ticketBodyBgColor: e.target.value })}
-                  />
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
+                      <Palette className="w-4 h-4" /> Màu chủ đạo
+                    </label>
+                    <div className="flex gap-4 items-center">
+                      <input
+                        type="color"
+                        className="w-12 h-12 rounded-xl border border-stone-200 cursor-pointer p-1 bg-white"
+                        value={eventData.ticketColor || '#000000'}
+                        onChange={(e) => setEventData({ ...eventData, ticketColor: e.target.value })}
+                      />
+                      <input
+                        type="text"
+                        className="flex-1 px-4 py-2 bg-stone-50 border border-stone-200 rounded-xl font-mono text-sm uppercase"
+                        value={eventData.ticketColor || ''}
+                        onChange={(e) => setEventData({ ...eventData, ticketColor: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
+                      <Palette className="w-4 h-4" /> Màu chữ tên khách
+                    </label>
+                    <div className="flex gap-4 items-center">
+                      <input
+                        type="color"
+                        className="w-12 h-12 rounded-xl border border-stone-200 cursor-pointer p-1 bg-white"
+                        value={eventData.ticketNameColor || '#000000'}
+                        onChange={(e) => setEventData({ ...eventData, ticketNameColor: e.target.value })}
+                      />
+                      <input
+                        type="text"
+                        className="flex-1 px-4 py-2 bg-stone-50 border border-stone-200 rounded-xl font-mono text-sm uppercase"
+                        value={eventData.ticketNameColor || ''}
+                        onChange={(e) => setEventData({ ...eventData, ticketNameColor: e.target.value })}
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
-                  <Palette className="w-4 h-4" /> Màu chữ thân vé
-                </label>
-                <div className="flex gap-4 items-center">
-                  <input
-                    type="color"
-                    className="w-12 h-12 rounded-xl border border-stone-200 cursor-pointer p-1 bg-white"
-                    value={eventData.ticketBodyTextColor || '#000000'}
-                    onChange={(e) => setEventData({ ...eventData, ticketBodyTextColor: e.target.value })}
-                  />
-                  <input
-                    type="text"
-                    className="flex-1 px-4 py-2 bg-stone-50 border border-stone-200 rounded-xl font-mono text-sm uppercase"
-                    value={eventData.ticketBodyTextColor || ''}
-                    onChange={(e) => setEventData({ ...eventData, ticketBodyTextColor: e.target.value })}
-                  />
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
+                      <Palette className="w-4 h-4" /> Màu nền thân vé
+                    </label>
+                    <div className="flex gap-4 items-center">
+                      <input
+                        type="color"
+                        className="w-12 h-12 rounded-xl border border-stone-200 cursor-pointer p-1 bg-white"
+                        value={eventData.ticketBodyBgColor || '#000000'}
+                        onChange={(e) => setEventData({ ...eventData, ticketBodyBgColor: e.target.value })}
+                      />
+                      <input
+                        type="text"
+                        className="flex-1 px-4 py-2 bg-stone-50 border border-stone-200 rounded-xl font-mono text-sm uppercase"
+                        value={eventData.ticketBodyBgColor || ''}
+                        onChange={(e) => setEventData({ ...eventData, ticketBodyBgColor: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
+                      <Palette className="w-4 h-4" /> Màu chữ thân vé
+                    </label>
+                    <div className="flex gap-4 items-center">
+                      <input
+                        type="color"
+                        className="w-12 h-12 rounded-xl border border-stone-200 cursor-pointer p-1 bg-white"
+                        value={eventData.ticketBodyTextColor || '#000000'}
+                        onChange={(e) => setEventData({ ...eventData, ticketBodyTextColor: e.target.value })}
+                      />
+                      <input
+                        type="text"
+                        className="flex-1 px-4 py-2 bg-stone-50 border border-stone-200 rounded-xl font-mono text-sm uppercase"
+                        value={eventData.ticketBodyTextColor || ''}
+                        onChange={(e) => setEventData({ ...eventData, ticketBodyTextColor: e.target.value })}
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
-                <Type className="w-4 h-4" /> Font chữ tên khách mời
-              </label>
-              <select
-                className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
-                value={eventData.ticketNameFont || "'Inter', sans-serif"}
-                onChange={(e) => setEventData({ ...eventData, ticketNameFont: e.target.value })}
-              >
-                {FONTS.map(font => (
-                  <option key={font.value} value={font.value} style={{ fontFamily: font.value }}>
-                    {font.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
-                <ImageIcon className="w-4 h-4" /> Hình nền vé (Background)
-              </label>
-              <div className="flex gap-4 items-start">
-                <div 
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-24 h-24 bg-stone-50 border-2 border-dashed border-stone-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-stone-100 transition-all group overflow-hidden relative"
-                >
-                  {eventData.ticketBgImage ? (
-                    <>
-                      <img src={eventData.ticketBgImage} alt="Background" className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                        <Upload className="w-6 h-6 text-white" />
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="w-6 h-6 text-stone-400 group-hover:text-emerald-500" />
-                      <span className="text-[10px] text-stone-400 mt-1">Tải lên</span>
-                    </>
-                  )}
-                </div>
-                {eventData.ticketBgImage && (
-                  <button 
-                    onClick={() => setEventData({ ...eventData, ticketBgImage: '' })}
-                    className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
+                    <Type className="w-4 h-4" /> Font chữ tên khách mời
+                  </label>
+                  <select
+                    className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                    value={eventData.ticketNameFont || "'Inter', sans-serif"}
+                    onChange={(e) => setEventData({ ...eventData, ticketNameFont: e.target.value })}
                   >
-                    <X className="w-5 h-5" />
-                  </button>
-                )}
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  onChange={handleImageUpload} 
-                  accept="image/*" 
-                  className="hidden" 
-                />
-                <div className="flex-1 text-xs text-stone-500 space-y-1">
-                  <p>Dung lượng tối đa: 1MB</p>
-                  <p>Định dạng: JPG, PNG, WebP</p>
-                  <p>Hình nền sẽ được phủ mờ hoặc làm nền cho phần nội dung vé.</p>
+                    {FONTS.map(font => (
+                      <option key={font.value} value={font.value} style={{ fontFamily: font.value }}>
+                        {font.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div className="p-6 bg-emerald-50 rounded-2xl border border-emerald-100">
-            <h4 className="font-bold text-emerald-900 mb-2 flex items-center gap-2">
-              <QrCode className="w-5 h-5" /> Mẹo thiết kế
-            </h4>
-            <ul className="text-sm text-emerald-800 space-y-1 list-disc list-inside opacity-80">
-              <li>Sử dụng hình nền có độ tương phản thấp để chữ dễ đọc.</li>
-              <li>Font chữ 'Dancing Script' phù hợp cho các sự kiện trang trọng, đám cưới.</li>
-              <li>Màu chữ tên khách nên tương phản tốt với hình nền.</li>
-            </ul>
+              <div className="p-6 bg-emerald-50 rounded-2xl border border-emerald-100">
+                <h4 className="font-bold text-emerald-900 mb-2 flex items-center gap-2">
+                  <QrCode className="w-5 h-5" /> Mẹo thiết kế
+                </h4>
+                <ul className="text-sm text-emerald-800 space-y-1 list-disc list-inside opacity-80">
+                  <li>Sử dụng hình nền có độ tương phản thấp để chữ dễ đọc.</li>
+                  <li>Font chữ 'Dancing Script' phù hợp cho các sự kiện trang trọng, đám cưới.</li>
+                  <li>Màu chữ tên khách nên tương phản tốt với hình nền.</li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {eventData.ticketTemplateId !== 'default' && (
+            <div className="bg-emerald-50/50 p-8 rounded-3xl border border-emerald-100 flex flex-col items-center justify-center text-center space-y-5 animate-in fade-in zoom-in duration-300">
+              <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center">
+                <LayoutIcon className="w-8 h-8" />
+              </div>
+              <div>
+                <h4 className="text-2xl font-bold text-emerald-900 mb-2">Mẫu thiết kế cao cấp</h4>
+                <p className="text-emerald-700 text-sm max-w-sm mx-auto">
+                  Bạn đang sử dụng mẫu thiết kế dựng sẵn. Xin lưu ý: Phần lớn tuỳ chỉnh màu sắc, font chữ riêng lẻ bên dưới sẽ tự động bị vô hiệu hoá để đảm bảo cấu trúc mẫu. Bạn vẫn có thể tải Hình Nền lên bình thường.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* ALWAYS VISIBLE BACKGROUND UPLOAD */}
+          <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm space-y-4">
+            <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
+              <ImageIcon className="w-4 h-4" /> Hình nền vé (Background Image)
+            </label>
+            <div className="flex gap-4 items-start">
+              <div 
+                onClick={() => fileInputRef.current?.click()}
+                className="w-24 h-24 bg-stone-50 border-2 border-dashed border-stone-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-stone-100 transition-all group overflow-hidden relative"
+              >
+                {eventData.ticketBgImage ? (
+                  <>
+                    <img src={eventData.ticketBgImage} alt="Background" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                      <Upload className="w-6 h-6 text-white" />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-6 h-6 text-stone-400 group-hover:text-emerald-500" />
+                    <span className="text-[10px] text-stone-400 mt-1">Tải lên</span>
+                  </>
+                )}
+              </div>
+              {eventData.ticketBgImage && (
+                <button 
+                  onClick={() => setEventData({ ...eventData, ticketBgImage: '' })}
+                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleImageUpload} 
+                accept="image/*" 
+                className="hidden" 
+              />
+              <div className="flex-1 text-xs text-stone-500 space-y-1">
+                <p>Dung lượng tối đa: 1MB</p>
+                <p>Định dạng: JPG, PNG, WebP</p>
+                <p>Hình nền sẽ được áp dụng cho mọi Mẫu mặc định cũng như HTML.</p>
+              </div>
+            </div>
           </div>
         </div>
-        )}
-
-        {eventData.ticketTemplateId !== 'default' && (
-          <div className="bg-emerald-50/50 p-8 rounded-3xl border border-emerald-100 flex flex-col items-center justify-center text-center space-y-5 animate-in fade-in zoom-in duration-300">
-            <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center">
-              <LayoutIcon className="w-8 h-8" />
-            </div>
-            <div>
-              <h4 className="text-2xl font-bold text-emerald-900 mb-2">Mẫu HTML Cao Cấp</h4>
-              <p className="text-emerald-700 text-sm max-w-sm mx-auto">
-                Bạn đang sử dụng template tự động hóa. Thông tin bao gồm <b>Logo của bạn, Tên sự kiện, Tên khách mời, Thời gian, Địa điểm</b> sẽ tự động được thu thập từ cài đặt sự kiện và inject trực tiếp vào giao diện vé.
-              </p>
-            </div>
-            <p className="text-xs text-emerald-600 border border-emerald-200 py-1.5 px-4 rounded-full bg-white">
-              Sắp tới: Tính năng Drag & Drop Builder
-            </p>
-          </div>
-        )}
 
         {/* Preview Side */}
         <div className="space-y-4">
@@ -451,21 +451,32 @@ export default function TicketDesign() {
             </div>
             ) : (
               <div 
-                className="bg-white rounded-3xl overflow-hidden shadow-2xl border border-stone-200 flex items-center justify-center relative min-h-[550px]"
-                dangerouslySetInnerHTML={{
-                  __html: renderTemplate(
-                    TEMPLATES.find(t => t.id === eventData.ticketTemplateId)?.html || '',
-                    {
-                      company: eventDetails?.organizerName || Object.keys(eventDetails || {}).length ? eventDetails?.organizerName || 'Ban Tổ Chức' : 'EventCheck Co.',
-                      name: 'Nguyễn Văn A',
-                      event_name: eventDetails?.name || 'Sự kiện Giao lưu 2026',
-                      time: `${eventDetails?.startDate || '20/05/2026'} - ${eventDetails?.startTime || '08:00'}`,
-                      location: eventDetails?.location || 'Trung tâm Hội nghị Quốc gia',
-                      qr: qrBase64
-                    }
-                  )
-                }}
-              />
+                className="bg-stone-50 rounded-3xl overflow-hidden shadow-2xl border border-stone-200 min-h-[550px]"
+              >
+                <div className="relative w-full min-h-[550px] flex items-stretch justify-stretch">
+                  {eventData.ticketBgImage && (
+                    <div className="absolute inset-0 z-0">
+                      <img src={eventData.ticketBgImage} alt="Background" className="w-full h-full object-cover opacity-50" />
+                      <div className="absolute inset-0 bg-white/30 backdrop-blur-[2px]" />
+                    </div>
+                  )}
+                  <div className="relative z-10 w-full min-h-[550px] flex items-center justify-center"
+                    dangerouslySetInnerHTML={{
+                      __html: renderTemplate(
+                        TEMPLATES.find(t => t.id === eventData.ticketTemplateId)?.html || '',
+                        {
+                          company: eventDetails?.organizerName || Object.keys(eventDetails || {}).length ? eventDetails?.organizerName || 'Ban Tổ Chức' : 'EventCheck Co.',
+                          name: 'Nguyễn Văn A',
+                          event_name: eventDetails?.name || 'Sự kiện Giao lưu 2026',
+                          time: `${eventDetails?.startDate || '20/05/2026'} - ${eventDetails?.startTime || '08:00'}`,
+                          location: eventDetails?.location || 'Trung tâm Hội nghị Quốc gia',
+                          qr: qrBase64
+                        }
+                      )
+                    }}
+                  />
+                </div>
+              </div>
             )}
             
           </div>
