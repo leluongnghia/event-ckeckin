@@ -1,0 +1,58 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.email == "bachu20288@gmail.com" ||
+         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'));
+    }
+
+    // Event Rules
+    match /events/{eventId} {
+      allow read: if true; // Allow public to see event info for registration
+      allow create, update, delete: if isAdmin();
+      
+      // Attendee Rules
+      match /attendees/{attendeeId} {
+        allow read: if isAuthenticated();
+        // Allow public registration (create)
+        allow create: if true; 
+        allow update, delete: if isAdmin();
+      }
+
+      // Session Rules
+      match /sessions/{sessionId} {
+        allow read: if true;
+        allow create, update, delete: if isAdmin();
+
+        // Session Attendance Rules
+        match /attendance/{attendanceId} {
+          allow read: if isAuthenticated();
+          allow create, update: if isAuthenticated();
+          allow delete: if isAdmin();
+        }
+      }
+    }
+    
+    // User Profile Rules
+    match /users/{userId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+    }
+
+    // Global Settings Rules
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

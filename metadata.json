@@ -1,0 +1,7 @@
+{
+  "name": "EventCheck - Hệ thống Check-in Sự kiện Thông minh",
+  "description": "Hệ thống quản lý khách mời, tạo mã QR, gửi email tự động và check-in thời gian thực.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

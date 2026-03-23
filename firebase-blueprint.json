@@ -1,0 +1,104 @@
+{
+  "entities": {
+    "Attendee": {
+      "title": "Attendee",
+      "description": "A person attending the event",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Full name of the attendee" },
+        "email": { "type": "string", "format": "email", "description": "Email address" },
+        "company": { "type": "string", "description": "Company name" },
+        "status": { "type": "string", "enum": ["registered", "checked_in"], "description": "Check-in status" },
+        "qrCode": { "type": "string", "description": "Unique QR code string" },
+        "isVIP": { "type": "boolean", "description": "Whether the attendee is a VIP" },
+        "emailSent": { "type": "boolean", "description": "Whether the invitation email was sent" },
+        "emailSentAt": { "type": "string", "format": "date-time", "description": "When the email was sent" },
+        "checkinTime": { "type": "string", "format": "date-time", "description": "When the attendee checked in" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the record was created" }
+      },
+      "required": ["name", "email", "status", "qrCode"]
+    },
+    "Session": {
+      "title": "Session",
+      "description": "A sub-event or workshop within the main event",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Title of the session" },
+        "startTime": { "type": "string", "format": "date-time", "description": "Start time" },
+        "endTime": { "type": "string", "format": "date-time", "description": "End time" },
+        "location": { "type": "string", "description": "Location of the session" },
+        "description": { "type": "string", "description": "Description" }
+      },
+      "required": ["title", "startTime", "endTime"]
+    },
+    "Event": {
+      "title": "Event",
+      "description": "Event configuration details",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Name of the event" },
+        "location": { "type": "string", "description": "Event location" },
+        "startDate": { "type": "string", "format": "date", "description": "Start date" },
+        "endDate": { "type": "string", "format": "date", "description": "End date" },
+        "description": { "type": "string", "description": "Event description" },
+        "surveyLink": { "type": "string", "description": "Link to the post-event survey" },
+        "kioskModeEnabled": { "type": "boolean", "description": "Whether kiosk mode is enabled" }
+      },
+      "required": ["name", "startDate"]
+    },
+    "User": {
+      "title": "User",
+      "description": "User profile for the event organizer",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Full name" },
+        "email": { "type": "string", "format": "email", "description": "Email address" },
+        "phone": { "type": "string", "description": "Phone number" },
+        "company": { "type": "string", "description": "Company name" },
+        "isEmailVerified": { "type": "boolean", "description": "Whether email is verified" },
+        "isPhoneVerified": { "type": "boolean", "description": "Whether phone is verified" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the user registered" }
+      },
+      "required": ["name", "email", "phone"]
+    },
+    "GlobalSettings": {
+      "title": "GlobalSettings",
+      "description": "Global application settings",
+      "type": "object",
+      "properties": {
+        "requireVerification": { "type": "boolean", "description": "Whether new users must verify email and phone" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "settings/global": {
+      "schema": "GlobalSettings",
+      "description": "Global settings"
+    },
+    "users/{userId}": {
+      "schema": "User",
+      "description": "User profile"
+    },
+    "events/{eventId}": {
+      "schema": "Event",
+      "description": "Event settings"
+    },
+    "events/{eventId}/attendees": {
+      "schema": "Attendee",
+      "description": "List of attendees for the event"
+    },
+    "events/{eventId}/sessions": {
+      "schema": "Session",
+      "description": "List of sessions for the event"
+    },
+    "events/{eventId}/sessions/{sessionId}/attendance": {
+      "schema": "object",
+      "description": "Attendance list for a specific session",
+      "properties": {
+        "attendeeId": { "type": "string" },
+        "checkinTime": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}
