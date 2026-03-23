@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Filter, Download, Plus, Mail, Trash2, Loader2, QrCode, X, Edit2, FileSpreadsheet, Link as LinkIcon, FileText, Eye } from 'lucide-react';
+import { Search, Filter, Download, Plus, Mail, Trash2, Loader2, QrCode, X, Edit2, FileSpreadsheet, Link as LinkIcon, FileText, Eye, CheckSquare, Square, Zap } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
@@ -35,6 +35,10 @@ export default function AttendeeList() {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewAttendee, setPreviewAttendee] = useState<Attendee | null>(null);
   const [eventSettings, setEventSettings] = useState<any>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkQrLoading, setBulkQrLoading] = useState(false);
+  const [bulkZaloLoading, setBulkZaloLoading] = useState(false);
+  const [bulkZaloProgress, setBulkZaloProgress] = useState('');
 
   const parentRef = React.useRef<HTMLDivElement>(null);
 
@@ -303,6 +307,81 @@ export default function AttendeeList() {
     } finally {
       setSendingZalo(null);
     }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === filteredAttendees.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredAttendees.map(a => a.id)));
+    }
+  };
+
+  const handleBulkQR = async () => {
+    const targets = filteredAttendees.filter(a => selectedIds.has(a.id));
+    if (targets.length === 0) return;
+    setBulkQrLoading(true);
+    try {
+      const QRCode = (await import('qrcode')).default;
+      // Generate each QR as dataURL and trigger individual download
+      for (const a of targets) {
+        const dataUrl: string = await QRCode.toDataURL(a.qrCode, { width: 300, margin: 2 });
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = `QR_${a.name.replace(/\s+/g, '_')}.png`;
+        link.click();
+        await new Promise(r => setTimeout(r, 150));
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Lỗi khi tạo QR hàng loạt.');
+    } finally {
+      setBulkQrLoading(false);
+    }
+  };
+
+  const handleBulkZalo = async () => {
+    if (!eventSettings?.zaloAccessToken || !eventSettings?.zaloTemplateId) {
+      alert('Vui lòng cấu hình Zalo ZNS trong phần Cài đặt trước.');
+      return;
+    }
+    const targets = filteredAttendees.filter(a => selectedIds.has(a.id) && a.phone);
+    if (targets.length === 0) {
+      alert('Không có khách mời nào được chọn có số điện thoại.');
+      return;
+    }
+    if (!confirm(`Gửi Zalo ZNS cho ${targets.length} khách mời?`)) return;
+    setBulkZaloLoading(true);
+    let ok = 0; let fail = 0;
+    for (let i = 0; i < targets.length; i++) {
+      const a = targets[i];
+      setBulkZaloProgress(`Đang gửi ${i + 1}/${targets.length}: ${a.name}`);
+      try {
+        const result = await sendZaloNotification(
+          a.phone!,
+          eventSettings.zaloTemplateId,
+          eventSettings.zaloAccessToken,
+          { name: a.name, event_name: eventSettings.name || 'Sự kiện', qr_code: a.qrCode, location: eventSettings.location || '', date: eventSettings.startDate || '' }
+        );
+        if (result.success) {
+          await updateDoc(doc(db, `events/${eventId}/attendees/${a.id}`), { zaloSent: true });
+          ok++;
+        } else { fail++; }
+      } catch { fail++; }
+      // Throttle to avoid rate limit
+      await new Promise(r => setTimeout(r, 300));
+    }
+    setBulkZaloLoading(false);
+    setBulkZaloProgress('');
+    alert(`Hoàn tất! Thành công: ${ok}, Thất bại: ${fail}.`);
   };
 
   return (
