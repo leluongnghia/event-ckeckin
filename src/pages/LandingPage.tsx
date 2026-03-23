@@ -1,5 +1,5 @@
-import React from 'react';
-import { QrCode, CheckCircle2, Users, Mail, ShieldCheck, ArrowRight, Sparkles, Zap, Smartphone, LayoutDashboard, MessageCircle, BarChart, Clock, Star, ChevronRight, Check } from 'lucide-react';
+import React, { useState } from 'react';
+import { QrCode, CheckCircle2, Users, Mail, ShieldCheck, ArrowRight, Sparkles, Zap, Smartphone, LayoutDashboard, MessageCircle, BarChart, Clock, Star, ChevronRight, Menu, X as CloseIcon } from 'lucide-react';
 import { motion } from 'motion/react';
 import { auth } from '../firebase';
 import { Link } from 'react-router-dom';
@@ -47,30 +47,7 @@ const howItWorks = [
   { step: '04', title: 'Check-in bằng camera', desc: 'Dùng bất kỳ thiết bị nào có camera, hướng vào mã QR, xác nhận trong chưa tới 2 giây.' },
 ];
 
-const plans = [
-  {
-    name: 'Miễn phí',
-    price: '0đ',
-    period: 'mãi mãi',
-    color: 'stone',
-    features: ['1 sự kiện / tháng', '50 khách mời / sự kiện', 'Check-in QR cơ bản', 'Báo cáo tổng quan'],
-  },
-  {
-    name: 'Chuyên nghiệp',
-    price: '299K',
-    period: '/ tháng',
-    color: 'emerald',
-    popular: true,
-    features: ['Sự kiện không giới hạn', '1,000 khách mời / sự kiện', 'Gửi Email & Zalo auto', 'Báo cáo chi tiết AI', 'Thông báo VIP Telegram', 'Hỗ trợ ưu tiên'],
-  },
-  {
-    name: 'Doanh nghiệp',
-    price: 'Liên hệ',
-    period: '',
-    color: 'stone',
-    features: ['Không giới hạn mọi thứ', 'Check-in kiosk tablet', 'Tích hợp API riêng', 'White-label thương hiệu', 'SLA 99.9% uptime', 'Hỗ trợ 24/7'],
-  },
-];
+
 
 const testimonials = [
   { name: 'Nguyễn Thị Lan', role: 'Giám đốc Sự kiện, TechCorp VN', avatar: 'L', text: 'EventCheck giúp chúng tôi check-in 800 khách trong 20 phút đầu. Trước đây làm thủ công mất cả buổi sáng. Tuyệt vời!' },
@@ -78,7 +55,7 @@ const testimonials = [
   { name: 'Phạm Thu Hà', role: 'Marketing Manager, Startup Hub', avatar: 'H', text: 'Dashboard thời gian thực cực kỳ hữu ích. Ban lãnh đạo nhìn số khách check-in live mà không cần hỏi nhân viên liên tục.' },
 ];
 
-function FeatureCard({ feature, index }: { feature: typeof features[0]; index: number }) {
+function FeatureCard({ feature, index }: { feature: typeof features[0]; index: number; key?: number }) {
   const Icon = feature.icon;
   const isReversed = index % 2 !== 0;
   return (
@@ -110,6 +87,7 @@ function FeatureCard({ feature, index }: { feature: typeof features[0]; index: n
 
 export default function LandingPage() {
   const user = auth.currentUser;
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-white font-sans overflow-x-hidden">
@@ -126,7 +104,9 @@ export default function LandingPage() {
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm font-semibold text-stone-500 hover:text-emerald-600 transition-colors">Tính năng</a>
             <a href="#how-it-works" className="text-sm font-semibold text-stone-500 hover:text-emerald-600 transition-colors">Quy trình</a>
-            <a href="#pricing" className="text-sm font-semibold text-stone-500 hover:text-emerald-600 transition-colors">Bảng giá</a>
+            <Link to="/checkin/demo" className="text-sm font-bold text-emerald-600 hover:text-emerald-700 transition-colors flex items-center gap-1.5 border border-emerald-200 bg-emerald-50 px-4 py-2 rounded-xl">
+              <QrCode className="w-4 h-4" /> Quét QR (PG)
+            </Link>
           </div>
           <div className="flex items-center gap-3">
             {user ? (
@@ -136,14 +116,72 @@ export default function LandingPage() {
             ) : (
               <>
                 <Link to="/auth" className="hidden md:block text-sm font-bold text-stone-600 hover:text-stone-900 transition-colors">Đăng nhập</Link>
-                <Link to="/auth" className="px-5 py-2.5 bg-stone-900 text-white rounded-xl font-bold text-sm hover:bg-stone-800 transition-all shadow-lg shadow-stone-900/20">
+                <Link to="/auth" className="hidden md:block px-5 py-2.5 bg-stone-900 text-white rounded-xl font-bold text-sm hover:bg-stone-800 transition-all shadow-lg shadow-stone-900/20">
                   Bắt đầu miễn phí →
                 </Link>
               </>
             )}
+            {/* Mobile hamburger */}
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="md:hidden p-2 text-stone-600 hover:bg-stone-100 rounded-lg transition-colors"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
           </div>
         </div>
       </nav>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-[60] flex">
+          <div className="absolute inset-0 bg-stone-900/50 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />
+          <div className="relative ml-auto w-[280px] bg-white h-full shadow-2xl flex flex-col p-6">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-2">
+                <div className="p-2 bg-emerald-600 rounded-xl"><QrCode className="w-5 h-5 text-white" /></div>
+                <span className="text-lg font-black text-stone-900">EventCheck</span>
+              </div>
+              <button onClick={() => setMobileMenuOpen(false)} className="p-2 text-stone-400 hover:text-stone-700 rounded-lg hover:bg-stone-100">
+                <CloseIcon className="w-6 h-6" />
+              </button>
+            </div>
+            <nav className="flex flex-col gap-1">
+              <a href="#features" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 rounded-xl text-stone-700 font-semibold hover:bg-stone-100 transition-colors">Tính năng</a>
+              <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 rounded-xl text-stone-700 font-semibold hover:bg-stone-100 transition-colors">Quy trình</a>
+              <div className="my-2 border-t border-stone-100" />
+              <Link
+                to="/checkin/demo"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-3 px-4 py-3.5 rounded-xl bg-emerald-50 text-emerald-700 font-bold hover:bg-emerald-100 transition-colors border border-emerald-200"
+              >
+                <QrCode className="w-5 h-5 shrink-0" />
+                <div>
+                  <div className="text-sm">Quét QR (PG)</div>
+                  <div className="text-xs font-medium text-emerald-600 mt-0.5">Không cần đăng nhập</div>
+                </div>
+              </Link>
+            </nav>
+            <div className="mt-auto pt-6 border-t border-stone-100 space-y-3">
+              {user ? (
+                <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} className="w-full py-3.5 bg-emerald-600 text-white rounded-xl font-bold text-center block hover:bg-emerald-700 transition-all">
+                  Vào Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link to="/auth" onClick={() => setMobileMenuOpen(false)} className="w-full py-3.5 bg-stone-900 text-white rounded-xl font-bold text-center block hover:bg-stone-800 transition-all">
+                    Bắt đầu miễn phí
+                  </Link>
+                  <Link to="/auth" onClick={() => setMobileMenuOpen(false)} className="w-full py-3.5 bg-stone-100 text-stone-700 rounded-xl font-bold text-center block hover:bg-stone-200 transition-all">
+                    Đăng nhập
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
 
       {/* Hero */}
       <section className="pt-28 md:pt-36 pb-16 px-4">
@@ -296,38 +334,7 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="py-24 px-4">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-14 space-y-3">
-            <h2 className="text-4xl md:text-5xl font-black text-stone-900 tracking-tight">Bảng giá đơn giản</h2>
-            <p className="text-stone-500 font-medium">Không phí ẩn. Không ràng buộc hợp đồng. Hủy bất kỳ lúc nào.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {plans.map((p, i) => (
-              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className={`rounded-3xl p-8 border-2 relative ${p.popular ? 'border-emerald-500 bg-emerald-50' : 'border-stone-200 bg-white'}`}>
-                {p.popular && <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-emerald-600 text-white text-xs font-black rounded-full uppercase tracking-wider">Phổ biến nhất</div>}
-                <div className="mb-6">
-                  <h3 className="text-xl font-black text-stone-900">{p.name}</h3>
-                  <div className="mt-3 flex items-baseline gap-1">
-                    <span className="text-4xl font-black text-stone-900">{p.price}</span>
-                    <span className="text-stone-500 font-medium">{p.period}</span>
-                  </div>
-                </div>
-                <ul className="space-y-3 mb-8">
-                  {p.features.map((f, j) => (
-                    <li key={j} className="flex items-center gap-2 text-sm font-medium text-stone-700">
-                      <Check className="w-4 h-4 text-emerald-600 shrink-0" /> {f}
-                    </li>
-                  ))}
-                </ul>
-                <Link to="/auth" className={`w-full py-3.5 rounded-2xl font-bold text-center block transition-all ${p.popular ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-500/30' : 'bg-stone-900 text-white hover:bg-stone-800'}`}>
-                  Bắt đầu ngay
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       {/* CTA */}
       <section className="py-20 px-4 bg-stone-50">
