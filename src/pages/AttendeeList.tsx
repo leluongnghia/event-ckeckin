@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Filter, Download, Plus, Mail, Trash2, Loader2, QrCode, X, Edit2, FileSpreadsheet, Link as LinkIcon, FileText, Eye, CheckSquare, Square, Zap, Users } from 'lucide-react';
+import { Search, Filter, Download, Plus, Mail, Trash2, Loader2, QrCode, X, Edit2, FileSpreadsheet, Link as LinkIcon, FileText, Eye, CheckSquare, Square, Zap, Users, Crown } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
@@ -18,6 +18,7 @@ interface Attendee {
   emailSent?: boolean;
   zaloSent?: boolean;
   isVIP?: boolean;
+  isSVIP?: boolean;
   checkinTime?: any;
 }
 
@@ -402,6 +403,24 @@ export default function AttendeeList() {
     alert(`Hoàn tất! Thành công: ${ok}, Thất bại: ${fail}.`);
   };
 
+  const handleBulkMarkVIP = async (isVIP: boolean, isSVIP: boolean) => {
+    if (selectedIds.size === 0) return;
+    const path = `events/${eventId}/attendees`;
+    const batch = writeBatch(db);
+    selectedIds.forEach(id => {
+      const docRef = doc(db, path, id);
+      batch.update(docRef, { isVIP, isSVIP });
+    });
+    try {
+      await batch.commit();
+      alert(`Đã cập nhật trạng thái VIP/SVIP cho ${selectedIds.size} khách mời.`);
+      setSelectedIds(new Set());
+    } catch (error) {
+      console.error(error);
+      alert('Lỗi cập nhật VIP/SVIP');
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Giới thiệu tính năng */}
@@ -484,6 +503,33 @@ export default function AttendeeList() {
         </div>
       </div>
 
+      {/* Bulk Actions Menu */}
+      {selectedIds.size > 0 && (
+        <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 animate-in fade-in zoom-in duration-200">
+          <div className="flex items-center gap-3">
+            <span className="text-emerald-800 font-bold whitespace-nowrap">Đã chọn ({selectedIds.size}) khách mời</span>
+            <button onClick={() => setSelectedIds(new Set())} className="text-sm text-emerald-600 hover:text-emerald-800 underline">Bỏ chọn tất cả</button>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button onClick={handleBulkQR} disabled={bulkQrLoading} className="px-3 py-1.5 bg-white border border-emerald-200 text-emerald-700 rounded-lg text-sm font-semibold hover:bg-emerald-100 transition-all flex items-center gap-2">
+              {bulkQrLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <QrCode className="w-4 h-4" />} Tạo QR
+            </button>
+            <button onClick={handleBulkZalo} disabled={bulkZaloLoading} className="px-3 py-1.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg text-sm font-semibold hover:bg-blue-100 transition-all flex items-center gap-2">
+              {bulkZaloLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageCircle className="w-4 h-4" />} Gửi Zalo ({bulkZaloProgress || `${selectedIds.size}`})
+            </button>
+            <button onClick={() => handleBulkMarkVIP(true, false)} className="px-3 py-1.5 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg text-sm font-semibold hover:bg-amber-100 transition-all flex items-center gap-2">
+              <Star className="w-4 h-4" /> Đánh dấu VIP
+            </button>
+            <button onClick={() => handleBulkMarkVIP(false, true)} className="px-3 py-1.5 bg-purple-50 border border-purple-200 text-purple-700 rounded-lg text-sm font-semibold hover:bg-purple-100 transition-all flex items-center gap-2">
+              <Crown className="w-4 h-4" /> Đánh dấu SVIP
+            </button>
+            <button onClick={() => handleBulkMarkVIP(false, false)} className="px-3 py-1.5 bg-stone-100 border border-stone-200 text-stone-700 rounded-lg text-sm font-semibold hover:bg-stone-200 transition-all flex items-center gap-2">
+              <X className="w-4 h-4" /> Huỷ VIP/SVIP
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
         {loading ? (
           <div className="p-12 flex justify-center">
@@ -496,6 +542,14 @@ export default function AttendeeList() {
               <table className="w-full text-left border-collapse">
                 <thead className="sticky top-0 bg-stone-50 z-10">
                   <tr className="border-b border-stone-200">
+                    <th className="px-6 py-4 w-12 text-center">
+                      <input 
+                        type="checkbox" 
+                        className="w-4 h-4 rounded border-stone-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                        checked={selectedIds.size === filteredAttendees.length && filteredAttendees.length > 0}
+                        onChange={toggleSelectAll}
+                      />
+                    </th>
                     <th className="px-6 py-4 text-xs font-semibold text-stone-500 uppercase tracking-wider">Khách mời</th>
                     <th className="px-6 py-4 text-xs font-semibold text-stone-500 uppercase tracking-wider">Công ty</th>
                     <th className="px-6 py-4 text-xs font-semibold text-stone-500 uppercase tracking-wider">Trạng thái</th>
@@ -513,20 +567,28 @@ export default function AttendeeList() {
                     return (
                       <tr 
                         key={attendee.id} 
-                        className="hover:bg-stone-50/50 transition-colors absolute top-0 left-0 w-full border-b border-stone-100"
+                        className={`hover:bg-stone-50/50 transition-colors absolute top-0 left-0 w-full border-b border-stone-100 ${selectedIds.has(attendee.id) ? 'bg-emerald-50/50' : ''}`}
                         style={{
                           height: `${virtualRow.size}px`,
                           transform: `translateY(${virtualRow.start}px)`,
                         }}
                       >
+                        <td className="px-6 py-4 text-center">
+                          <input 
+                            type="checkbox" 
+                            className="w-4 h-4 rounded border-stone-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                            checked={selectedIds.has(attendee.id)}
+                            onChange={() => toggleSelect(attendee.id)}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             <div>
                               <p className="text-sm font-medium text-stone-900 flex items-center gap-2">
                                 {attendee.name}
-                                {attendee.isVIP && (
-                                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                                )}
+                                {attendee.isSVIP && <Crown className="w-4 h-4 fill-purple-500 text-purple-500 shrink-0" />}
+                                {!attendee.isSVIP && attendee.isVIP && <Star className="w-4 h-4 fill-amber-400 text-amber-400 shrink-0" />}
                               </p>
                               <p className="text-xs text-stone-500">{attendee.email}</p>
                             </div>
@@ -583,27 +645,38 @@ export default function AttendeeList() {
             {/* Mobile Card View */}
             <div className="md:hidden divide-y divide-stone-100">
               {filteredAttendees.map((attendee) => (
-                <div key={attendee.id} className="p-4 space-y-3">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="text-sm font-bold text-stone-900 flex items-center gap-2">
-                        {attendee.name}
-                        {attendee.isVIP && (
-                          <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                        )}
-                      </p>
-                      <p className="text-xs text-stone-500">{attendee.email}</p>
-                      <p className="text-xs text-stone-600 mt-1">{attendee.company || 'N/A'}</p>
+                <div key={attendee.id} className={`p-4 space-y-3 ${selectedIds.has(attendee.id) ? 'bg-emerald-50/50' : ''}`}>
+                  <div className="flex items-start gap-3">
+                    <div className="pt-1 select-none flex items-center h-full">
+                      <input 
+                        type="checkbox" 
+                        className="w-5 h-5 rounded border-stone-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                        checked={selectedIds.has(attendee.id)}
+                        onChange={() => toggleSelect(attendee.id)}
+                      />
                     </div>
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                      attendee.status === 'checked_in' 
-                        ? 'bg-emerald-100 text-emerald-700' 
-                        : 'bg-stone-100 text-stone-600'
-                    }`}>
-                      {attendee.status === 'checked_in' ? 'Đã tham gia' : 'Chưa tham gia'}
-                    </span>
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <p className="text-sm font-bold text-stone-900 flex items-center gap-2">
+                            {attendee.name}
+                            {attendee.isSVIP && <Crown className="w-4 h-4 fill-purple-500 text-purple-500 shrink-0" />}
+                            {!attendee.isSVIP && attendee.isVIP && <Star className="w-4 h-4 fill-amber-400 text-amber-400 shrink-0" />}
+                          </p>
+                          <p className="text-xs text-stone-500">{attendee.email}</p>
+                          <p className="text-xs text-stone-600 mt-1">{attendee.company || 'N/A'}</p>
+                        </div>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                          attendee.status === 'checked_in' 
+                            ? 'bg-emerald-100 text-emerald-700' 
+                            : 'bg-stone-100 text-stone-600'
+                        }`}>
+                          {attendee.status === 'checked_in' ? 'Đã tham gia' : 'Chưa tham gia'}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 pt-1">
+                  <div className="flex items-center gap-2 pt-1 pl-8">
                     <button onClick={() => openPreview(attendee)} className="flex-1 flex items-center justify-center gap-2 py-2 text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-xl transition-all text-xs font-bold">
                       <QrCode className="w-4 h-4" />
                       Tạo vé
