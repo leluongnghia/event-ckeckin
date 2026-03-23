@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, collectionGroup, doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db, auth, handleFirestoreError, OperationType } from '../firebase';
-import { Users, Mail, ShieldCheck, Download, Search, Loader2, Calendar, LayoutGrid, Settings as SettingsIcon, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Users, Mail, ShieldCheck, Download, Search, Loader2, Calendar, LayoutGrid, Settings as SettingsIcon, ToggleLeft, ToggleRight, MessageSquareWarning } from 'lucide-react';
 import { motion } from 'motion/react';
 
 const ADMIN_EMAIL = 'leluongnghia90@gmail.com';
@@ -22,6 +22,7 @@ export default function AdminDashboard() {
   });
   const [globalSettings, setGlobalSettings] = useState<any>(null);
   const [updatingSettings, setUpdatingSettings] = useState(false);
+  const [feedbacks, setFeedbacks] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -56,7 +57,14 @@ export default function AdminDashboard() {
           totalEvents: events.length
         });
 
-        // 3. Fetch global settings
+        // 3. Fetch feedbacks
+        const feedbacksSnapshot = await getDocs(query(collection(db, 'feedbacks')));
+        const feedbackList = feedbacksSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        // Sort by createdAt descending
+        feedbackList.sort((a: any, b: any) => b.createdAt?.toMillis() - a.createdAt?.toMillis());
+        setFeedbacks(feedbackList);
+
+        // 4. Fetch global settings
         const settingsDoc = await getDoc(doc(db, 'settings', 'global'));
         if (settingsDoc.exists()) {
           setGlobalSettings(settingsDoc.data());
@@ -319,6 +327,47 @@ export default function AdminDashboard() {
             )}
           </div>
         </div>
+
+        {/* Feedback Section */}
+        <div className="bg-white rounded-[2.5rem] border border-stone-200 shadow-sm overflow-hidden">
+          <div className="p-8 border-b border-stone-100 flex items-center gap-4">
+            <div className="p-3 bg-amber-50 text-amber-600 rounded-xl">
+              <MessageSquareWarning className="w-6 h-6" />
+            </div>
+            <h3 className="text-xl font-bold text-stone-900">Báo lỗi & Đề xuất ({feedbacks.length})</h3>
+          </div>
+          <div className="p-8">
+            <div className="space-y-4">
+              {feedbacks.length === 0 ? (
+                <p className="text-stone-500 text-center py-4">Chưa có báo cáo nào.</p>
+              ) : (
+                feedbacks.map((fb) => (
+                  <div key={fb.id} className="p-4 md:p-6 bg-stone-50 border border-stone-200 rounded-2xl">
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex flex-col md:flex-row md:items-center gap-2">
+                        <span className={cn(
+                          "px-3 py-1 text-xs font-bold rounded-full w-max mt-1 md:mt-0",
+                          fb.type === 'bug' ? "bg-red-100 text-red-700" : "bg-emerald-100 text-emerald-700"
+                        )}>
+                          {fb.type === 'bug' ? 'Báo lỗi' : 'Đề xuất'}
+                        </span>
+                        <h4 className="text-lg font-bold text-stone-900">{fb.title}</h4>
+                      </div>
+                      <span className="text-xs text-stone-500 hidden md:inline-block">
+                        {fb.createdAt?.toDate ? fb.createdAt.toDate().toLocaleDateString() : 'N/A'}
+                      </span>
+                    </div>
+                    <p className="text-stone-700 text-sm mt-3 whitespace-pre-wrap">{fb.description}</p>
+                    <div className="mt-4 pt-4 border-t border-stone-200 flex items-center justify-between text-xs text-stone-500">
+                      <span className="font-medium text-stone-700">Gửi bởi: {fb.userEmail}</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   );

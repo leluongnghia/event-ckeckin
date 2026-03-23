@@ -36,6 +36,10 @@ export default function EventList() {
     if (!auth.currentUser) return;
 
     try {
+      const userRef = doc(db, 'users', auth.currentUser.uid);
+      const userSnap = await getDoc(userRef);
+      const userSettings = userSnap.exists() ? userSnap.data() : {};
+
       const docRef = await addDoc(collection(db, 'events'), {
         ...newEvent,
         ownerId: auth.currentUser.uid,
@@ -43,6 +47,15 @@ export default function EventList() {
         ticketTitle: 'VÉ MỜI SỰ KIỆN',
         ticketSubtitle: newEvent.name,
         ticketColor: '#059669',
+        telegramBotToken: userSettings.telegramBotToken || '',
+        telegramChatId: userSettings.telegramChatId || '',
+        zaloAccessToken: userSettings.zaloAccessToken || '',
+        zaloTemplateId: userSettings.zaloTemplateId || '',
+        smtpHost: userSettings.smtpHost || '',
+        smtpPort: userSettings.smtpPort || '587',
+        smtpUser: userSettings.smtpUser || '',
+        smtpPass: userSettings.smtpPass || '',
+        smtpFrom: userSettings.smtpFrom || '',
       });
       setIsAdding(false);
       setNewEvent({ name: '', startDate: '', endDate: '', location: '' });

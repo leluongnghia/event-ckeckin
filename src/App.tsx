@@ -17,6 +17,8 @@ import AdminDashboard from './pages/AdminDashboard';
 import ErrorBoundary from './components/ErrorBoundary';
 import LandingPage from './pages/LandingPage';
 import Auth from './pages/Auth';
+import UserSettings from './pages/UserSettings';
+import Feedback from './pages/Feedback';
 import { auth, db } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -79,6 +81,8 @@ export default function App() {
                   <Route element={<Layout />}>
                     <Route path="/" element={<EventList />} />
                     <Route path="/admin" element={<AdminDashboard />} />
+                    <Route path="/settings" element={<UserSettings />} />
+                    <Route path="/feedback" element={<Feedback />} />
                     <Route path="/events/:eventId" element={<Dashboard />} />
                     <Route path="/events/:eventId/attendees" element={<AttendeeList />} />
                     <Route path="/events/:eventId/checkin" element={<CheckIn />} />

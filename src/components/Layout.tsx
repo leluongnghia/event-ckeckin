@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useParams, useNavigate, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Users, QrCode, Mail, Settings, LogOut, Palette, LayoutGrid, ShieldCheck, Calendar, Menu, X as CloseIcon, Info } from 'lucide-react';
+import { LayoutDashboard, Users, QrCode, Mail, Settings, LogOut, Palette, LayoutGrid, ShieldCheck, Calendar, Menu, X as CloseIcon, Info, MessageSquareWarning } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { motion, AnimatePresence } from 'motion/react';
@@ -39,7 +39,9 @@ export default function Layout() {
 
   const globalItems = [
     { name: 'Sự kiện của tôi', path: '/dashboard', icon: LayoutGrid },
-    { name: 'Trang giới thiệu', path: '/', icon: Info },
+    { name: 'Khám phá sự kiện', path: '/', icon: Info },
+    { name: 'Cấu hình chung', path: '/dashboard/settings', icon: Settings },
+    { name: 'Góp ý & Báo lỗi', path: '/dashboard/feedback', icon: MessageSquareWarning },
   ];
 
   if (user?.email === ADMIN_EMAIL) {
