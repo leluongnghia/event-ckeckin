@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { QrCode, User, Mail, Building, Send, CheckCircle2, Loader2, X, Download, Calendar } from 'lucide-react';
+import { QrCode, User, Mail, Building, Send, CheckCircle2, Loader2, X, Download, Calendar, Phone, MapPin, Info } from 'lucide-react';
 import { collection, addDoc, query, where, getDocs, serverTimestamp, doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { motion } from 'motion/react';
-import axios from 'axios';
 
 export default function PublicRegistration() {
   const { eventId = 'default-event' } = useParams();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     company: ''
   });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -59,7 +59,7 @@ export default function PublicRegistration() {
       const docRef = await addDoc(collection(db, path), attendeeData);
       setRegisteredAttendee({ id: docRef.id, ...attendeeData });
 
-      // 3. Generate QR for immediate view
+      // 3. Generate QR for immediate view (client-side)
       try {
         const QRCode = (await import("qrcode")).default;
         const url = await QRCode.toDataURL(attendeeData.qrCode);
@@ -172,7 +172,7 @@ export default function PublicRegistration() {
             <button 
               onClick={() => {
                 setStatus('idle');
-                setFormData({ name: '', email: '', company: '' });
+                setFormData({ name: '', email: '', phone: '', company: '' });
                 setQrImage(null);
                 setRegisteredAttendee(null);
               }}
@@ -187,101 +187,151 @@ export default function PublicRegistration() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 flex items-center justify-center p-4 font-sans">
-      <div className="max-w-xl w-full grid grid-cols-1 gap-8">
-        <div className="text-center space-y-4">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-600 text-white rounded-2xl shadow-lg shadow-emerald-200 mb-2">
-            <QrCode className="w-8 h-8" />
-          </div>
-          <h1 className="text-4xl font-bold text-stone-900 tracking-tight">{eventSettings?.name || 'Đăng Ký Tham Gia'}</h1>
-          <div className="text-stone-500 text-lg">
-            {eventSettings?.startDate ? (
-              <div className="flex flex-col items-center">
-                <p className="flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-emerald-600" />
-                  <span>{eventSettings.startDate} {eventSettings.endDate && ` - ${eventSettings.endDate}`}</span>
-                </p>
-                {eventSettings?.location && (
-                  <p className="text-stone-400 text-sm font-medium mt-1">{eventSettings.location}</p>
-                )}
-              </div>
-            ) : (
-              <p>Vui lòng điền thông tin để nhận vé mời điện tử</p>
-            )}
-          </div>
+    <div className="min-h-screen bg-stone-50 font-sans">
+      {/* Hero Banner */}
+      {eventSettings?.bannerImage && (
+        <div className="relative w-full h-56 md:h-72 overflow-hidden">
+          <img src={eventSettings.bannerImage} alt={eventSettings.name} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/60" />
         </div>
+      )}
 
-        <motion.div 
+      <div className={`max-w-2xl mx-auto px-4 ${eventSettings?.bannerImage ? '-mt-20 relative z-10' : 'pt-12'}`}>
+        
+        {/* Event Info Card */}
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white p-8 md:p-10 rounded-[2.5rem] shadow-2xl shadow-stone-200/50 border border-stone-100"
+          className="bg-white rounded-[2rem] shadow-2xl border border-stone-100 overflow-hidden mb-6"
         >
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-stone-700 flex items-center gap-2">
-                <User className="w-4 h-4" /> Họ và tên
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="Nguyễn Văn A"
-                className="w-full px-5 py-4 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all"
-                value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
-              />
+          {/* Header */}
+          <div 
+            className="p-8 text-white text-center"
+            style={{ backgroundColor: eventSettings?.ticketColor || '#059669' }}
+          >
+            <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <QrCode className="w-7 h-7" />
             </div>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{eventSettings?.name || 'Đăng Ký Tham Gia'}</h1>
+          </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-stone-700 flex items-center gap-2">
-                <Mail className="w-4 h-4" /> Email nhận vé
-              </label>
-              <input
-                type="email"
-                required
-                placeholder="example@gmail.com"
-                className="w-full px-5 py-4 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all"
-                value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-stone-700 flex items-center gap-2">
-                <Building className="w-4 h-4" /> Công ty / Tổ chức
-              </label>
-              <input
-                type="text"
-                placeholder="Tên công ty của bạn"
-                className="w-full px-5 py-4 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all"
-                value={formData.company}
-                onChange={(e) => setFormData({...formData, company: e.target.value})}
-              />
-            </div>
-
-            {status === 'error' && (
-              <div className="p-4 bg-red-50 border border-red-100 text-red-600 rounded-2xl text-sm font-medium flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 rotate-180" />
-                {message}
+          {/* Event Details */}
+          <div className="p-6 space-y-3 border-b border-stone-100">
+            {(eventSettings?.startDate || eventSettings?.endDate) && (
+              <div className="flex items-center gap-3 text-stone-600">
+                <div className="w-9 h-9 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0">
+                  <Calendar className="w-4 h-4 text-emerald-600" />
+                </div>
+                <span className="font-medium">
+                  {eventSettings.startDate}
+                  {eventSettings.endDate && eventSettings.endDate !== eventSettings.startDate && ` — ${eventSettings.endDate}`}
+                </span>
               </div>
             )}
+            {eventSettings?.location && (
+              <div className="flex items-center gap-3 text-stone-600">
+                <div className="w-9 h-9 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0">
+                  <MapPin className="w-4 h-4 text-emerald-600" />
+                </div>
+                <span className="font-medium">{eventSettings.location}</span>
+              </div>
+            )}
+            {eventSettings?.description && (
+              <div className="flex items-start gap-3 text-stone-600 pt-1">
+                <div className="w-9 h-9 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+                  <Info className="w-4 h-4 text-emerald-600" />
+                </div>
+                <p className="text-sm leading-relaxed">{eventSettings.description}</p>
+              </div>
+            )}
+          </div>
 
-            <button
-              type="submit"
-              disabled={status === 'loading'}
-              className="w-full py-5 bg-emerald-600 text-white rounded-2xl font-bold text-lg hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-3 disabled:opacity-70"
-            >
-              {status === 'loading' ? (
-                <Loader2 className="w-6 h-6 animate-spin" />
-              ) : (
-                <>
-                  Đăng ký ngay <Send className="w-5 h-5" />
-                </>
+          {/* Registration Form */}
+          <div className="p-6">
+            <h2 className="text-lg font-bold text-stone-900 mb-5">Thông tin đăng ký</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
+                  <User className="w-4 h-4" /> Họ và tên <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Nguyễn Văn A"
+                  className="w-full px-5 py-3.5 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all"
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
+                  <Mail className="w-4 h-4" /> Email nhận vé <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  required
+                  placeholder="example@gmail.com"
+                  className="w-full px-5 py-3.5 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all"
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
+                  <Phone className="w-4 h-4" /> Số điện thoại <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  required
+                  placeholder="0901 234 567"
+                  pattern="[0-9+\s\-]{9,15}"
+                  className="w-full px-5 py-3.5 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
+                  <Building className="w-4 h-4" /> Công ty / Tổ chức <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Tên công ty của bạn"
+                  className="w-full px-5 py-3.5 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all"
+                  value={formData.company}
+                  onChange={(e) => setFormData({...formData, company: e.target.value})}
+                />
+              </div>
+
+              {status === 'error' && (
+                <div className="p-4 bg-red-50 border border-red-100 text-red-600 rounded-2xl text-sm font-medium flex items-center gap-2">
+                  <X className="w-4 h-4 shrink-0" />
+                  {message}
+                </div>
               )}
-            </button>
-          </form>
+
+              <button
+                type="submit"
+                disabled={status === 'loading'}
+                className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-bold text-base hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-3 disabled:opacity-70 mt-2"
+              >
+                {status === 'loading' ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <>
+                    Đăng ký ngay <Send className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
         </motion.div>
 
-        <p className="text-center text-stone-400 text-sm">
+        <p className="text-center text-stone-400 text-xs pb-8">
           Bằng cách đăng ký, bạn đồng ý với các điều khoản của sự kiện.
         </p>
       </div>

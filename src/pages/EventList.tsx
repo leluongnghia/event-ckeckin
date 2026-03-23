@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, query, where, onSnapshot, addDoc, serverTimestamp, deleteDoc, doc, getDoc } from 'firebase/firestore';
 import { db, auth, handleFirestoreError, OperationType } from '../firebase';
-import { Plus, Calendar, Users, ArrowRight, Trash2, Loader2, LayoutGrid, List } from 'lucide-react';
+import { Plus, Calendar, Users, ArrowRight, Trash2, Loader2, LayoutGrid, Image as ImageIcon, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -9,7 +9,9 @@ export default function EventList() {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
-  const [newEvent, setNewEvent] = useState({ name: '', startDate: '', endDate: '', location: '' });
+  const [newEvent, setNewEvent] = useState({ name: '', startDate: '', endDate: '', location: '', description: '', bannerImage: '' });
+  const [bannerPreview, setBannerPreview] = useState<string>('');
+  const [bannerUploading, setBannerUploading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -58,11 +60,24 @@ export default function EventList() {
         smtpFrom: userSettings.smtpFrom || '',
       });
       setIsAdding(false);
-      setNewEvent({ name: '', startDate: '', endDate: '', location: '' });
-      navigate(`/events/${docRef.id}`);
+      setNewEvent({ name: '', startDate: '', endDate: '', location: '', description: '', bannerImage: '' });
+      setBannerPreview('');
+      navigate(`/dashboard/events/${docRef.id}`);
     } catch (error) {
       console.error("Error creating event:", error);
     }
+  };
+
+  const handleBannerUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = reader.result as string;
+      setBannerPreview(result);
+      setNewEvent(prev => ({ ...prev, bannerImage: result }));
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleDeleteEvent = async (id: string, e: React.MouseEvent) => {
@@ -169,7 +184,7 @@ export default function EventList() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white w-full max-w-md rounded-[2.5rem] p-10 shadow-2xl"
+              className="bg-white w-full max-w-lg rounded-[2.5rem] p-10 shadow-2xl max-h-[90vh] overflow-y-auto"
             >
               <h2 className="text-3xl font-black text-stone-900 mb-2">Sự kiện mới</h2>
               <p className="text-stone-500 mb-8">Nhập thông tin cơ bản cho sự kiện của bạn</p>
@@ -215,6 +230,41 @@ export default function EventList() {
                     value={newEvent.location}
                     onChange={(e) => setNewEvent({...newEvent, location: e.target.value})}
                   />
+                </div>
+
+                {/* Description */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-stone-400 uppercase tracking-widest ml-1">Giới thiệu sự kiện</label>
+                  <textarea
+                    rows={3}
+                    className="w-full px-6 py-4 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all resize-none text-sm"
+                    placeholder="Mô tả ngắn về sự kiện của bạn..."
+                    value={newEvent.description}
+                    onChange={(e) => setNewEvent({...newEvent, description: e.target.value})}
+                  />
+                </div>
+
+                {/* Banner Image */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-stone-400 uppercase tracking-widest ml-1">Ảnh banner sự kiện</label>
+                  {bannerPreview ? (
+                    <div className="relative">
+                      <img src={bannerPreview} alt="Banner" className="w-full h-36 object-cover rounded-2xl" />
+                      <button
+                        type="button"
+                        onClick={() => { setBannerPreview(''); setNewEvent(prev => ({ ...prev, bannerImage: '' })); }}
+                        className="absolute top-2 right-2 p-1.5 bg-stone-900/60 text-white rounded-full hover:bg-stone-900 transition-all"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="flex flex-col items-center justify-center w-full h-28 bg-stone-50 border-2 border-dashed border-stone-200 rounded-2xl cursor-pointer hover:bg-stone-100 transition-all">
+                      <ImageIcon className="w-7 h-7 text-stone-400 mb-1" />
+                      <span className="text-xs text-stone-400 font-medium">Nhấn để tải ảnh lên</span>
+                      <input type="file" accept="image/*" className="hidden" onChange={handleBannerUpload} />
+                    </label>
+                  )}
                 </div>
 
                 <div className="flex gap-4 pt-4">
