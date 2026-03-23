@@ -206,9 +206,9 @@ export default function LandingPage() {
               </a>
             </motion.div>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="flex items-center justify-center gap-6 pt-2 text-sm text-stone-400 font-medium">
-              <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-emerald-500" /> Miễn phí vĩnh viễn</span>
-              <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-emerald-500" /> Không cần thẻ tín dụng</span>
-              <span className="flex items-center gap-1.5"><Check className="w-4 h-4 text-emerald-500" /> Cài đặt trong 5 phút</span>
+              <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Miễn phí vĩnh viễn</span>
+              <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Không cần thẻ tín dụng</span>
+              <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Cài đặt trong 5 phút</span>
             </motion.div>
           </div>
 
