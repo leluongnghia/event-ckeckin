@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Settings as SettingsIcon, Save, Calendar, MapPin, Type, Bell, Loader2, QrCode, CheckCircle2, Mail, FileText, Send, Map as MapIcon, ExternalLink, Image as ImageIcon, X } from 'lucide-react';
+import { Settings as SettingsIcon, Save, Calendar, MapPin, Type, Bell, Loader2, QrCode, CheckCircle2, Mail, FileText, Send, Map as MapIcon, ExternalLink, Image as ImageIcon, X, Building } from 'lucide-react';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType, auth } from '../firebase';
 import { GoogleGenAI } from '@google/genai';
@@ -27,7 +27,10 @@ export default function Settings() {
     smtpUser: '',
     smtpPass: '',
     smtpFrom: '',
-    bannerImage: ''
+    bannerImage: '',
+    organizerName: '',
+    organizerDesc: '',
+    organizerLogo: ''
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -246,6 +249,74 @@ export default function Settings() {
                 />
               </label>
             )}
+          </div>
+
+          {/* Organizer Section */}
+          <div className="space-y-4 md:col-span-2 pt-6 border-t border-stone-100">
+            <div className="flex items-center gap-2">
+              <Building className="w-4 h-4 text-emerald-600" />
+              <span className="text-sm font-bold text-stone-700">Ban tổ chức</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* Logo */}
+              <div className="space-y-2">
+                <label className="text-xs font-semibold text-stone-500">Logo ban tổ chức</label>
+                {(eventData as any).organizerLogo ? (
+                  <div className="relative w-32 h-32">
+                    <img src={(eventData as any).organizerLogo} alt="Logo" className="w-32 h-32 object-contain rounded-2xl border border-stone-200 bg-stone-50 p-2" />
+                    <button
+                      type="button"
+                      onClick={() => setEventData({ ...eventData, organizerLogo: '' } as any)}
+                      className="absolute -top-2 -right-2 p-1 bg-stone-900/70 text-white rounded-full hover:bg-stone-900 transition-all"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center w-32 h-32 bg-stone-50 border-2 border-dashed border-stone-200 rounded-2xl cursor-pointer hover:bg-stone-100 transition-all">
+                    <ImageIcon className="w-7 h-7 text-stone-400 mb-1" />
+                    <span className="text-[10px] text-stone-400 font-medium text-center px-1">Tải logo lên</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        const reader = new FileReader();
+                        reader.onloadend = () => setEventData({ ...eventData, organizerLogo: reader.result as string } as any);
+                        reader.readAsDataURL(file);
+                      }}
+                    />
+                  </label>
+                )}
+              </div>
+
+              {/* Name + Desc */}
+              <div className="space-y-3 flex-1">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-stone-500">Tên ban tổ chức</label>
+                  <input
+                    type="text"
+                    placeholder="Ví dụ: Công ty XYZ"
+                    className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm"
+                    value={(eventData as any).organizerName || ''}
+                    onChange={(e) => setEventData({ ...eventData, organizerName: e.target.value } as any)}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-stone-500">Giới thiệu ngắn</label>
+                  <textarea
+                    rows={3}
+                    placeholder="Mô tả ngắn về ban tổ chức..."
+                    className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm resize-none"
+                    value={(eventData as any).organizerDesc || ''}
+                    onChange={(e) => setEventData({ ...eventData, organizerDesc: e.target.value } as any)}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="space-y-2 md:col-span-2">

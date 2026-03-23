@@ -335,6 +335,30 @@ export default function PublicRegistration() {
           Bằng cách đăng ký, bạn đồng ý với các điều khoản của sự kiện.
         </p>
       </div>
+
+      {/* Organizer footer */}
+      {(eventSettings?.organizerName || eventSettings?.organizerLogo) && (
+        <div className="border-t border-stone-200 bg-white py-6 px-4 mt-2">
+          <div className="max-w-2xl mx-auto flex items-center gap-4">
+            {eventSettings.organizerLogo && (
+              <img
+                src={eventSettings.organizerLogo}
+                alt={eventSettings.organizerName || 'Organizer'}
+                className="w-14 h-14 object-contain rounded-xl border border-stone-100 bg-stone-50 p-1 shrink-0"
+              />
+            )}
+            <div>
+              <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-0.5">Ban tổ chức</p>
+              {eventSettings.organizerName && (
+                <p className="text-sm font-bold text-stone-800">{eventSettings.organizerName}</p>
+              )}
+              {eventSettings.organizerDesc && (
+                <p className="text-xs text-stone-500 mt-0.5 leading-relaxed">{eventSettings.organizerDesc}</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
