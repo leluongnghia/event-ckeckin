@@ -23,7 +23,7 @@ export default function Auth() {
   const [step, setStep] = useState(1); // 1: Auth, 2: Profile Info, 3: Phone Verification
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [requireVerification, setRequireVerification] = useState(true);
+  const [requireVerification, setRequireVerification] = useState(false);
   const navigate = useNavigate();
 
   // Form states
@@ -154,7 +154,8 @@ export default function Auth() {
             company,
             isEmailVerified: user.emailVerified,
             isPhoneVerified: false,
-            createdAt: serverTimestamp()
+            createdAt: serverTimestamp(),
+            role: 'admin'
           });
           navigate('/');
         }
