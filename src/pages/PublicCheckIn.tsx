@@ -4,7 +4,6 @@ import { QrCode, CheckCircle2, XCircle, Loader2, Search, User, Building, Clock }
 import { collection, query, where, getDocs, updateDoc, doc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { motion, AnimatePresence } from 'motion/react';
-import { Html5Qrcode } from 'html5-qrcode';
 import PublicNavbar from '../components/PublicNavbar';
 
 export default function PublicCheckIn() {
@@ -15,65 +14,65 @@ export default function PublicCheckIn() {
   const isProcessing = React.useRef(false);
   const [manualCode, setManualCode] = useState('');
 
+  const scannerRef = React.useRef<any>(null);
+
   useEffect(() => {
     const fetchSettings = async () => {
       const docRef = doc(db, 'events', eventId);
       const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setEventSettings(docSnap.data());
-      }
+      if (docSnap.exists()) setEventSettings(docSnap.data());
     };
     fetchSettings();
 
-    let html5QrCode: Html5Qrcode | null = null;
     let isCleaningUp = false;
 
     const startScanner = async () => {
       try {
-        html5QrCode = new Html5Qrcode("reader");
-        await html5QrCode.start(
+        const { Html5Qrcode } = await import('html5-qrcode');
+        const qr = new Html5Qrcode("reader");
+        scannerRef.current = qr;
+        await qr.start(
           { facingMode: "environment" },
           { fps: 10, qrbox: { width: 250, height: 250 } },
           (decodedText) => {
-            if (!isCleaningUp) {
-              handleCheckIn(decodedText);
+            if (!isCleaningUp && !isProcessing.current) {
+              handleCheckIn(decodedText, qr);
             }
           },
           undefined
         );
-        if (isCleaningUp && html5QrCode.isScanning) {
-          await html5QrCode.stop();
-          html5QrCode.clear();
-        }
       } catch (err) {
         console.error("Camera error:", err);
       }
     };
 
-    const timeoutId = setTimeout(() => {
-      startScanner();
-    }, 100);
+    const timeoutId = setTimeout(startScanner, 100);
 
     return () => {
       isCleaningUp = true;
       clearTimeout(timeoutId);
-      if (html5QrCode && html5QrCode.isScanning) {
-        html5QrCode.stop().then(() => {
-          html5QrCode?.clear();
-        }).catch(console.error);
+      const qr = scannerRef.current;
+      if (qr && qr.isScanning) {
+        qr.stop().then(() => qr.clear()).catch(console.error);
       }
     };
   }, [eventId]);
 
-  const handleCheckIn = async (code: string) => {
+  const handleCheckIn = async (code: string, scanner?: any) => {
     if (isProcessing.current) return;
     isProcessing.current = true;
     setLoading(true);
     setScanResult(null);
 
+    // Pause scanner while processing
+    const qr = scanner || scannerRef.current;
+    try {
+      if (qr?.isScanning) await qr.pause(true);
+    } catch (_) {}
+
     try {
       const path = `events/${eventId}/attendees`;
-      const q = query(collection(db, path), where("qrCode", "==", code));
+      const q = query(collection(db, path), where("qrCode", "==", code.trim()));
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
@@ -83,18 +82,18 @@ export default function PublicCheckIn() {
         const attendeeData = attendeeDoc.data();
 
         if (attendeeData.status === 'checked_in') {
-          setScanResult({ 
-            success: false, 
+          setScanResult({
+            success: false,
             message: 'Khách mời này đã check-in trước đó.',
-            attendee: attendeeData 
+            attendee: attendeeData
           });
         } else {
           await updateDoc(doc(db, path, attendeeDoc.id), {
             status: 'checked_in',
             checkinTime: serverTimestamp()
           });
-          setScanResult({ 
-            success: true, 
+          setScanResult({
+            success: true,
             message: 'Check-in thành công!',
             attendee: { ...attendeeData, status: 'checked_in' }
           });
@@ -105,8 +104,15 @@ export default function PublicCheckIn() {
       setScanResult({ success: false, message: 'Đã có lỗi xảy ra khi xử lý check-in.' });
     } finally {
       setLoading(false);
-      isProcessing.current = false;
       setManualCode('');
+      // Resume scanner after 4 seconds so staff can see result
+      setTimeout(async () => {
+        try {
+          const qr = scannerRef.current;
+          if (qr?.isScanning === false) await qr.resume();
+        } catch (_) {}
+        isProcessing.current = false;
+      }, 4000);
     }
   };
 
