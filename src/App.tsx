@@ -59,6 +59,7 @@ export default function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
+          <Route path="/admin" element={<Navigate to="/dashboard/admin" replace />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/register/:eventId" element={<PublicRegistration />} />
           <Route path="/register" element={<PublicRegistration />} />

@@ -4,13 +4,15 @@ import { QrCode, CheckCircle2, XCircle, Loader2, Search, User, Building, Clock }
 import { collection, query, where, getDocs, updateDoc, doc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { motion, AnimatePresence } from 'motion/react';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import { Html5Qrcode } from 'html5-qrcode';
+import PublicNavbar from '../components/PublicNavbar';
 
 export default function PublicCheckIn() {
   const { eventId = 'default-event' } = useParams();
   const [eventSettings, setEventSettings] = useState<any>(null);
   const [scanResult, setScanResult] = useState<{ success: boolean; message: string; attendee?: any } | null>(null);
   const [loading, setLoading] = useState(false);
+  const isProcessing = React.useRef(false);
   const [manualCode, setManualCode] = useState('');
 
   useEffect(() => {
@@ -23,33 +25,49 @@ export default function PublicCheckIn() {
     };
     fetchSettings();
 
-    const scanner = new Html5QrcodeScanner(
-      "reader",
-      { fps: 10, qrbox: { width: 250, height: 250 } },
-      /* verbose= */ false
-    );
+    let html5QrCode: Html5Qrcode | null = null;
+    let isCleaningUp = false;
 
-    scanner.render(onScanSuccess, onScanFailure);
+    const startScanner = async () => {
+      try {
+        html5QrCode = new Html5Qrcode("reader");
+        await html5QrCode.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 250, height: 250 } },
+          (decodedText) => {
+            if (!isCleaningUp) {
+              handleCheckIn(decodedText);
+            }
+          },
+          undefined
+        );
+        if (isCleaningUp && html5QrCode.isScanning) {
+          await html5QrCode.stop();
+          html5QrCode.clear();
+        }
+      } catch (err) {
+        console.error("Camera error:", err);
+      }
+    };
 
-    function onScanSuccess(decodedText: string) {
-      handleCheckIn(decodedText);
-      // Optional: stop scanning after success to show result
-      // scanner.clear(); 
-    }
-
-    function onScanFailure(error: any) {
-      // console.warn(`Code scan error = ${error}`);
-    }
+    const timeoutId = setTimeout(() => {
+      startScanner();
+    }, 100);
 
     return () => {
-      scanner.clear().catch(error => {
-        console.error("Failed to clear scanner", error);
-      });
+      isCleaningUp = true;
+      clearTimeout(timeoutId);
+      if (html5QrCode && html5QrCode.isScanning) {
+        html5QrCode.stop().then(() => {
+          html5QrCode?.clear();
+        }).catch(console.error);
+      }
     };
   }, [eventId]);
 
   const handleCheckIn = async (code: string) => {
-    if (loading) return;
+    if (isProcessing.current) return;
+    isProcessing.current = true;
     setLoading(true);
     setScanResult(null);
 
@@ -87,14 +105,16 @@ export default function PublicCheckIn() {
       setScanResult({ success: false, message: 'Đã có lỗi xảy ra khi xử lý check-in.' });
     } finally {
       setLoading(false);
+      isProcessing.current = false;
       setManualCode('');
     }
   };
 
   return (
-    <div className="min-h-screen bg-stone-900 text-white font-sans flex flex-col">
+    <div className="min-h-screen bg-stone-900 text-white font-sans flex flex-col pt-[72px]">
+      <PublicNavbar />
       {/* Header */}
-      <header className="p-6 bg-stone-800/50 backdrop-blur-md border-b border-stone-700 sticky top-0 z-20">
+      <header className="p-6 bg-stone-800/50 backdrop-blur-md border-b border-stone-700 sticky top-[72px] z-20">
         <div className="max-w-md mx-auto flex items-center gap-4">
           <div className="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-900/20">
             <QrCode className="w-6 h-6" />

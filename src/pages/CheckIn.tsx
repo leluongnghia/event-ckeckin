@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import { Html5Qrcode } from 'html5-qrcode';
 import { CheckCircle2, XCircle, Loader2, Printer, UserPlus, Star, X } from 'lucide-react';
 import { collection, query, where, getDocs, updateDoc, doc, serverTimestamp, addDoc, getDoc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
@@ -29,7 +29,8 @@ export default function CheckIn() {
   const [isVIP, setIsVIP] = useState(false);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [offlineQueue, setOfflineQueue] = useState<string[]>([]);
-  const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+  const scannerRef = useRef<Html5Qrcode | null>(null);
+  const isProcessing = useRef(false);
 
   useEffect(() => {
     const handleOnline = () => {
@@ -47,29 +48,47 @@ export default function CheckIn() {
       setOfflineQueue(JSON.parse(savedQueue));
     }
 
-    const scanner = new Html5QrcodeScanner(
-      "reader",
-      { fps: 10, qrbox: { width: 250, height: 250 } },
-      /* verbose= */ false
-    );
-    scannerRef.current = scanner;
+    let html5QrCode: Html5Qrcode | null = null;
+    let isCleaningUp = false;
 
-    scanner.render(onScanSuccess, onScanFailure);
+    const startScanner = async () => {
+      try {
+        html5QrCode = new Html5Qrcode("reader");
+        scannerRef.current = html5QrCode;
+        await html5QrCode.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 250, height: 250 } },
+          (decodedText) => {
+            if (!isCleaningUp) {
+              setScanResult(decodedText);
+              handleCheckIn(decodedText);
+            }
+          },
+          undefined
+        );
+        if (isCleaningUp && html5QrCode.isScanning) {
+          await html5QrCode.stop();
+          html5QrCode.clear();
+        }
+      } catch (err) {
+        console.error("Camera error:", err);
+      }
+    };
 
-    function onScanSuccess(decodedText: string) {
-      setScanResult(decodedText);
-      handleCheckIn(decodedText);
-      scanner.clear();
-    }
-
-    function onScanFailure(error: any) {
-      // console.warn(`Code scan error = ${error}`);
-    }
+    const timeoutId = setTimeout(() => {
+      startScanner();
+    }, 100);
 
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
-      scanner.clear().catch(e => console.error("Failed to clear scanner", e));
+      isCleaningUp = true;
+      clearTimeout(timeoutId);
+      if (html5QrCode && html5QrCode.isScanning) {
+        html5QrCode.stop().then(() => {
+          html5QrCode?.clear();
+        }).catch(console.error);
+      }
     };
   }, []);
 
@@ -90,6 +109,8 @@ export default function CheckIn() {
   };
 
   const handleCheckIn = async (code: string, isSyncing = false) => {
+    if (isProcessing.current && !isSyncing) return;
+    if (!isSyncing) isProcessing.current = true;
     if (!isSyncing) setStatus('loading');
     
     if (!navigator.onLine && !isSyncing) {
@@ -164,6 +185,8 @@ export default function CheckIn() {
       handleFirestoreError(error, OperationType.WRITE, path);
       setStatus('error');
       setMessage('Đã có lỗi xảy ra trong quá trình check-in.');
+    } finally {
+      if (!isSyncing) isProcessing.current = false;
     }
   };
 
@@ -239,9 +262,11 @@ export default function CheckIn() {
           </div>
         )}
 
-        {status === 'idle' || status === 'scanning' ? (
+        <div className={status === 'idle' || status === 'scanning' ? 'block' : 'hidden'}>
           <div id="reader" className="w-full overflow-hidden rounded-2xl"></div>
-        ) : (
+        </div>
+        
+        {status !== 'idle' && status !== 'scanning' && (
           <div className="flex flex-col items-center justify-center py-8 lg:py-12 space-y-6 lg:space-y-8 animate-in fade-in zoom-in duration-300">
             {status === 'loading' && (
               <Loader2 className="w-16 h-16 lg:w-20 lg:h-20 text-emerald-500 animate-spin" />
