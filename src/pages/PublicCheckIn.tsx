@@ -168,65 +168,74 @@ export default function PublicCheckIn() {
           </button>
         </div>
 
-        {/* Result Overlay/Modal */}
+        {/* Result Overlay - Full screen so it's always visible */}
         <AnimatePresence>
           {scanResult && (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className={`w-full p-8 rounded-[2.5rem] border-2 shadow-2xl ${
-                scanResult.success 
-                  ? 'bg-emerald-900/20 border-emerald-500/50 text-emerald-100' 
-                  : 'bg-red-900/20 border-red-500/50 text-red-100'
-              }`}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-6"
+              style={{ backgroundColor: scanResult.success ? 'rgba(6,78,59,0.97)' : 'rgba(69,10,10,0.97)' }}
             >
-              <div className="flex flex-col items-center text-center space-y-6">
-                <div className={`w-20 h-20 rounded-full flex items-center justify-center ${
-                  scanResult.success ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
+              <div className="w-full max-w-sm flex flex-col items-center text-center space-y-6">
+                {/* Icon */}
+                <div className={`w-28 h-28 rounded-full flex items-center justify-center shadow-2xl ${
+                  scanResult.success ? 'bg-emerald-500' : 'bg-red-500'
                 }`}>
-                  {scanResult.success ? <CheckCircle2 className="w-10 h-10" /> : <XCircle className="w-10 h-10" />}
-                </div>
-                
-                <div className="space-y-2">
-                  <h2 className="text-2xl font-black uppercase tracking-tight">{scanResult.success ? 'Thành công!' : 'Thất bại'}</h2>
-                  <p className="text-lg opacity-80">{scanResult.message}</p>
+                  {scanResult.success
+                    ? <CheckCircle2 className="w-16 h-16 text-white" />
+                    : <XCircle className="w-16 h-16 text-white" />
+                  }
                 </div>
 
+                {/* Status */}
+                <div className="space-y-2">
+                  <h2 className={`text-4xl font-black uppercase tracking-tight ${
+                    scanResult.success ? 'text-emerald-300' : 'text-red-300'
+                  }`}>
+                    {scanResult.success ? '✓ Thành công!' : '✗ Thất bại'}
+                  </h2>
+                  <p className="text-xl text-white/80">{scanResult.message}</p>
+                </div>
+
+                {/* Attendee info */}
                 {scanResult.attendee && (
-                  <div className="w-full bg-black/20 rounded-3xl p-6 space-y-4 text-left">
+                  <div className="w-full bg-white/10 rounded-3xl p-6 space-y-4 text-left">
                     <div className="flex items-center gap-3">
-                      <User className="w-5 h-5 text-stone-400" />
+                      <User className="w-5 h-5 text-white/60 shrink-0" />
                       <div>
-                        <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest">Khách mời</p>
-                        <p className="text-lg font-bold">{scanResult.attendee.name}</p>
+                        <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest">Khách mời</p>
+                        <p className="text-xl font-black text-white">{scanResult.attendee.name}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <Building className="w-5 h-5 text-stone-400" />
+                      <Building className="w-5 h-5 text-white/60 shrink-0" />
                       <div>
-                        <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest">Công ty</p>
-                        <p className="text-lg font-bold">{scanResult.attendee.company || 'N/A'}</p>
+                        <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest">Công ty</p>
+                        <p className="text-lg font-bold text-white">{scanResult.attendee.company || 'N/A'}</p>
                       </div>
                     </div>
                     {scanResult.success && (
                       <div className="flex items-center gap-3">
-                        <Clock className="w-5 h-5 text-stone-400" />
+                        <Clock className="w-5 h-5 text-white/60 shrink-0" />
                         <div>
-                          <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest">Thời gian</p>
-                          <p className="text-lg font-bold">{new Date().toLocaleTimeString()}</p>
+                          <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest">Thời gian check-in</p>
+                          <p className="text-lg font-bold text-white">{new Date().toLocaleTimeString('vi-VN')}</p>
                         </div>
                       </div>
                     )}
                   </div>
                 )}
 
-                <button 
-                  onClick={() => setScanResult(null)}
-                  className="w-full py-4 bg-white/10 hover:bg-white/20 rounded-2xl font-bold transition-all"
+                {/* Dismiss */}
+                <button
+                  onClick={() => { setScanResult(null); isProcessing.current = false; }}
+                  className="w-full py-4 bg-white/20 hover:bg-white/30 active:scale-95 rounded-2xl text-white font-bold text-lg transition-all"
                 >
                   Tiếp tục quét
                 </button>
+                <p className="text-white/40 text-xs">Tự động đóng sau 4 giây</p>
               </div>
             </motion.div>
           )}
