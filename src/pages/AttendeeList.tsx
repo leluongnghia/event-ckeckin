@@ -580,11 +580,17 @@ export default function AttendeeList() {
       {/* Ticket Preview Modal */}
       {isPreviewOpen && previewAttendee && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white w-full max-w-lg rounded-3xl lg:rounded-[2.5rem] overflow-hidden relative shadow-2xl animate-in zoom-in duration-300 max-h-[90vh] overflow-y-auto">
-            <button onClick={() => setIsPreviewOpen(false)} className="absolute right-4 top-4 lg:right-6 lg:top-6 z-10 p-2 bg-white/80 backdrop-blur-md text-stone-400 hover:text-stone-600 rounded-full shadow-sm transition-all no-print">
-              <X className="w-5 h-5 lg:w-6 lg:h-6" />
-            </button>
-            
+          <div className="bg-white w-full max-w-lg rounded-3xl lg:rounded-[2.5rem] shadow-2xl animate-in zoom-in duration-300 flex flex-col max-h-[90vh]">
+            {/* Sticky header with close button */}
+            <div className="flex items-center justify-end p-4 shrink-0">
+              <button onClick={() => setIsPreviewOpen(false)} className="p-2 bg-stone-100 hover:bg-stone-200 text-stone-600 rounded-full transition-all no-print">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Scrollable content */}
+            <div className="overflow-y-auto flex-1">
+
             <div id="printable-ticket" className="bg-white relative">
               {/* Background Image Layer */}
               {eventSettings?.ticketBgImage && (
@@ -653,11 +659,13 @@ export default function AttendeeList() {
               </div>
             </div>
 
-            <div className="p-6 lg:p-10 pt-0 flex flex-col sm:flex-row gap-3 lg:gap-4 no-print">
-              <button onClick={() => window.print()} className="flex-1 py-3 lg:py-4 bg-stone-900 text-white rounded-2xl font-bold hover:bg-stone-800 transition-all shadow-lg shadow-stone-900/20 text-sm lg:text-base">
+            </div> {/* end scrollable content */}
+
+            <div className="p-4 lg:p-6 border-t border-stone-100 flex flex-col sm:flex-row gap-3 no-print shrink-0">
+              <button onClick={() => window.print()} className="flex-1 py-3 bg-stone-900 text-white rounded-2xl font-bold hover:bg-stone-800 transition-all shadow-lg shadow-stone-900/20 text-sm">
                 In vé mời
               </button>
-              <button className="flex-1 py-3 lg:py-4 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-2xl font-bold hover:bg-emerald-100 transition-all text-sm lg:text-base">
+              <button className="flex-1 py-3 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-2xl font-bold hover:bg-emerald-100 transition-all text-sm">
                 Gửi lại Email
               </button>
             </div>
