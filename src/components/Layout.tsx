@@ -12,7 +12,7 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const ADMIN_EMAIL = 'bachu20288@gmail.com';
+const ADMIN_EMAIL = 'leluongnghia90@gmail.com';
 
 export default function Layout() {
   const { eventId } = useParams();
