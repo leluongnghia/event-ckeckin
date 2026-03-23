@@ -26,6 +26,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { Star, MessageCircle } from 'lucide-react';
 import { sendZaloNotification } from '../utils/notifications';
 import PageGuide from '../components/PageGuide';
+import { TEMPLATES, renderTemplate } from '../utils/templates';
 
 export default function AttendeeList() {
   const { eventId = 'default-event' } = useParams();
@@ -805,7 +806,9 @@ export default function AttendeeList() {
             <div className="overflow-y-auto flex-1">
 
             <div id="printable-ticket" className="bg-white relative">
-              {/* Background Image Layer */}
+              {(!eventSettings?.ticketTemplateId || eventSettings?.ticketTemplateId === 'default') ? (
+                <>
+                  {/* Background Image Layer */}
               {eventSettings?.ticketBgImage && (
                 <div className="absolute inset-0 z-0">
                   <img src={eventSettings.ticketBgImage} alt="Background" className="w-full h-full object-cover opacity-20" />
@@ -870,6 +873,25 @@ export default function AttendeeList() {
                   </div>
                 </div>
               </div>
+              </>
+            ) : (
+              <div 
+                className="w-full relative min-h-[500px] flex items-center justify-center bg-white"
+                dangerouslySetInnerHTML={{
+                  __html: renderTemplate(
+                    TEMPLATES.find(t => t.id === eventSettings.ticketTemplateId)?.html || '',
+                    {
+                      company: eventSettings?.organizerName || Object.keys(eventSettings || {}).length ? eventSettings?.organizerName || 'Ban Tổ Chức' : 'EventCheck Co.',
+                      name: previewAttendee.name,
+                      event_name: eventSettings?.name || 'Sự kiện Giao lưu 2026',
+                      time: `${eventSettings?.startDate || '20/05/2026'} - ${eventSettings?.startTime || '08:00'}`,
+                      location: eventSettings?.location || 'Trung tâm Hội nghị Quốc gia',
+                      qr: qrImage || ''
+                    }
+                  )
+                }}
+              />
+            )}
             </div>
 
             </div> {/* end scrollable content */}

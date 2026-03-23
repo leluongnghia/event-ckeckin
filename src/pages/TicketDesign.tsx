@@ -4,6 +4,7 @@ import { Palette, Save, Loader2, QrCode, Type, Layout as LayoutIcon, Image as Im
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import PageGuide from '../components/PageGuide';
+import { TEMPLATES, renderTemplate } from '../utils/templates';
 
 const FONTS = [
   { name: 'Inter', value: "'Inter', sans-serif" },
@@ -23,6 +24,7 @@ const FONTS = [
 export default function TicketDesign() {
   const { eventId = 'default-event' } = useParams();
   const [eventData, setEventData] = useState({
+    ticketTemplateId: 'default',
     ticketTitle: 'VÉ MỜI SỰ KIỆN',
     ticketSubtitle: 'EventCheck SaaS Experience',
     ticketColor: '#059669', // emerald-600
@@ -32,18 +34,26 @@ export default function TicketDesign() {
     ticketNameFont: "'Inter', sans-serif",
     ticketNameColor: '#1c1917', // stone-900
   });
+  const [eventDetails, setEventDetails] = useState<any>(null);
+  const [qrBase64, setQrBase64] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    import('qrcode').then(QRCode => {
+      QRCode.default.toDataURL('SAMPLE-QR-CODE-123', { margin: 1 }).then(setQrBase64);
+    });
+
     const fetchEvent = async () => {
       try {
         const docRef = doc(db, 'events', eventId);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const data = docSnap.data();
+          setEventDetails(data);
           setEventData({
+            ticketTemplateId: data.ticketTemplateId || 'default',
             ticketTitle: data.ticketTitle || 'VÉ MỜI SỰ KIỆN',
             ticketSubtitle: data.ticketSubtitle || 'EventCheck SaaS Experience',
             ticketColor: data.ticketColor || '#059669',
@@ -72,6 +82,7 @@ export default function TicketDesign() {
       
       await setDoc(docRef, {
         ...currentData,
+        ticketTemplateId: eventData.ticketTemplateId,
         ticketTitle: eventData.ticketTitle,
         ticketSubtitle: eventData.ticketSubtitle,
         ticketColor: eventData.ticketColor,
@@ -133,12 +144,36 @@ export default function TicketDesign() {
         </button>
       </div>
 
+      {/* Template Selection */}
+      <div className="bg-white p-6 lg:p-8 rounded-3xl border border-stone-200 shadow-sm space-y-5">
+        <label className="text-sm font-semibold text-stone-700 uppercase tracking-widest">Thư viện Mẫu (SaaS Templates)</label>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {TEMPLATES.map(t => (
+            <div 
+              key={t.id} 
+              onClick={() => setEventData({ ...eventData, ticketTemplateId: t.id })}
+              className={`p-4 border-2 rounded-2xl cursor-pointer transition-all flex flex-col items-center gap-3 text-center ${eventData.ticketTemplateId === t.id ? 'border-emerald-500 bg-emerald-50 shadow-md transform scale-105' : 'border-stone-100 bg-stone-50 hover:border-emerald-200'}`}
+            >
+              <div className="w-12 h-16 bg-white rounded shadow-sm border border-stone-200 overflow-hidden relative">
+                <div className="absolute inset-0 flex flex-col pt-2 items-center opacity-30">
+                  <span className="w-8 h-2 bg-stone-300 rounded-full mb-1"></span>
+                  <span className="w-10 h-1 bg-stone-200 rounded-full mb-2"></span>
+                  <div className="w-8 h-8 border-2 border-dashed border-stone-300 rounded" />
+                </div>
+              </div>
+              <p className="text-xs font-bold text-stone-700">{t.name}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Editor Side */}
-        <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm space-y-8">
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
+        {eventData.ticketTemplateId === 'default' && (
+          <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm space-y-8 animate-in fade-in zoom-in duration-300">
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
                 <Type className="w-4 h-4" /> Tiêu đề vé
               </label>
               <input
@@ -322,11 +357,31 @@ export default function TicketDesign() {
             </ul>
           </div>
         </div>
+        )}
+
+        {eventData.ticketTemplateId !== 'default' && (
+          <div className="bg-emerald-50/50 p-8 rounded-3xl border border-emerald-100 flex flex-col items-center justify-center text-center space-y-5 animate-in fade-in zoom-in duration-300">
+            <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center">
+              <LayoutIcon className="w-8 h-8" />
+            </div>
+            <div>
+              <h4 className="text-2xl font-bold text-emerald-900 mb-2">Mẫu HTML Cao Cấp</h4>
+              <p className="text-emerald-700 text-sm max-w-sm mx-auto">
+                Bạn đang sử dụng template tự động hóa. Thông tin bao gồm <b>Logo của bạn, Tên sự kiện, Tên khách mời, Thời gian, Địa điểm</b> sẽ tự động được thu thập từ cài đặt sự kiện và inject trực tiếp vào giao diện vé.
+              </p>
+            </div>
+            <p className="text-xs text-emerald-600 border border-emerald-200 py-1.5 px-4 rounded-full bg-white">
+              Sắp tới: Tính năng Drag & Drop Builder
+            </p>
+          </div>
+        )}
 
         {/* Preview Side */}
         <div className="space-y-4">
           <label className="text-sm font-semibold text-stone-700 uppercase tracking-widest ml-2">Bản xem trước trực tiếp</label>
           <div className="sticky top-24">
+            
+            {eventData.ticketTemplateId === 'default' ? (
             <div 
               className="bg-white rounded-[3rem] overflow-hidden shadow-2xl border border-stone-100 transform transition-all hover:scale-[1.02] relative"
               style={{ backgroundColor: eventData.ticketBodyBgColor, color: eventData.ticketBodyTextColor }}
@@ -394,6 +449,25 @@ export default function TicketDesign() {
                 </div>
               </div>
             </div>
+            ) : (
+              <div 
+                className="bg-white rounded-3xl overflow-hidden shadow-2xl border border-stone-200 flex items-center justify-center relative min-h-[550px]"
+                dangerouslySetInnerHTML={{
+                  __html: renderTemplate(
+                    TEMPLATES.find(t => t.id === eventData.ticketTemplateId)?.html || '',
+                    {
+                      company: eventDetails?.organizerName || Object.keys(eventDetails || {}).length ? eventDetails?.organizerName || 'Ban Tổ Chức' : 'EventCheck Co.',
+                      name: 'Nguyễn Văn A',
+                      event_name: eventDetails?.name || 'Sự kiện Giao lưu 2026',
+                      time: `${eventDetails?.startDate || '20/05/2026'} - ${eventDetails?.startTime || '08:00'}`,
+                      location: eventDetails?.location || 'Trung tâm Hội nghị Quốc gia',
+                      qr: qrBase64
+                    }
+                  )
+                }}
+              />
+            )}
+            
           </div>
         </div>
       </div>
