@@ -38,8 +38,8 @@ export default function Layout() {
   ] : [];
 
   const globalItems = [
-    { name: 'Sự kiện của tôi', path: '/', icon: LayoutGrid },
-    { name: 'Trang giới thiệu', path: '/landing', icon: Info },
+    { name: 'Sự kiện của tôi', path: '/dashboard', icon: LayoutGrid },
+    { name: 'Trang giới thiệu', path: '/', icon: Info },
   ];
 
   if (user?.email === ADMIN_EMAIL) {
@@ -51,7 +51,7 @@ export default function Layout() {
       {/* Sidebar - Desktop */}
       <aside className="hidden lg:flex w-64 bg-white border-r border-stone-200 flex-col shrink-0">
         <div className="p-6 border-b border-stone-100">
-          <Link to="/" className="text-xl font-bold text-emerald-600 flex items-center gap-2">
+          <Link to="/dashboard" className="text-xl font-bold text-emerald-600 flex items-center gap-2">
             <QrCode className="w-6 h-6" />
             EventCheck
           </Link>
@@ -128,7 +128,7 @@ export default function Layout() {
               className="fixed top-0 left-0 bottom-0 w-[280px] bg-white z-50 lg:hidden flex flex-col shadow-2xl"
             >
               <div className="p-6 border-b border-stone-100 flex items-center justify-between">
-                <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-bold text-emerald-600 flex items-center gap-2">
+                <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-bold text-emerald-600 flex items-center gap-2">
                   <QrCode className="w-6 h-6" />
                   EventCheck
                 </Link>

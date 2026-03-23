@@ -58,7 +58,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
-          <Route path="/landing" element={<LandingPage />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/register/:eventId" element={<PublicRegistration />} />
           <Route path="/register" element={<PublicRegistration />} />
@@ -67,10 +67,10 @@ export default function App() {
 
           {/* Protected Routes */}
           <Route
-            path="/*"
+            path="/dashboard/*"
             element={
               !user ? (
-                <Navigate to="/landing" replace />
+                <Navigate to="/" replace />
               ) : hasProfile === false ? (
                 <Navigate to="/auth" replace />
               ) : (

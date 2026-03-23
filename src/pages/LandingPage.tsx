@@ -23,7 +23,7 @@ export default function LandingPage() {
             <a href="#pricing" className="text-sm font-bold text-stone-600 hover:text-emerald-600 transition-colors">Bảng giá</a>
             {user ? (
               <Link 
-                to="/"
+                to="/dashboard"
                 className="px-6 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-sm hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-900/20 flex items-center gap-2"
               >
                 <LayoutDashboard className="w-4 h-4" />
@@ -83,7 +83,7 @@ export default function LandingPage() {
           >
             {user ? (
               <Link 
-                to="/"
+                to="/dashboard"
                 className="w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 bg-emerald-600 text-white rounded-xl md:rounded-2xl font-black text-base md:text-lg hover:bg-emerald-700 transition-all shadow-2xl shadow-emerald-500/40 flex items-center justify-center gap-2 group"
               >
                 Quay lại Dashboard
@@ -169,7 +169,7 @@ export default function LandingPage() {
           <div className="pt-4 relative z-10">
             {user ? (
               <Link 
-                to="/"
+                to="/dashboard"
                 className="px-12 py-5 bg-emerald-600 text-white rounded-2xl font-black text-xl hover:bg-emerald-700 transition-all shadow-2xl shadow-emerald-500/20"
               >
                 Vào Dashboard ngay
