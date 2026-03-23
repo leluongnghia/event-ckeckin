@@ -129,6 +129,16 @@ export default function AttendeeList() {
       const phone = row.phone || row['Số điện thoại'] || row['SĐT'] || '';
       const company = row.company || row['Công ty'] || '';
       
+      // Nhận diện cột VIP từ dữ liệu Excel (hỗ trợ nhiều định dạng từ khóa)
+      const vipValue = row.isVIP || row['VIP'] || row['Loại khách'] || row['Khách VIP'] || '';
+      const stringVipValue = String(vipValue).trim().toLowerCase();
+      const isVIP = stringVipValue === 'true' || 
+                    stringVipValue === 'x' || 
+                    stringVipValue === 'yes' || 
+                    stringVipValue === 'có' || 
+                    stringVipValue === '1' ||
+                    stringVipValue === 'vip';
+
       if (name && email) {
         const newDocRef = doc(collection(db, path));
         batch.set(newDocRef, {
@@ -136,6 +146,7 @@ export default function AttendeeList() {
           email,
           phone,
           company,
+          isVIP: !!isVIP,
           status: 'registered',
           qrCode: Math.random().toString(36).substring(7),
           createdAt: serverTimestamp()
@@ -158,8 +169,8 @@ export default function AttendeeList() {
 
   const downloadTemplate = () => {
     const templateData = [
-      { name: 'Nguyen Van A', email: 'a@example.com', company: 'Cong ty A' },
-      { name: 'Tran Thi B', email: 'b@example.com', company: 'Cong ty B' }
+      { 'Tên': 'Nguyen Van A', 'Email': 'a@example.com', 'Số điện thoại': '0901234567', 'Công ty': 'Cong ty A', 'VIP': 'x' },
+      { 'Tên': 'Tran Thi B', 'Email': 'b@example.com', 'Số điện thoại': '0987654321', 'Công ty': 'Cong ty B', 'VIP': '' }
     ];
     const worksheet = XLSX.utils.json_to_sheet(templateData);
     const workbook = XLSX.utils.book_new();
