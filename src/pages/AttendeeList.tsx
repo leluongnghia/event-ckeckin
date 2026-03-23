@@ -266,6 +266,12 @@ export default function AttendeeList() {
     alert("Đã sao chép link đăng ký vào bộ nhớ tạm!");
   };
 
+  const copyCheckinLink = () => {
+    const link = `${window.location.origin}/checkin/${eventId}`;
+    navigator.clipboard.writeText(link);
+    alert("Đã sao chép link Cổng Check-in (PG) vào bộ nhớ tạm!");
+  };
+
   const [sendingZalo, setSendingZalo] = useState<string | null>(null);
 
   const handleSendZalo = async (attendee: Attendee) => {
@@ -402,6 +408,10 @@ export default function AttendeeList() {
           <button onClick={copyRegistrationLink} className="flex items-center gap-2 px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs font-medium text-stone-600 hover:bg-stone-50 transition-all whitespace-nowrap shrink-0" title="Sao chép link đăng ký công khai">
             <LinkIcon className="w-4 h-4" />
             Link đăng ký
+          </button>
+          <button onClick={copyCheckinLink} className="flex items-center gap-2 px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-xl text-xs font-bold text-emerald-700 hover:bg-emerald-100 transition-all whitespace-nowrap shrink-0" title="Sao chép link Cổng Check-in (PG)">
+            <QrCode className="w-4 h-4" />
+            Link Check-in (PG)
           </button>
           <button onClick={downloadTemplate} className="flex items-center gap-2 px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs font-medium text-stone-600 hover:bg-stone-50 transition-all whitespace-nowrap shrink-0">
             <FileSpreadsheet className="w-4 h-4" />

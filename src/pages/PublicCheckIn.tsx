@@ -76,7 +76,7 @@ export default function PublicCheckIn() {
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
-        setScanResult({ success: false, message: 'Mã vé không hợp lệ hoặc không tồn tại trong sự kiện này.' });
+        setScanResult({ success: false, message: `Mã vé "${code}" không hợp lệ hoặc không tồn tại trong sự kiện này.` });
       } else {
         const attendeeDoc = querySnapshot.docs[0];
         const attendeeData = attendeeDoc.data();
