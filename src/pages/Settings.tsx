@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Settings as SettingsIcon, Save, Calendar, MapPin, Type, Bell, Loader2, QrCode, CheckCircle2, Mail, FileText, Send, Map as MapIcon, ExternalLink } from 'lucide-react';
+import { Settings as SettingsIcon, Save, Calendar, MapPin, Type, Bell, Loader2, QrCode, CheckCircle2, Mail, FileText, Send, Map as MapIcon, ExternalLink, Image as ImageIcon, X } from 'lucide-react';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType, auth } from '../firebase';
 import { GoogleGenAI } from '@google/genai';
@@ -26,7 +26,8 @@ export default function Settings() {
     smtpPort: '587',
     smtpUser: '',
     smtpPass: '',
-    smtpFrom: ''
+    smtpFrom: '',
+    bannerImage: ''
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -209,6 +210,42 @@ export default function Settings() {
               value={eventData.description || ''}
               onChange={(e) => setEventData({ ...eventData, description: e.target.value })}
             />
+          </div>
+
+          {/* Banner Image */}
+          <div className="space-y-2 md:col-span-2">
+            <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
+              <ImageIcon className="w-4 h-4" /> Ảnh banner sự kiện
+            </label>
+            {eventData.bannerImage ? (
+              <div className="relative">
+                <img src={eventData.bannerImage} alt="Banner" className="w-full h-40 object-cover rounded-2xl" />
+                <button
+                  type="button"
+                  onClick={() => setEventData({ ...eventData, bannerImage: '' })}
+                  className="absolute top-2 right-2 p-1.5 bg-stone-900/60 text-white rounded-full hover:bg-stone-900 transition-all"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <label className="flex flex-col items-center justify-center w-full h-32 bg-stone-50 border-2 border-dashed border-stone-200 rounded-2xl cursor-pointer hover:bg-stone-100 transition-all">
+                <ImageIcon className="w-8 h-8 text-stone-400 mb-2" />
+                <span className="text-xs text-stone-400 font-medium">Nhấn để tải ảnh lên (hiển thị trên trang đăng ký công khai)</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onloadend = () => setEventData({ ...eventData, bannerImage: reader.result as string });
+                    reader.readAsDataURL(file);
+                  }}
+                />
+              </label>
+            )}
           </div>
 
           <div className="space-y-2 md:col-span-2">
