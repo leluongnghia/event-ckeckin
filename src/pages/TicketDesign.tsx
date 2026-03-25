@@ -20,6 +20,41 @@ const FONTS = [
   { name: 'Merriweather', value: "'Merriweather', serif" },
 ];
 
+const TICKETS_TEMPLATES = [
+  {
+    id: 'sample-1',
+    name: 'Mẫu 1 (Blue Professional)',
+    thumbnail: '/default-ticket-bg.jpg',
+    config: {
+      ticketBgImage: '/default-ticket-bg.jpg',
+      ticketNameFont: "'Inter', sans-serif",
+      ticketNameColor: '#FFFFFF',
+      namePositionX: 50,
+      namePositionY: 45,
+      nameFontSize: 20,
+      qrPositionX: 50,
+      qrPositionY: 78,
+      qrSize: 79
+    }
+  },
+  {
+    id: 'sample-2',
+    name: 'Mẫu 2 (Clean Light)',
+    thumbnail: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=400&auto=format&fit=crop',
+    config: {
+      ticketBgImage: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1200&auto=format&fit=crop',
+      ticketNameFont: "'Montserrat', sans-serif",
+      ticketNameColor: '#1c1917',
+      namePositionX: 50,
+      namePositionY: 40,
+      nameFontSize: 28,
+      qrPositionX: 50,
+      qrPositionY: 70,
+      qrSize: 120
+    }
+  }
+];
+
 export default function TicketDesign() {
   const { eventId = 'default-event' } = useParams();
   const [eventData, setEventData] = useState({
@@ -251,6 +286,24 @@ export default function TicketDesign() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Editor Side */}
         <div className="lg:col-span-5 space-y-6">
+          <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm space-y-6">
+            <h4 className="font-bold text-stone-900 text-lg border-b border-stone-100 pb-4">Chọn mẫu vé mời</h4>
+            <div className="grid grid-cols-2 gap-4">
+              {TICKETS_TEMPLATES.map(template => (
+                <button
+                  key={template.id}
+                  onClick={() => setEventData({ ...eventData, ...template.config })}
+                  className={`relative aspect-[3/4] rounded-2xl overflow-hidden border-2 transition-all hover:scale-[1.02] active:scale-95 group ${eventData.ticketBgImage === template.config.ticketBgImage ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-stone-100'}`}
+                >
+                  <img src={template.thumbnail} alt={template.name} className="w-full h-full object-cover" />
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3">
+                    <p className="text-[10px] font-bold text-white uppercase tracking-wider">{template.name}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm space-y-6">
             <h4 className="font-bold text-stone-900 text-lg border-b border-stone-100 pb-4">Cài đặt Hình & Chữ</h4>
             
