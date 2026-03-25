@@ -80,8 +80,8 @@ export default function EmailCampaign() {
   };
 
   const filteredAttendees = attendees.filter(a => 
-    a.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    a.email.toLowerCase().includes(searchTerm.toLowerCase())
+    (a.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (a.email || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
