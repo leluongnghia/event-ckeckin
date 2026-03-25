@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { Palette, Save, Loader2, QrCode, Type, Image as ImageIcon, Upload, X, Move } from 'lucide-react';
+import { Palette, Save, Loader2, QrCode, Type, Image as ImageIcon, Upload, X, Move, Maximize2 } from 'lucide-react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import PageGuide from '../components/PageGuide';
@@ -37,8 +37,22 @@ export default function TicketDesign() {
   const [qrBase64, setQrBase64] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [imageAspectRatio, setImageAspectRatio] = useState<string>('9/16');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Auto-detect aspect ratio when image changes
+  useEffect(() => {
+    if (eventData.ticketBgImage) {
+      const img = new Image();
+      img.onload = () => {
+        setImageAspectRatio(`${img.width}/${img.height}`);
+      };
+      img.src = eventData.ticketBgImage;
+    } else {
+      setImageAspectRatio('9/16'); // Default portrait
+    }
+  }, [eventData.ticketBgImage]);
 
   useEffect(() => {
     import('qrcode').then(QRCode => {
@@ -134,6 +148,34 @@ export default function TicketDesign() {
           qrPositionX: Math.max(0, Math.min(100, startBaseX + dxPercent)),
           qrPositionY: Math.max(0, Math.min(100, startBaseY + dyPercent)),
         }));
+      }
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleResizeStart = (e: React.MouseEvent, type: 'name' | 'qr') => {
+    e.preventDefault();
+    e.stopPropagation(); // DO NOT trigger the move handler
+    
+    const startX = e.clientX;
+    const startSize = type === 'name' ? eventData.nameFontSize : eventData.qrSize;
+    
+    const handleMouseMove = (mouseEvent: MouseEvent) => {
+      // Moving right/down increases size, moving left/up decreases
+      const dx = mouseEvent.clientX - startX;
+      
+      const newSize = Math.max(type === 'name' ? 10 : 50, startSize + dx);
+      if (type === 'name') {
+        setEventData(prev => ({ ...prev, nameFontSize: newSize }));
+      } else {
+        setEventData(prev => ({ ...prev, qrSize: newSize }));
       }
     };
 
@@ -310,7 +352,7 @@ export default function TicketDesign() {
               style={{
                 width: '100%',
                 maxWidth: '400px',
-                aspectRatio: '9/16' // Standard mobile portrait ratio
+                aspectRatio: imageAspectRatio
               }}
             >
               {/* Background Image */}
@@ -346,6 +388,15 @@ export default function TicketDesign() {
                 >
                   Nguyễn Văn A
                 </span>
+                
+                {/* Resize Handle */}
+                <div 
+                  className="absolute -right-3 -bottom-3 w-6 h-6 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-full shadow-lg cursor-nwse-resize opacity-0 group-hover:opacity-100 flex items-center justify-center z-20 hover:bg-emerald-100 hover:scale-110 transition-transform"
+                  onMouseDown={(e) => handleResizeStart(e, 'name')}
+                  title="Kéo để chỉnh Cỡ chữ"
+                >
+                  <Maximize2 className="w-3 h-3 rotate-90" />
+                </div>
               </div>
 
               {/* Draggable QR Code */}
@@ -375,6 +426,15 @@ export default function TicketDesign() {
                     <QrCode className="w-1/2 h-1/2 text-stone-400" />
                   </div>
                 )}
+                
+                {/* Resize Handle */}
+                <div 
+                  className="absolute -right-3 -bottom-3 w-6 h-6 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-full shadow-lg cursor-nwse-resize opacity-0 group-hover:opacity-100 flex items-center justify-center z-20 hover:bg-emerald-100 hover:scale-110 transition-transform"
+                  onMouseDown={(e) => handleResizeStart(e, 'qr')}
+                  title="Kéo để chỉnh Kích thước QR"
+                >
+                  <Maximize2 className="w-3 h-3 rotate-90" />
+                </div>
               </div>
             </div>
 
