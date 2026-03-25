@@ -243,6 +243,14 @@ export default function UserSettings() {
                   <li><strong>SMTP User:</strong> Địa chỉ Gmail của bạn làm mail vãng lai gửi đi.</li>
                   <li><strong>SMTP Password:</strong> BẮT BUỘC dùng <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noreferrer" className="text-emerald-600 font-bold hover:underline">Mật khẩu Ứng dụng</a> 16 chữ số do Google cấp.</li>
                 </ol>
+                <div className="mt-3 flex items-start gap-2 bg-emerald-50 border border-emerald-200 rounded-lg p-3">
+                  <span className="text-base">📬</span>
+                  <p className="text-emerald-800 leading-relaxed">
+                    <strong>Hạn mức miễn phí của Gmail SMTP:</strong> Khoảng <strong>~500 email/ngày</strong>. 
+                    Đủ cho hầu hết sự kiện.<br />
+                    Nếu sự kiện có &gt; 500 khách, hãy chia nhỏ chiến dịch gửi thành nhiều đợt hoặc nâng cấp lên dịch vụ như <strong>Resend.com</strong> (3.000 email/tháng miễn phí).
+                  </p>
+                </div>
               </div>
 
               <div className="md:col-span-2 border-t border-stone-100 pt-4 mt-2">
