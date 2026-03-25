@@ -13,7 +13,8 @@ import {
   MousePointer2, 
   ChevronRight,
   ShieldCheck,
-  Send
+  Send,
+  BarChart
 } from 'lucide-react';
 import PublicNavbar from '../components/PublicNavbar';
 
@@ -77,6 +78,18 @@ const guideSteps = [
       'Hệ thống phản hồi xanh (Thành công) hoặc đỏ (Kèm lỗi) trong < 2 giây.',
       'Dữ liệu check-in đồng bộ ngay lập tức lên Dashboard quản lý.',
       'Hỗ trợ chế độ offline: Nếu mất mạng đột ngột, dữ liệu sẽ tự đồng bộ ngay khi có kết nối trở lại.'
+    ]
+  },
+  {
+    id: 'step6',
+    icon: BarChart,
+    title: '6. Phân tích & Báo chuẩn (Sau sự kiện)',
+    description: 'Tổng kết sự kiện một cách thông minh bằng báo cáo Excel và AI.',
+    details: [
+      'Truy cập "Tổng quan" để xem Dashboard tự động cập nhật biểu đồ theo giờ.',
+      'Sử dụng tính năng "Phân tích bằng AI" để nhận lời khuyên và dự báo từ Google Gemini.',
+      'Nhấn nút "Xuất báo cáo" để tải về file Excel danh sách khách kèm thời gian check-in chính xác.',
+      'Báo cáo giúp bạn đối soát ngân sách và đo lường hiệu quả truyền thông cực kỳ nhanh chóng.'
     ]
   }
 ];

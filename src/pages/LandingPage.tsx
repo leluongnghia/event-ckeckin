@@ -41,10 +41,11 @@ const features = [
 ];
 
 const howItWorks = [
-  { step: '01', title: 'Tạo sự kiện', desc: 'Điền thông tin sự kiện, ngày giờ, địa điểm và tùy chỉnh mẫu vé mời theo thương hiệu của bạn.' },
-  { step: '02', title: 'Nhập danh sách khách', desc: 'Import từ Excel hoặc thêm từng người. Hệ thống tự động tạo mã QR cá nhân hóa cho mỗi khách mời.' },
-  { step: '03', title: 'Gửi vé tự động', desc: 'Một cú nhấn, toàn bộ vé QR được phân phối đến inbox email hoặc Zalo của khách mời.' },
-  { step: '04', title: 'Check-in bằng camera', desc: 'Dùng bất kỳ thiết bị nào có camera, hướng vào mã QR, xác nhận trong chưa tới 2 giây.' },
+  { step: '01', title: 'Tạo sự kiện', desc: 'Điền thông tin sự kiện, ngày giờ, địa điểm và tùy chỉnh mẫu vé mời theo thương hiệu.' },
+  { step: '02', title: 'Nhập khách mời', desc: 'Import từ Excel. Hệ thống tự động sinh mã QR định danh duy nhất cho từng khách.' },
+  { step: '03', title: 'Gửi vé tự động', desc: 'Phân phối vé qua Email/Zalo. Khách nhận được vé QR để quét tại sự kiện.' },
+  { step: '04', title: 'Quét mã Check-in', desc: 'Dùng camera điện thoại hoặc máy tính để quét mã QR. Xác nhận trong 2 giây.' },
+  { step: '05', title: 'Báo cáo & AI', desc: 'Xuất báo cáo Excel và sử dụng AI để phân tích hiệu quả sự kiện ngay lập tức.' },
 ];
 
 const testimonials = [
