@@ -24,7 +24,6 @@ export default function PublicNavbar() {
           <div className="hidden md:flex items-center gap-8">
             <a href={`${anchorPrefix}#features`} className="text-sm font-semibold text-stone-500 hover:text-emerald-600 transition-colors">Tính năng</a>
             <a href={`${anchorPrefix}#how-it-works`} className="text-sm font-semibold text-stone-500 hover:text-emerald-600 transition-colors">Quy trình</a>
-            <Link to="/roadmap" className="text-sm font-semibold text-stone-500 hover:text-emerald-600 transition-colors">Lộ trình</Link>
             <Link to="/guide" className="text-sm font-semibold text-stone-500 hover:text-emerald-600 transition-colors">Hướng dẫn</Link>
             <Link to="/checkin/demo" className="text-sm font-bold text-emerald-600 hover:text-emerald-700 transition-colors flex items-center gap-1.5 border border-emerald-200 bg-emerald-50 px-4 py-2 rounded-xl">
               <QrCode className="w-4 h-4" /> Demo Quét QR
