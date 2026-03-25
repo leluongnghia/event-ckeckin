@@ -51,6 +51,7 @@ const guideSteps = [
     description: 'Đưa dữ liệu khách mời vào hệ thống một cách nhanh chóng và an toàn.',
     details: [
       'Thêm từng khách mời hoặc nhập hàng loạt từ file Excel (.xlsx).',
+      'Sử dụng "Link đăng ký": Gửi link này cho khách mời để họ tự điền thông tin (Họ tên, SĐT, Email...) và hệ thống tự động sinh vé gửi về email cho họ.',
       'Hệ thống tự động sinh mã QR định danh duy nhất cho từng khách mời.',
       'Phân loại khách VIP để có chế độ đón tiếp đặc biệt.',
       'Dữ liệu được lưu trữ bảo mật trên môi trường Cloud.'
@@ -75,6 +76,7 @@ const guideSteps = [
     description: 'Quy trình check-in siêu tốc giúp loại bỏ tình trạng ùn tắc tại cổng.',
     details: [
       'Truy cập mục "Quét mã QR", hướng camera vào mã QR của khách mời.',
+      'Sử dụng "Link checkin PG": Chia sẻ link này cho nhân viên/PG tại cổng để họ quét mã trực tiếp trên điện thoại cá nhân (không cần đăng nhập tài khoản của bạn).',
       'Hệ thống phản hồi xanh (Thành công) hoặc đỏ (Kèm lỗi) trong < 2 giây.',
       'Dữ liệu check-in đồng bộ ngay lập tức lên Dashboard quản lý.',
       'Hỗ trợ chế độ offline: Nếu mất mạng đột ngột, dữ liệu sẽ tự đồng bộ ngay khi có kết nối trở lại.'

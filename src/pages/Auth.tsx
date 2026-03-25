@@ -75,7 +75,23 @@ export default function Auth() {
           setEmail(auth.currentUser.email || '');
           setStep(2);
         } else {
-          navigate('/');
+          // If user doc exists, check for mandatory verification flag
+          const userData = userDoc.data();
+          if (!auth.currentUser.emailVerified && (userData.mustVerifyEmail || userData.status === 'pending_verification')) {
+            setName(userData.name || '');
+            setEmail(auth.currentUser.email || '');
+            setStep(2);
+          } else if (auth.currentUser.emailVerified && (userData.mustVerifyEmail || userData.status === 'pending_verification')) {
+            // Auto-activate if they just verified
+            await setDoc(doc(db, 'users', auth.currentUser.uid), {
+              isEmailVerified: true,
+              status: 'active',
+              mustVerifyEmail: false
+            }, { merge: true });
+            navigate('/');
+          } else {
+            navigate('/');
+          }
         }
       }
     };
@@ -105,7 +121,14 @@ export default function Auth() {
       // Check if user profile exists
       const userDoc = await getDoc(doc(db, 'users', user.uid));
       if (userDoc.exists()) {
-        navigate('/');
+        const userData = userDoc.data();
+        if (!user.emailVerified && (userData.mustVerifyEmail || userData.status === 'pending_verification')) {
+          setName(userData.name || '');
+          setEmail(user.email || '');
+          setStep(2);
+        } else {
+          navigate('/');
+        }
       } else {
         setName(user.displayName || '');
         setEmail(user.email || '');

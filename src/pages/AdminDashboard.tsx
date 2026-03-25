@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, query, collectionGroup, doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, getDocs, query, collectionGroup, doc, getDoc, setDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import { db, auth, handleFirestoreError, OperationType } from '../firebase';
-import { Users, Mail, ShieldCheck, Download, Search, Loader2, Calendar, LayoutGrid, Settings as SettingsIcon, ToggleLeft, ToggleRight, MessageSquareWarning, Phone, CheckCircle2, XCircle } from 'lucide-react';
-import { motion } from 'motion/react';
+import { Users, Mail, ShieldCheck, Download, Search, Loader2, Calendar, LayoutGrid, Settings as SettingsIcon, ToggleLeft, ToggleRight, MessageSquareWarning, Phone, CheckCircle2, XCircle, Bell } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 const ADMIN_EMAILS = ['leluongnghia90@gmail.com', 'leluongnghia91@gmail.com'];
 
@@ -25,6 +25,13 @@ export default function AdminDashboard() {
   const [feedbacks, setFeedbacks] = useState<any[]>([]);
   const [allUsers, setAllUsers] = useState<any[]>([]);
   const [userSearch, setUserSearch] = useState('');
+  const [actionLoading, setActionLoading] = useState<string | null>(null); // userId or 'bulk'
+  const [toast, setToast] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
+  };
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -116,6 +123,41 @@ export default function AdminDashboard() {
     a.phone?.includes(searchTerm) ||
     (a.eventId && eventMap[a.eventId]?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
+  const requireUserVerification = async (userId: string) => {
+    setActionLoading(userId);
+    try {
+      await setDoc(doc(db, 'users', userId), { mustVerifyEmail: true }, { merge: true });
+      setAllUsers(prev => prev.map(u => u.id === userId ? { ...u, mustVerifyEmail: true } : u));
+      showToast('Đã yêu cầu xác thực cho user này. Họ sẽ bị nhắc xác thực khi đăng nhập lần sau.');
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const requireAllUnverifiedVerification = async () => {
+    const unverified = allUsers.filter(u => !u.isEmailVerified);
+    if (unverified.length === 0) {
+      showToast('Tất cả user đã xác thực email!');
+      return;
+    }
+    setActionLoading('bulk');
+    try {
+      const batch = writeBatch(db);
+      unverified.forEach(u => {
+        batch.set(doc(db, 'users', u.id), { mustVerifyEmail: true }, { merge: true });
+      });
+      await batch.commit();
+      setAllUsers(prev => prev.map(u => u.isEmailVerified ? u : { ...u, mustVerifyEmail: true }));
+      showToast(`Đã yêu cầu xác thực cho ${unverified.length} user chưa xác thực.`);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   const exportToCSV = () => {
     const headers = ['Tên', 'Email', 'Số điện thoại', 'Công ty', 'Sự kiện', 'Trạng thái', 'Email đã gửi'];
@@ -387,6 +429,14 @@ export default function AdminDashboard() {
                 />
               </div>
               <button
+                onClick={requireAllUnverifiedVerification}
+                disabled={actionLoading === 'bulk'}
+                className="flex items-center gap-2 px-5 py-3 bg-amber-600 text-white rounded-2xl font-bold hover:bg-amber-700 transition-all shadow-sm whitespace-nowrap disabled:opacity-50"
+              >
+                {actionLoading === 'bulk' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Bell className="w-4 h-4" />}
+                Yêu cầu xác thực hết
+              </button>
+              <button
                 onClick={exportUsersToCSV}
                 className="flex items-center gap-2 px-5 py-3 bg-emerald-600 text-white rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-sm whitespace-nowrap"
               >
@@ -404,6 +454,7 @@ export default function AdminDashboard() {
                   <th className="px-8 py-5 text-xs font-bold text-stone-400 uppercase tracking-widest">Xác thực Email</th>
                   <th className="px-8 py-5 text-xs font-bold text-stone-400 uppercase tracking-widest">Ngày đăng ký</th>
                   <th className="px-8 py-5 text-xs font-bold text-stone-400 uppercase tracking-widest">Role</th>
+                  <th className="px-8 py-5 text-xs font-bold text-stone-400 uppercase tracking-widest text-right">Thao tác</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-stone-100">
@@ -454,6 +505,21 @@ export default function AdminDashboard() {
                       }`}>
                         {u.role || 'user'}
                       </span>
+                    </td>
+                    <td className="px-8 py-5 text-right">
+                      {!u.isEmailVerified && !u.mustVerifyEmail && (
+                        <button
+                          onClick={() => requireUserVerification(u.id)}
+                          disabled={actionLoading === u.id}
+                          className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                          title="Yêu cầu xác thực"
+                        >
+                          {actionLoading === u.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Bell className="w-4 h-4" />}
+                        </button>
+                      )}
+                      {u.mustVerifyEmail && (
+                        <span className="text-[10px] font-bold text-amber-600 animate-pulse">Đã nhắc</span>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -508,6 +574,21 @@ export default function AdminDashboard() {
         </div>
 
       </div>
+
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 bg-stone-900 text-white rounded-2xl shadow-2xl z-50 flex items-center gap-3 font-bold text-sm"
+          >
+            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+            {toast}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
