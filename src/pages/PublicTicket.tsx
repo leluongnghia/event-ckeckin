@@ -11,6 +11,7 @@ export default function PublicTicket() {
   const [error, setError] = useState('');
   const [ticketData, setTicketData] = useState<any>(null);
   const [qrBase64, setQrBase64] = useState('');
+  const [imageAspectRatio, setImageAspectRatio] = useState<string>('9/16');
   const [isDownloading, setIsDownloading] = useState(false);
   const ticketRef = useRef<HTMLDivElement>(null);
 
@@ -36,6 +37,13 @@ export default function PublicTicket() {
           attendee: attendeeInfo,
         });
         setQrBase64(qrDataUrl);
+
+        // Auto-detect aspect ratio from background image
+        if (eventInfo.ticketBgImage) {
+          const img = new Image();
+          img.onload = () => setImageAspectRatio(`${img.width}/${img.height}`);
+          img.src = eventInfo.ticketBgImage;
+        }
       } catch (err: any) {
         setError(err.message || 'Có lỗi xảy ra');
       } finally {
@@ -115,16 +123,22 @@ export default function PublicTicket() {
 
       <div className="relative z-10 w-full max-w-md flex flex-col items-center space-y-8">
         
-        {/* Core Ticket */}
+        {/* Core Ticket - aspect-ratio container so % overlays are accurate */}
         <div 
-          className="w-full relative shadow-2xl shadow-emerald-900/50 rounded-2xl overflow-hidden bg-white group"
+          className="w-full relative shadow-2xl shadow-emerald-900/50 rounded-2xl overflow-hidden"
           ref={ticketRef}
-          style={{ width: '100%', maxWidth: '400px' }}
+          style={{ width: '100%', maxWidth: '400px', aspectRatio: imageAspectRatio }}
         >
           {bgImage ? (
-            <img src={bgImage} alt="Vé Mời" className="w-full h-auto block" crossOrigin="anonymous" />
+            <img
+              src={bgImage}
+              alt="Vé Mời"
+              className="absolute inset-0 w-full h-full object-cover block select-none pointer-events-none"
+              crossOrigin="anonymous"
+              draggable={false}
+            />
           ) : (
-            <div className="w-full aspect-[9/16] bg-stone-200 flex items-center justify-center text-stone-400">
+            <div className="absolute inset-0 bg-stone-200 flex items-center justify-center text-stone-400">
               Chưa có hình nền vé
             </div>
           )}
