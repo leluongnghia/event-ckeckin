@@ -110,6 +110,22 @@ export default function Auth() {
     }
   }, [step]);
 
+  useEffect(() => {
+    // Automatically send verification email when hitting Step 2
+    const sendAutoVerification = async () => {
+      if (step === 2 && auth.currentUser && !auth.currentUser.emailVerified) {
+        try {
+          await sendEmailVerification(auth.currentUser);
+          console.log("Auto-verification email sent");
+        } catch (err: any) {
+          // If already sent or too many requests, we ignore it here
+          console.warn("Auto-verification send skipped:", err.message);
+        }
+      }
+    };
+    sendAutoVerification();
+  }, [step]);
+
   const handleGoogleAuth = async () => {
     setLoading(true);
     setError(null);
@@ -209,17 +225,27 @@ export default function Auth() {
 
   const handleResendVerification = async () => {
     setLoading(true);
+    setError(null);
     try {
       if (auth.currentUser) {
         await sendEmailVerification(auth.currentUser);
-        setError(null);
-        alert('Email xác thực đã được gửi lại!');
+        showToast('Email xác thực đã được gửi lại! Vui lòng kiểm tra cả hòm thư Spam.');
       }
     } catch (err: any) {
-      setError(err.message);
+      if (err.code === 'auth/too-many-requests') {
+        setError('Bạn đã yêu cầu gửi email quá nhanh. Vui lòng đợi 1-2 phút và thử lại.');
+      } else {
+        setError(err.message);
+      }
     } finally {
       setLoading(false);
     }
+  };
+
+  const [toast, setToast] = useState<string | null>(null);
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
   };
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
@@ -472,9 +498,9 @@ export default function Auth() {
                   type="button"
                   onClick={handleResendVerification}
                   disabled={loading}
-                  className="w-full text-sm font-bold text-stone-400 hover:text-stone-600 transition-colors"
+                  className="w-full text-sm font-bold text-stone-400 hover:text-stone-600 transition-colors flex items-center justify-center gap-2"
                 >
-                  Gửi lại email xác thực
+                  {loading && step === 2 ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Gửi lại email xác thực'}
                 </button>
               </motion.div>
             )}
@@ -554,6 +580,21 @@ export default function Auth() {
           </p>
         </div>
       </div>
+
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 bg-stone-900 text-white rounded-2xl shadow-2xl z-50 flex items-center gap-3 font-bold text-sm"
+          >
+            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+            {toast}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
