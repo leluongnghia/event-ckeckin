@@ -60,9 +60,11 @@ export default function CheckIn() {
           { facingMode: "environment" },
           { fps: 10, qrbox: { width: 250, height: 250 } },
           (decodedText) => {
-            if (!isCleaningUp) {
+            if (!isCleaningUp && !isProcessing.current) {
               setScanResult(decodedText);
               handleCheckIn(decodedText);
+              // Tạm dừng camera ngay khi quét được để tránh nhảy kết quả liên tục
+              html5QrCode?.pause();
             }
           },
           undefined
@@ -240,7 +242,23 @@ export default function CheckIn() {
   };
 
   const resetScanner = () => {
-    window.location.reload();
+    setStatus('scanning');
+    setScanResult(null);
+    setCurrentAttendee(null);
+    setMessage('');
+    setIsVIP(false);
+    isProcessing.current = false;
+    
+    // Resume scanner instead of reload
+    if (scannerRef.current) {
+      try {
+        scannerRef.current.resume();
+      } catch (e) {
+        console.error("Failed to resume scanner", e);
+        // Fallback for extreme cases
+        window.location.reload();
+      }
+    }
   };
 
   const handlePrintBadge = () => {
@@ -284,65 +302,65 @@ export default function CheckIn() {
           </div>
         )}
 
-        <div className={status === 'idle' || status === 'scanning' ? 'block' : 'hidden'}>
-          <div id="reader" className="w-full overflow-hidden rounded-2xl"></div>
+        <div className="relative overflow-hidden rounded-2xl min-h-[300px] bg-stone-100 flex items-center justify-center">
+          <div id="reader" className={`w-full ${status === 'scanning' || status === 'idle' ? 'block' : 'opacity-20 grayscale'}`}></div>
+          
+          {status !== 'idle' && status !== 'scanning' && (
+            <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-white/90 backdrop-blur-sm p-8 animate-in fade-in zoom-in duration-300">
+              {status === 'loading' && (
+                <Loader2 className="w-16 h-16 lg:w-20 lg:h-20 text-emerald-500 animate-spin" />
+              )}
+              {status === 'success' && (
+                <>
+                  <div className="relative">
+                    <CheckCircle2 className="w-20 h-20 lg:w-24 lg:h-24 text-emerald-500" />
+                    {isVIP && (
+                      <div className="absolute -top-1 -right-1 bg-amber-500 text-white p-1.5 rounded-full shadow-lg">
+                        <Star className="w-5 h-5 lg:w-6 lg:h-6 fill-current" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-center space-y-2 px-4 max-w-sm">
+                    <h4 className="text-xl lg:text-2xl font-black text-stone-900 uppercase">Thành công</h4>
+                    <p className="text-stone-600 text-base lg:text-lg font-medium leading-tight">{message}</p>
+                  </div>
+                  
+                  <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 w-full max-w-md mt-6">
+                    <button
+                      onClick={handlePrintBadge}
+                      className="flex-1 py-3.5 lg:py-4 bg-stone-900 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-stone-800 transition-all shadow-lg shadow-stone-900/20 text-sm lg:text-base"
+                    >
+                      <Printer className="w-5 h-5" /> In thẻ
+                    </button>
+                    <button
+                      onClick={resetScanner}
+                      className="flex-1 py-3.5 lg:py-4 bg-emerald-600 text-white rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20 text-sm lg:text-base"
+                    >
+                      Tiếp tục quét
+                    </button>
+                  </div>
+                </>
+              )}
+              {status === 'error' && (
+                <>
+                  <XCircle className="w-20 h-20 lg:w-24 lg:h-24 text-red-500" />
+                  <div className="text-center space-y-2 px-4 max-w-sm">
+                    <h4 className="text-xl lg:text-2xl font-black text-stone-900 uppercase">Thất bại</h4>
+                    <p className="text-stone-600 text-base lg:text-lg font-medium leading-tight">{message}</p>
+                  </div>
+                  <div className="w-full max-w-md mt-6">
+                    <button
+                      onClick={resetScanner}
+                      className="w-full py-3.5 lg:py-4 bg-stone-900 text-white rounded-2xl font-bold hover:bg-stone-800 transition-all text-sm lg:text-base"
+                    >
+                      Thử lại
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </div>
-        
-        {status !== 'idle' && status !== 'scanning' && (
-          <div className="flex flex-col items-center justify-center py-8 lg:py-12 space-y-6 lg:space-y-8 animate-in fade-in zoom-in duration-300">
-            {status === 'loading' && (
-              <Loader2 className="w-16 h-16 lg:w-20 lg:h-20 text-emerald-500 animate-spin" />
-            )}
-            {status === 'success' && (
-              <>
-                <div className="relative">
-                  <CheckCircle2 className="w-20 h-20 lg:w-24 lg:h-24 text-emerald-500" />
-                  {isVIP && (
-                    <div className="absolute -top-1 -right-1 bg-amber-500 text-white p-1.5 rounded-full shadow-lg">
-                      <Star className="w-5 h-5 lg:w-6 lg:h-6 fill-current" />
-                    </div>
-                  )}
-                </div>
-                <div className="text-center space-y-2 px-4">
-                  <h4 className="text-xl lg:text-2xl font-black text-stone-900 uppercase">Thành công</h4>
-                  <p className="text-stone-600 text-base lg:text-lg font-medium leading-tight">{message}</p>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 w-full px-4">
-                  <button
-                    onClick={handlePrintBadge}
-                    className="flex-1 py-3.5 lg:py-4 bg-stone-900 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-stone-800 transition-all shadow-lg shadow-stone-900/20 text-sm lg:text-base"
-                  >
-                    <Printer className="w-5 h-5" /> In thẻ tên
-                  </button>
-                  <button
-                    onClick={resetScanner}
-                    className="flex-1 py-3.5 lg:py-4 bg-emerald-600 text-white rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20 text-sm lg:text-base"
-                  >
-                    Tiếp tục quét
-                  </button>
-                </div>
-              </>
-            )}
-            {status === 'error' && (
-              <>
-                <XCircle className="w-20 h-20 lg:w-24 lg:h-24 text-red-500" />
-                <div className="text-center space-y-2 px-4">
-                  <h4 className="text-xl lg:text-2xl font-black text-stone-900 uppercase">Thất bại</h4>
-                  <p className="text-stone-600 text-base lg:text-lg font-medium leading-tight">{message}</p>
-                </div>
-                <div className="w-full px-4">
-                  <button
-                    onClick={resetScanner}
-                    className="w-full py-3.5 lg:py-4 bg-stone-900 text-white rounded-2xl font-bold hover:bg-stone-800 transition-all text-sm lg:text-base"
-                  >
-                    Thử lại
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        )}
       </div>
 
       {/* Printable Badge (Hidden in UI) */}
