@@ -42,6 +42,8 @@ export default function AttendeeList() {
   const [bulkQrLoading, setBulkQrLoading] = useState(false);
   const [bulkZaloLoading, setBulkZaloLoading] = useState(false);
   const [bulkZaloProgress, setBulkZaloProgress] = useState('');
+  const [ticketImageAspectRatio, setTicketImageAspectRatio] = useState<string>('9/16');
+  const [resendingEmail, setResendingEmail] = useState(false);
 
   const parentRef = React.useRef<HTMLDivElement>(null);
 
@@ -242,12 +244,37 @@ export default function AttendeeList() {
     setPreviewAttendee(attendee);
     setIsPreviewOpen(true);
     setQrImage(null);
+    // Auto-detect ticket background aspect ratio
+    const bgImage = eventSettings?.ticketBgImage;
+    if (bgImage) {
+      const img = new Image();
+      img.onload = () => setTicketImageAspectRatio(`${img.width}/${img.height}`);
+      img.src = bgImage;
+    } else {
+      setTicketImageAspectRatio('9/16');
+    }
     try {
       const QRCode = (await import("qrcode")).default;
       const url = await QRCode.toDataURL(attendee.qrCode);
       setQrImage(url);
     } catch (error) {
       console.error("Failed to generate QR", error);
+    }
+  };
+
+  const resendEmail = async (attendee: Attendee) => {
+    setResendingEmail(true);
+    try {
+      await axios.post('/api/email/send-batch', { attendees: [attendee], eventId });
+      await updateDoc(doc(db, `events/${eventId}/attendees/${attendee.id}`), {
+        emailSent: true,
+        emailSentAt: new Date()
+      });
+      alert(`Đã gửi lại email thành công cho ${attendee.name}!`);
+    } catch (err: any) {
+      alert(`Gửi thất bại: ${err.response?.data?.error || err.message}`);
+    } finally {
+      setResendingEmail(false);
     }
   };
 
@@ -805,7 +832,7 @@ export default function AttendeeList() {
             {/* Scrollable content */}
             <div className="overflow-y-auto flex-1">
 
-            <div id="printable-ticket" className="bg-stone-100 relative mx-auto overflow-hidden shadow-sm border border-stone-200" style={{ width: '100%', maxWidth: '400px', aspectRatio: '9/16' }}>
+            <div id="printable-ticket" className="bg-stone-100 relative mx-auto overflow-hidden shadow-sm border border-stone-200" style={{ width: '100%', maxWidth: '400px', aspectRatio: ticketImageAspectRatio }}>
               {eventSettings?.ticketBgImage ? (
                 <img src={eventSettings.ticketBgImage} alt="Background" className="w-full h-full object-cover select-none pointer-events-none" />
               ) : (
@@ -862,7 +889,12 @@ export default function AttendeeList() {
               <button onClick={() => window.print()} className="flex-1 py-3 bg-stone-900 text-white rounded-2xl font-bold hover:bg-stone-800 transition-all shadow-lg shadow-stone-900/20 text-sm">
                 In vé mời
               </button>
-              <button className="flex-1 py-3 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-2xl font-bold hover:bg-emerald-100 transition-all text-sm">
+              <button
+                onClick={() => previewAttendee && resendEmail(previewAttendee)}
+                disabled={resendingEmail}
+                className="flex-1 py-3 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-2xl font-bold hover:bg-emerald-100 transition-all text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {resendingEmail ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                 Gửi lại Email
               </button>
             </div>
