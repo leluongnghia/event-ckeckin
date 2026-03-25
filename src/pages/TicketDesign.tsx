@@ -23,7 +23,7 @@ const FONTS = [
 const TICKETS_TEMPLATES = [
   {
     id: 'sample-1',
-    name: 'Mẫu 1 (Blue Professional)',
+    name: 'Mẫu 1 (Blue Pro)',
     thumbnail: '/default-ticket-bg.jpg',
     config: {
       ticketBgImage: '/default-ticket-bg.jpg',
@@ -39,18 +39,98 @@ const TICKETS_TEMPLATES = [
   },
   {
     id: 'sample-2',
-    name: 'Mẫu 2 (Clean Light)',
-    thumbnail: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=400&auto=format&fit=crop',
+    name: 'Mẫu 2 (FPT Schools)',
+    thumbnail: '/sample-fpt.png',
     config: {
-      ticketBgImage: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1200&auto=format&fit=crop',
+      ticketBgImage: '/sample-fpt.png',
+      ticketNameFont: "'Dancing Script', cursive",
+      ticketNameColor: '#b91c1c',
+      namePositionX: 52,
+      namePositionY: 13,
+      nameFontSize: 28,
+      qrPositionX: 33,
+      qrPositionY: 67,
+      qrSize: 160
+    }
+  },
+  {
+    id: 'sample-3',
+    name: 'Mẫu 3 (P&G SDDS)',
+    thumbnail: '/sample-pg.png',
+    config: {
+      ticketBgImage: '/sample-pg.png',
       ticketNameFont: "'Montserrat', sans-serif",
+      ticketNameColor: '#FFFFFF',
+      namePositionX: 50,
+      namePositionY: 59,
+      nameFontSize: 32,
+      qrPositionX: 50,
+      qrPositionY: 43,
+      qrSize: 140
+    }
+  },
+  {
+    id: 'sample-4',
+    name: 'Mẫu 4 (Vitus System)',
+    thumbnail: '/sample-vitus.png',
+    config: {
+      ticketBgImage: '/sample-vitus.png',
+      ticketNameFont: "'Inter', sans-serif",
       ticketNameColor: '#1c1917',
       namePositionX: 50,
-      namePositionY: 40,
-      nameFontSize: 28,
+      namePositionY: 44,
+      nameFontSize: 24,
       qrPositionX: 50,
-      qrPositionY: 70,
-      qrSize: 120
+      qrPositionY: 65,
+      qrSize: 220
+    }
+  },
+  {
+    id: 'sample-5',
+    name: 'Mẫu 5 (Phú Đông)',
+    thumbnail: '/sample-phudong.png',
+    config: {
+      ticketBgImage: '/sample-phudong.png',
+      ticketNameFont: "'Montserrat', sans-serif",
+      ticketNameColor: '#FFFFFF',
+      namePositionX: 50,
+      namePositionY: 13,
+      nameFontSize: 22,
+      qrPositionX: 50,
+      qrPositionY: 80,
+      qrSize: 140
+    }
+  },
+  {
+    id: 'sample-6',
+    name: 'Mẫu 6 (Trần Phú)',
+    thumbnail: '/sample-tranphu.png',
+    config: {
+      ticketBgImage: '/sample-tranphu.png',
+      ticketNameFont: "'Inter', sans-serif",
+      ticketNameColor: '#1c1917',
+      namePositionX: 50,
+      namePositionY: 67,
+      nameFontSize: 18,
+      qrPositionX: 48,
+      qrPositionY: 49,
+      qrSize: 150
+    }
+  },
+  {
+    id: 'sample-7',
+    name: 'Mẫu 7 (ĐH Y Hà Nội)',
+    thumbnail: '/sample-dhy.png',
+    config: {
+      ticketBgImage: '/sample-dhy.png',
+      ticketNameFont: "'Inter', sans-serif",
+      ticketNameColor: '#1c1917',
+      namePositionX: 50,
+      namePositionY: 41,
+      nameFontSize: 22,
+      qrPositionX: 50,
+      qrPositionY: 57,
+      qrSize: 160
     }
   }
 ];
