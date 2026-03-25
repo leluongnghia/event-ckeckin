@@ -69,18 +69,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const eventDoc = await getDoc(doc(db, 'events', eventId));
     let settings: any = eventDoc.exists() ? eventDoc.data() : {};
 
-    // Merge with global user settings (SMTP, template, etc.)
+    // Merge with global user settings - USER SMTP takes absolute priority
+    let userSmtp: any = {};
     if (settings.ownerId) {
       const userDoc = await getDoc(doc(db, 'users', settings.ownerId));
       if (userDoc.exists()) {
         const u = userDoc.data();
+        userSmtp = u;
+        // User SMTP takes absolute priority - only fall back to event SMTP if user has none
+        const hasUserSmtp = u.smtpHost && u.smtpUser && u.smtpPass;
         settings = {
           ...settings,
-          smtpHost: u.smtpHost || settings.smtpHost,
-          smtpPort: u.smtpPort || settings.smtpPort,
-          smtpUser: u.smtpUser || settings.smtpUser,
-          smtpPass: u.smtpPass || settings.smtpPass,
-          smtpFrom: u.smtpFrom || settings.smtpFrom,
+          // If user has full SMTP config, use it entirely; otherwise try event-level
+          smtpHost: hasUserSmtp ? u.smtpHost : (settings.smtpHost || u.smtpHost),
+          smtpPort: hasUserSmtp ? (u.smtpPort || '587') : (settings.smtpPort || u.smtpPort || '587'),
+          smtpUser: hasUserSmtp ? u.smtpUser : (settings.smtpUser || u.smtpUser),
+          smtpPass: hasUserSmtp ? u.smtpPass : (settings.smtpPass || u.smtpPass),
+          smtpFrom: u.smtpFrom || settings.smtpFrom || u.smtpUser || settings.smtpUser,
           emailTemplateHTML: u.emailTemplateHTML || settings.emailTemplateHTML,
           customEmailMessage: u.customEmailMessage || settings.customEmailMessage,
         };
@@ -88,7 +93,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (!settings.smtpHost || !settings.smtpUser || !settings.smtpPass) {
-      return res.status(400).json({ error: 'Chưa cấu hình SMTP. Vui lòng vào Cài đặt chung để nhập thông tin SMTP.' });
+      return res.status(400).json({ error: 'Ch\u01b0a c\u1ea5u h\u00ecnh SMTP. Vui l\u00f2ng v\u00e0o C\u00e0i \u0111\u1eb7t chung \u0111\u1ec3 nh\u1eadp th\u00f4ng tin SMTP.' });
     }
 
     const mailer = nodemailer.createTransport({
