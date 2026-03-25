@@ -19,6 +19,7 @@ import LandingPage from './pages/LandingPage';
 import Auth from './pages/Auth';
 import UserSettings from './pages/UserSettings';
 import Feedback from './pages/Feedback';
+import Guide from './pages/Guide';
 import { auth, db } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -67,6 +68,7 @@ export default function App() {
           <Route path="/register" element={<PublicRegistration />} />
           <Route path="/checkin/:eventId" element={<PublicCheckIn />} />
           <Route path="/kiosk/:eventId" element={<KioskMode />} />
+          <Route path="/guide" element={<Guide />} />
 
           {/* Protected Routes */}
           <Route
