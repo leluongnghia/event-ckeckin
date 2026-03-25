@@ -25,7 +25,25 @@ export default function UserSettings() {
         const docRef = doc(db, 'users', auth.currentUser.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setUserData(prev => ({ ...prev, ...docSnap.data() }));
+          const data = docSnap.data();
+          setUserData(prev => ({ 
+            ...prev, 
+            ...data,
+            // Prefill with defaults if missing
+            smtpHost: data.smtpHost || 'smtp.gmail.com',
+            smtpPort: data.smtpPort || '587',
+            smtpUser: data.smtpUser || auth.currentUser?.email || '',
+            smtpFrom: data.smtpFrom || auth.currentUser?.email || ''
+          }));
+        } else {
+          // New user, set defaults
+          setUserData(prev => ({
+            ...prev,
+            smtpHost: 'smtp.gmail.com',
+            smtpPort: '587',
+            smtpUser: auth.currentUser?.email || '',
+            smtpFrom: auth.currentUser?.email || ''
+          }));
         }
       } catch (error) {
         console.error("Error fetching user settings", error);
