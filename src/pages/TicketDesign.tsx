@@ -23,15 +23,15 @@ const FONTS = [
 export default function TicketDesign() {
   const { eventId = 'default-event' } = useParams();
   const [eventData, setEventData] = useState({
-    ticketBgImage: '',
+    ticketBgImage: '/default-ticket-bg.jpg',
     ticketNameFont: "'Inter', sans-serif",
-    ticketNameColor: '#1c1917',
+    ticketNameColor: '#FFFFFF',
     namePositionX: 50,
-    namePositionY: 30,
-    nameFontSize: 24,
+    namePositionY: 45,
+    nameFontSize: 20,
     qrPositionX: 50,
-    qrPositionY: 60,
-    qrSize: 150
+    qrPositionY: 78,
+    qrSize: 79
   });
   const [eventDetails, setEventDetails] = useState<any>(null);
   const [qrBase64, setQrBase64] = useState<string>('');
@@ -67,15 +67,15 @@ export default function TicketDesign() {
           const data = docSnap.data();
           setEventDetails(data);
           setEventData({
-            ticketBgImage: data.ticketBgImage || '',
+            ticketBgImage: data.ticketBgImage || '/default-ticket-bg.jpg',
             ticketNameFont: data.ticketNameFont || "'Inter', sans-serif",
-            ticketNameColor: data.ticketNameColor || '#1c1917',
+            ticketNameColor: data.ticketNameColor || '#FFFFFF',
             namePositionX: data.namePositionX ?? 50,
-            namePositionY: data.namePositionY ?? 30,
-            nameFontSize: data.nameFontSize || 24,
+            namePositionY: data.namePositionY ?? 45,
+            nameFontSize: data.nameFontSize || 20,
             qrPositionX: data.qrPositionX ?? 50,
-            qrPositionY: data.qrPositionY ?? 60,
-            qrSize: data.qrSize || 150,
+            qrPositionY: data.qrPositionY ?? 78,
+            qrSize: data.qrSize || 79,
           });
         }
       } catch (error) {

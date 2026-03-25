@@ -58,7 +58,17 @@ export default function EventList() {
         smtpUser: userSettings.smtpUser || '',
         smtpPass: userSettings.smtpPass || '',
         smtpFrom: userSettings.smtpFrom || '',
-        customEmailMessage: userSettings.customEmailMessage || ''
+        customEmailMessage: userSettings.customEmailMessage || '',
+        // Default Ticket Design derived from User's preferred template
+        ticketBgImage: '/default-ticket-bg.jpg',
+        ticketNameFont: "'Inter', sans-serif",
+        ticketNameColor: '#FFFFFF',
+        namePositionX: 50,
+        namePositionY: 45,
+        nameFontSize: 20,
+        qrPositionX: 50,
+        qrPositionY: 78,
+        qrSize: 79
       });
       setIsAdding(false);
       setNewEvent({ name: '', startDate: '', endDate: '', location: '', description: '', bannerImage: '' });
