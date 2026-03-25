@@ -122,7 +122,8 @@ export default function Auth() {
       const userDoc = await getDoc(doc(db, 'users', user.uid));
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        if (!user.emailVerified && (userData.mustVerifyEmail || userData.status === 'pending_verification')) {
+        if (userData.mustVerifyEmail || userData.status === 'pending_verification') {
+          // Even if Google verified, we force our verification step if flag is set
           setName(userData.name || '');
           setEmail(user.email || '');
           setStep(2);

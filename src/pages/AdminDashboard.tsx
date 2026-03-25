@@ -454,7 +454,6 @@ export default function AdminDashboard() {
                   <th className="px-8 py-5 text-xs font-bold text-stone-400 uppercase tracking-widest">Xác thực Email</th>
                   <th className="px-8 py-5 text-xs font-bold text-stone-400 uppercase tracking-widest">Ngày đăng ký</th>
                   <th className="px-8 py-5 text-xs font-bold text-stone-400 uppercase tracking-widest">Role</th>
-                  <th className="px-8 py-5 text-xs font-bold text-stone-400 uppercase tracking-widest text-right">Thao tác</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-stone-100">
@@ -484,17 +483,38 @@ export default function AdminDashboard() {
                       </p>
                     </td>
                     <td className="px-8 py-5">
-                      {u.isEmailVerified ? (
-                        <div className="flex items-center gap-1.5 text-emerald-600">
-                          <CheckCircle2 className="w-4 h-4" />
-                          <span className="text-xs font-bold">Xác thực</span>
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {u.isEmailVerified ? (
+                            <div className="flex items-center gap-1.5 text-emerald-600">
+                              <CheckCircle2 className="w-4 h-4" />
+                              <span className="text-xs font-bold">Xác thực</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1.5 text-amber-500">
+                              <XCircle className="w-4 h-4" />
+                              <span className="text-xs font-bold">Chưa xác thực</span>
+                            </div>
+                          )}
                         </div>
-                      ) : (
-                        <div className="flex items-center gap-1.5 text-amber-500">
-                          <XCircle className="w-4 h-4" />
-                          <span className="text-xs font-bold">Chưa xác thực</span>
-                        </div>
-                      )}
+                        
+                        {!u.isEmailVerified && (
+                          <div className="flex items-center">
+                            {u.mustVerifyEmail ? (
+                              <span className="text-[10px] font-bold text-amber-600 animate-pulse bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-100 whitespace-nowrap">Đã nhắc</span>
+                            ) : (
+                              <button
+                                onClick={() => requireUserVerification(u.id)}
+                                disabled={actionLoading === u.id}
+                                className="p-1.5 text-amber-600 hover:bg-amber-100 rounded-lg transition-colors shrink-0"
+                                title="Yêu cầu xác thực ngay"
+                              >
+                                {actionLoading === u.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Bell className="w-3.5 h-3.5" />}
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </td>
                     <td className="px-8 py-5 text-xs text-stone-500 font-medium">
                       {u.createdAt?.toDate ? u.createdAt.toDate().toLocaleDateString('vi-VN') : 'N/A'}
@@ -505,21 +525,6 @@ export default function AdminDashboard() {
                       }`}>
                         {u.role || 'user'}
                       </span>
-                    </td>
-                    <td className="px-8 py-5 text-right">
-                      {!u.isEmailVerified && !u.mustVerifyEmail && (
-                        <button
-                          onClick={() => requireUserVerification(u.id)}
-                          disabled={actionLoading === u.id}
-                          className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
-                          title="Yêu cầu xác thực"
-                        >
-                          {actionLoading === u.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Bell className="w-4 h-4" />}
-                        </button>
-                      )}
-                      {u.mustVerifyEmail && (
-                        <span className="text-[10px] font-bold text-amber-600 animate-pulse">Đã nhắc</span>
-                      )}
                     </td>
                   </tr>
                 ))}
