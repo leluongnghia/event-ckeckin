@@ -224,8 +224,8 @@ export default function AdminDashboard() {
 
           <div className="flex items-center justify-between p-6 bg-stone-50 rounded-2xl border border-stone-100">
             <div className="space-y-1">
-              <p className="font-bold text-stone-900">Bắt buộc xác thực đa lớp</p>
-              <p className="text-sm text-stone-500">Yêu cầu người dùng mới xác thực Email và Số điện thoại (SMS OTP) khi đăng ký.</p>
+              <p className="font-bold text-stone-900">Bắt buộc xác thực Email khi đăng ký</p>
+              <p className="text-sm text-stone-500">Yêu cầu người dùng mới xác thực Email trước khi sử dụng hệ thống.</p>
               <p className="text-xs text-amber-600 font-medium">Lưu ý: Tài khoản Admin luôn được bỏ qua bước này.</p>
             </div>
             <button 
