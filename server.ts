@@ -109,7 +109,7 @@ async function startServer() {
     <p style="font-size: 16px; line-height: 1.6; color: #4b5563; margin-bottom: 30px; white-space: pre-wrap;">{{EVENT_DESC}}</p>
     <div style="background-color: #f9fafb; border: 2px dashed #d1d5db; border-radius: 20px; padding: 30px; text-align: center; margin-bottom: 30px;">
       <div style="margin-bottom: 20px;">
-        <img src="{{QR_CODE_IMG}}" style="width: 220px; height: 220px; border: 8px solid #ffffff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);" />
+        <img src="{{QR_CODE_IMG}}" style="display: block; margin: 0 auto; width: 220px; height: 220px; border: 8px solid #ffffff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);" />
       </div>
       <div style="display: inline-block; background-color: #111827; color: #ffffff; padding: 8px 20px; border-radius: 99px; font-size: 14px; font-weight: 700; font-family: monospace; letter-spacing: 2px;">{{QR_CODE_VAL}}</div>
     </div>
