@@ -99,7 +99,6 @@ export default function App() {
                     <Route path="/checkin" element={<CheckIn />} />
                     <Route path="/email" element={<EmailCampaign />} />
                     <Route path="/design" element={<TicketDesign />} />
-                    <Route path="/settings" element={<Settings />} />
                   </Route>
                 </Routes>
               )
