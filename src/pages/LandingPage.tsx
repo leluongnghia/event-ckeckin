@@ -242,6 +242,54 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* AZEvent Developer Section */}
+      <section className="py-20 px-4 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-stone-50 border border-stone-200 rounded-[2rem] p-10 md:p-16 relative overflow-hidden">
+            {/* Subtle background accent */}
+            <div className="absolute top-0 right-0 w-72 h-72 bg-emerald-500/5 rounded-full blur-[80px]" />
+            <div className="flex flex-col lg:flex-row gap-12 items-center relative z-10">
+              <div className="flex-1 space-y-6">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-full text-sm font-bold border border-emerald-100">
+                  <Sparkles className="w-4 h-4" />
+                  Được phát triển bởi
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-emerald-600 rounded-xl"><Zap className="w-5 h-5 text-white" /></div>
+                  <span className="text-2xl font-black text-stone-900">AZEVENT.VN</span>
+                </div>
+                <h2 className="text-3xl md:text-4xl font-black text-stone-900 tracking-tight leading-tight">
+                  10 năm kinh nghiệm,<br />
+                  <span className="text-emerald-600">hàng trăm sự kiện thành công</span>
+                </h2>
+                <p className="text-stone-500 font-medium leading-relaxed text-lg">
+                  AzEvent là đơn vị tổ chức sự kiện chuyên nghiệp hàng đầu Việt Nam với hơn 10 năm kinh nghiệm
+                  trong lĩnh vực tổ chức Gala Dinner, Tất Niên, Hội nghị và các sự kiện doanh nghiệp quy mô lớn.
+                  EventCheck được xây dựng từ chính nhu cầu thực tế của hàng trăm sự kiện đã tổ chức — giúp việc check-in trở nên
+                  chuyên nghiệp, minh bạch và ấn tượng hơn trước hàng nghìn khách mời.
+                </p>
+                <a href="https://azevent.vn" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-emerald-600 font-bold hover:gap-3 transition-all">
+                  Xem hồ sơ năng lực <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
+              <div className="grid grid-cols-2 gap-5 shrink-0 w-full lg:w-auto">
+                {[
+                  { value: '10+', label: 'Năm kinh nghiệm' },
+                  { value: '500+', label: 'Sự kiện Gala, Tất Niên' },
+                  { value: '50K+', label: 'Khách mời đã phục vụ' },
+                  { value: '24/7', label: 'Hỗ trợ khách hàng' },
+                ].map((s, i) => (
+                  <div key={i} className="bg-white border border-stone-200 rounded-2xl p-6 text-center shadow-sm">
+                    <div className="text-3xl font-black text-emerald-600">{s.value}</div>
+                    <div className="text-stone-500 text-sm font-medium mt-1">{s.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Pricing */}
 
 
@@ -261,7 +309,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-14 border-t border-stone-200 px-4">
+      <footer className="py-14 border-t border-stone-200 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-start justify-between gap-10 mb-12">
             <div className="space-y-4 max-w-xs">
@@ -269,7 +317,13 @@ export default function LandingPage() {
                 <div className="p-2 bg-emerald-600 rounded-xl"><QrCode className="w-5 h-5 text-white" /></div>
                 <span className="text-xl font-black text-stone-900">EventCheck</span>
               </div>
-              <p className="text-stone-500 text-sm font-medium leading-relaxed">Nền tảng quản lý sự kiện và check-in thông minh số 1 Việt Nam.</p>
+              <p className="text-stone-500 text-sm font-medium leading-relaxed">Nền tảng quản lý sự kiện và check-in thông minh — phát triển bởi AZEvent.vn.</p>
+              <div className="pt-2 space-y-1.5 text-sm text-stone-500">
+                <p className="font-semibold text-stone-700">Công ty TNHH TT & Tổ chức Sự kiện Số 1</p>
+                <p>📍 Sảnh D, T02, Chung cư C37 Bắc Hà, 17 Tố Hữu, Nam Từ Liêm, Hà Nội</p>
+                <p>📞 <a href="tel:0912386968" className="hover:text-emerald-600 transition-colors font-bold">09123.86.968</a></p>
+                <p>✉️ <a href="mailto:info@azevent.vn" className="hover:text-emerald-600 transition-colors">info@azevent.vn</a></p>
+              </div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-8 text-sm">
               <div className="space-y-3">
@@ -277,21 +331,24 @@ export default function LandingPage() {
                 {['Tính năng', 'Bảng giá', 'Lộ trình phát triển'].map(l => <a key={l} href="#" className="block text-stone-500 hover:text-stone-900 font-medium transition-colors">{l}</a>)}
               </div>
               <div className="space-y-3">
-                <div className="font-black text-stone-900 uppercase tracking-widest text-xs">Tài nguyên</div>
-                {['Hướng dẫn', 'Blog', 'Hỏi đáp'].map(l => <a key={l} href="#" className="block text-stone-500 hover:text-stone-900 font-medium transition-colors">{l}</a>)}
+                <div className="font-black text-stone-900 uppercase tracking-widest text-xs">Sản phẩm khác</div>
+                <a href="https://luckydraw.azevent.vn" target="_blank" rel="noreferrer" className="block text-stone-500 hover:text-emerald-600 font-medium transition-colors">LuckyDraw Pro</a>
+                <a href="https://azevent.vn" target="_blank" rel="noreferrer" className="block text-stone-500 hover:text-emerald-600 font-medium transition-colors">AZEvent.vn</a>
               </div>
               <div className="space-y-3">
                 <div className="font-black text-stone-900 uppercase tracking-widest text-xs">Liên hệ</div>
-                {['Zalo OA', 'Email hỗ trợ', 'Facebook'].map(l => <a key={l} href="#" className="block text-stone-500 hover:text-stone-900 font-medium transition-colors">{l}</a>)}
+                <a href="https://zalo.me/0912386968" target="_blank" rel="noreferrer" className="block text-stone-500 hover:text-stone-900 font-medium transition-colors">Zalo: 09123.86.968</a>
+                <a href="mailto:info@azevent.vn" className="block text-stone-500 hover:text-stone-900 font-medium transition-colors">info@azevent.vn</a>
+                <a href="https://facebook.com/azevent.vn" target="_blank" rel="noreferrer" className="block text-stone-500 hover:text-stone-900 font-medium transition-colors">Facebook</a>
               </div>
             </div>
           </div>
           <div className="border-t border-stone-200 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-stone-400 text-sm font-medium">© 2026 EventCheck SaaS. Bảo lưu mọi quyền.</p>
+            <p className="text-stone-400 text-sm font-medium">© 2026 AZEvent.vn — EventCheck SaaS. Bảo lưu mọi quyền.</p>
             <div className="flex items-center gap-6 text-sm text-stone-400">
               <a href="#" className="hover:text-stone-900 font-medium transition-colors">Điều khoản</a>
               <a href="#" className="hover:text-stone-900 font-medium transition-colors">Bảo mật</a>
-              <a href="#" className="hover:text-stone-900 font-medium transition-colors">Cookie</a>
+              <a href="https://azevent.vn" target="_blank" rel="noreferrer" className="hover:text-emerald-600 font-medium transition-colors">azevent.vn</a>
             </div>
           </div>
         </div>
