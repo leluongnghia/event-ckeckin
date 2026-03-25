@@ -130,11 +130,38 @@ export default function AdminDashboard() {
     ]);
 
     const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.setAttribute("href", url);
-    link.setAttribute("download", `all_attendees_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute("download", `danh_sach_khach_moi_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const exportUsersToCSV = () => {
+    const filtered = allUsers.filter(u =>
+      u.name?.toLowerCase().includes(userSearch.toLowerCase()) ||
+      u.email?.toLowerCase().includes(userSearch.toLowerCase()) ||
+      u.phone?.includes(userSearch)
+    );
+    const headers = ['Tên', 'Email', 'Số điện thoại', 'Công ty', 'Xác thực Email', 'Ngày đăng ký', 'Role'];
+    const rows = filtered.map(u => [
+      u.name || '',
+      u.email || '',
+      u.phone || '',
+      u.company || '',
+      u.isEmailVerified ? 'Có' : 'Chưa',
+      u.createdAt?.toDate ? u.createdAt.toDate().toLocaleDateString('vi-VN') : 'N/A',
+      u.role || 'user'
+    ]);
+    const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+    const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    link.setAttribute("href", URL.createObjectURL(blob));
+    link.setAttribute("download", `danh_sach_user_${new Date().toISOString().split('T')[0]}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -348,15 +375,24 @@ export default function AdminDashboard() {
                 <p className="text-sm text-stone-400 font-medium">{allUsers.length} tài khoản</p>
               </div>
             </div>
-            <div className="relative max-w-sm w-full">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
-              <input
-                type="text"
-                placeholder="Tìm kiếm tên, email, sđt..."
-                className="w-full pl-12 pr-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
-                value={userSearch}
-                onChange={(e) => setUserSearch(e.target.value)}
-              />
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              <div className="relative flex-1 md:w-64">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm tên, email, sđt..."
+                  className="w-full pl-12 pr-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                  value={userSearch}
+                  onChange={(e) => setUserSearch(e.target.value)}
+                />
+              </div>
+              <button
+                onClick={exportUsersToCSV}
+                className="flex items-center gap-2 px-5 py-3 bg-emerald-600 text-white rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-sm whitespace-nowrap"
+              >
+                <Download className="w-4 h-4" />
+                Xuất CSV
+              </button>
             </div>
           </div>
           <div className="overflow-x-auto">
