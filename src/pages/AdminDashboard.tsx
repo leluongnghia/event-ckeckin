@@ -4,7 +4,7 @@ import { db, auth, handleFirestoreError, OperationType } from '../firebase';
 import { Users, Mail, ShieldCheck, Download, Search, Loader2, Calendar, LayoutGrid, Settings as SettingsIcon, ToggleLeft, ToggleRight, MessageSquareWarning, Phone, CheckCircle2, XCircle, Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-const ADMIN_EMAILS = ['leluongnghia90@gmail.com', 'leluongnghia91@gmail.com'];
+const ADMIN_EMAILS = ['leluongnghia90@gmail.com', 'nghia.le@azevent.vn'];
 
 function cn(...inputs: any[]) {
   return inputs.filter(Boolean).join(' ');

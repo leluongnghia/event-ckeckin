@@ -16,7 +16,7 @@ import { auth, db } from '../firebase';
 import { QrCode, Mail, Lock, User, Phone, Building, ArrowRight, Loader2, CheckCircle2, ShieldCheck, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
-const ADMIN_EMAILS = ['leluongnghia90@gmail.com', 'leluongnghia91@gmail.com'];
+const ADMIN_EMAILS = ['leluongnghia90@gmail.com', 'nghia.le@azevent.vn'];
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
