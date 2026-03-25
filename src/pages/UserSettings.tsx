@@ -76,6 +76,7 @@ export default function UserSettings() {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [editorMode, setEditorMode] = useState<'preview' | 'visual' | 'code'>('preview');
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -239,24 +240,85 @@ export default function UserSettings() {
               </div>
 
               <div className="md:col-span-2 border-t border-stone-100 pt-4 mt-2">
-                <label className="text-sm font-semibold text-stone-700 flex items-center gap-2 mb-2">
-                  <Mail className="w-4 h-4" /> Bản xem trước Giao diện Email Gửi Khách
-                </label>
-                <p className="text-[10px] lg:text-xs text-stone-400 italic mb-4">Đây là giao diện mặc định hệ thống sẽ tự động tạo và gửi cho khách mời của bạn (thông tin bên dưới chỉ là minh họa mẫu). Nội dung "Lời mở đầu" bạn nhập ở trên sẽ được chèn vào ngay bên dưới câu chào "Chào Tên Khách".</p>
-                <div 
-                  className="w-full bg-stone-50 border border-stone-200 rounded-2xl p-4 lg:p-8 overflow-x-auto shadow-inner"
-                  dangerouslySetInnerHTML={{
-                    __html: (userData.emailTemplateHTML || defaultEmailTemplateHTML)
-                      .replace(/\{\{ATTENDEE_NAME\}\}/g, 'Nguyễn Văn A')
-                      .replace(/\{\{EVENT_NAME\}\}/g, 'TÊN SỰ KIỆN MẪU')
-                      .replace(/\{\{EVENT_DATE\}\}/g, '25/12/2026')
-                      .replace(/\{\{EVENT_TIME\}\}/g, '08:00 AM')
-                      .replace(/\{\{EVENT_LOCATION\}\}/g, 'Trung tâm Hội nghị Quốc gia')
-                      .replace(/\{\{EVENT_DESC\}\}/g, userData.customEmailMessage || 'Nội dung lời mở đầu của bạn sẽ xuất hiện tại đây...')
-                      .replace(/\{\{QR_CODE_VAL\}\}/g, 'VIP-123456')
-                      .replace(/src="\{\{QR_CODE_IMG\}\}"/g, 'src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=VIP-123456"') // Fake QR code for visual preview
-                  }}
-                />
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-y-2 mb-2">
+                  <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
+                    <Mail className="w-4 h-4" /> 
+                    {editorMode === 'preview' && "Bản xem trước Giao diện Email Gửi Khách"}
+                    {editorMode === 'visual' && "Chỉnh sửa Giao diện Trực quan"}
+                    {editorMode === 'code' && "Chỉnh sửa Mã nguồn HTML"}
+                  </label>
+                  
+                  <div className="flex gap-2 items-center bg-stone-100 p-1 rounded-xl w-max">
+                    <button onClick={() => setEditorMode('preview')} className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${editorMode === 'preview' ? 'bg-white text-emerald-600 shadow-sm' : 'text-stone-500 hover:text-stone-700'}`}>Xem trước</button>
+                    <button onClick={() => setEditorMode('visual')} className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${editorMode === 'visual' ? 'bg-white text-emerald-600 shadow-sm' : 'text-stone-500 hover:text-stone-700'}`}>Sửa trực quan</button>
+                    <button onClick={() => setEditorMode('code')} className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${editorMode === 'code' ? 'bg-white text-emerald-600 shadow-sm' : 'text-stone-500 hover:text-stone-700'}`}>Sửa Code</button>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-start mb-4">
+                  <p className="text-[10px] lg:text-xs text-stone-400 italic max-w-[70%]">
+                    {editorMode === 'preview' && "Đây là giao diện mặc định hệ thống sẽ tự động tạo và gửi cho khách mời của bạn (thông tin bên dưới chỉ là minh họa mẫu). Nội dung 'Lời mở đầu' bạn nhập ở trên sẽ được chèn vào ngay bên dưới câu chào 'Chào Tên Khách'."}
+                    {editorMode === 'visual' && "Bạn có thể nhấp trực tiếp vào khung nội dung bên dưới để sửa chữ. Vui lòng KHÔNG sửa các TỪ KHOÁ trong cặp ngoặc kép {{...}} để hệ thống tự động chèn dữ liệu. Khung thiết kế có thể hơi lỗi nếu bạn bấm <Enter> làm vỡ cấu trúc HTML."}
+                    {editorMode === 'code' && "Dành cho người dùng rành về HTML/CSS. Sửa trực tiếp cấu trúc HTML của thẻ."}
+                  </p>
+                  <button onClick={() => setUserData({ ...userData, emailTemplateHTML: defaultEmailTemplateHTML })} className="text-[10px] lg:text-xs text-stone-500 hover:text-emerald-600 transition-colors font-semibold bg-stone-100 hover:bg-emerald-50 px-3 py-1.5 rounded-lg border border-stone-200">
+                    ↻ Khôi phục bản gốc
+                  </button>
+                </div>
+
+                {editorMode === 'code' ? (
+                  <textarea 
+                    rows={20} 
+                    className="w-full px-4 py-3 bg-stone-900 border border-stone-800 rounded-2xl focus:ring-2 focus:ring-emerald-500/50 outline-none transition-all text-sm font-mono text-emerald-400"
+                    placeholder="Mã HTML cho sự kiện của bạn..."
+                    value={userData.emailTemplateHTML || ''} 
+                    onChange={e => setUserData({ ...userData, emailTemplateHTML: e.target.value })} 
+                  />
+                ) : (
+                  <div 
+                    className={`w-full bg-stone-50 border rounded-2xl max-w-full overflow-hidden shadow-inner flex justify-center py-4 sm:py-8 transition-colors ${editorMode === 'visual' ? 'border-sky-400 ring-2 ring-sky-400/20' : 'border-stone-200'} `}
+                  >
+                    <div className="w-full max-w-full overflow-x-auto px-2 sm:px-8">
+                      <div 
+                        className="min-w-[400px]"
+                        contentEditable={editorMode === 'visual'}
+                        suppressContentEditableWarning={true}
+                        onBlur={(e) => {
+                          if (editorMode === 'visual') {
+                            setUserData({ ...userData, emailTemplateHTML: e.currentTarget.innerHTML });
+                          }
+                        }}
+                        dangerouslySetInnerHTML={{
+                          __html: editorMode === 'preview' 
+                            ? (userData.emailTemplateHTML || defaultEmailTemplateHTML)
+                                .replace(/\{\{ATTENDEE_NAME\}\}/g, 'Nguyễn Văn A')
+                                .replace(/\{\{EVENT_NAME\}\}/g, 'TÊN SỰ KIỆN MẪU')
+                                .replace(/\{\{EVENT_DATE\}\}/g, '25/12/2026')
+                                .replace(/\{\{EVENT_TIME\}\}/g, '08:00 AM')
+                                .replace(/\{\{EVENT_LOCATION\}\}/g, 'Trung tâm Hội nghị Quốc gia')
+                                .replace(/\{\{EVENT_DESC\}\}/g, userData.customEmailMessage || 'Nội dung lời mở đầu của bạn sẽ xuất hiện tại đây...')
+                                .replace(/\{\{QR_CODE_VAL\}\}/g, 'VIP-123456')
+                                .replace(/src="\{\{QR_CODE_IMG\}\}"/g, 'src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=VIP-123456"')
+                            : (userData.emailTemplateHTML || defaultEmailTemplateHTML)
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+                
+                <div className="text-[10px] sm:text-xs text-stone-500 space-y-1 bg-stone-100 p-3 rounded-xl border border-stone-200 mt-4">
+                  <p className="font-bold text-stone-700 border-b border-stone-200 pb-1 mb-2">Các biến số Động hỗ trợ chèn vào mẫu:</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5">
+                    <p><code className="bg-white px-1 py-0.5 rounded text-indigo-600 font-mono font-bold shadow-sm border border-stone-200">{'{'}{'{'}ATTENDEE_NAME{'}'}{'}'}</code>: Tên khách mời</p>
+                    <p><code className="bg-white px-1 py-0.5 rounded text-indigo-600 font-mono font-bold shadow-sm border border-stone-200">{'{'}{'{'}EVENT_NAME{'}'}{'}'}</code>: Tên sự kiện</p>
+                    <p><code className="bg-white px-1 py-0.5 rounded text-indigo-600 font-mono font-bold shadow-sm border border-stone-200">{'{'}{'{'}EVENT_DATE{'}'}{'}'}</code>: Ngày tổ chức</p>
+                    <p><code className="bg-white px-1 py-0.5 rounded text-indigo-600 font-mono font-bold shadow-sm border border-stone-200">{'{'}{'{'}EVENT_TIME{'}'}{'}'}</code>: Giờ tổ chức</p>
+                    <p><code className="bg-white px-1 py-0.5 rounded text-indigo-600 font-mono font-bold shadow-sm border border-stone-200">{'{'}{'{'}EVENT_LOCATION{'}'}{'}'}</code>: Địa điểm</p>
+                    <p><code className="bg-white px-1 py-0.5 rounded text-indigo-600 font-mono font-bold shadow-sm border border-stone-200">{'{'}{'{'}EVENT_DESC{'}'}{'}'}</code>: Tự động chèn "Lời mở đầu"</p>
+                    <p><code className="bg-white px-1 py-0.5 rounded text-indigo-600 font-mono font-bold shadow-sm border border-stone-200">{'{'}{'{'}QR_CODE_IMG{'}'}{'}'}</code>: (Đặc biệt) Dùng làm thuộc tính <span className="font-bold text-stone-600">src</span> của thẻ Ảnh</p>
+                    <p><code className="bg-white px-1 py-0.5 rounded text-indigo-600 font-mono font-bold shadow-sm border border-stone-200">{'{'}{'{'}QR_CODE_VAL{'}'}{'}'}</code>: Mã số vé (Text)</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
