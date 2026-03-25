@@ -45,6 +45,12 @@ const defaultEmailTemplateHTML = `
       </p>
     </div>
 
+    <div style="text-align: center; margin-bottom: 16px;">
+      <a href="{{TICKET_URL}}" style="display: inline-block; background-color: #111827; color: #ffffff; padding: 16px 32px; border-radius: 14px; font-size: 16px; font-weight: 700; text-decoration: none; box-shadow: 0 10px 15px -3px rgba(17, 24, 39, 0.3);">
+        🎫 Tải Thẻ Tham Dự (Bản Ảnh Đẹp)
+      </a>
+    </div>
+
     <div style="text-align: center;">
       <a href="https://maps.google.com/?q={{EVENT_LOCATION}}" style="display: inline-block; background-color: #059669; color: #ffffff; padding: 16px 32px; border-radius: 14px; font-size: 16px; font-weight: 700; text-decoration: none; box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.3);">
         📍 Xem đường đi trên bản đồ
@@ -298,6 +304,7 @@ export default function UserSettings() {
                                 .replace(/\{\{EVENT_LOCATION\}\}/g, 'Trung tâm Hội nghị Quốc gia')
                                 .replace(/\{\{EVENT_DESC\}\}/g, userData.customEmailMessage || 'Nội dung lời mở đầu của bạn sẽ xuất hiện tại đây...')
                                 .replace(/\{\{QR_CODE_VAL\}\}/g, 'VIP-123456')
+                                .replace(/\{\{TICKET_URL\}\}/g, '#')
                                 .replace(/src="\{\{QR_CODE_IMG\}\}"/g, 'src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=VIP-123456"')
                             : (userData.emailTemplateHTML || defaultEmailTemplateHTML)
                         }}
