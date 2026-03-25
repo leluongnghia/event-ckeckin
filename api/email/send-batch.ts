@@ -4,11 +4,21 @@ type VercelResponse = any;
 import nodemailer from 'nodemailer';
 import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
-import firebaseConfig from '../../firebase-applet-config.json';
 
-// Init Firebase (avoid double-init in hot reload)
+// Inline Firebase config to avoid relative path resolution issues in Vercel serverless
+const firebaseConfig = {
+  apiKey: "AIzaSyD_uCC_yHnYC5I73UX49nCRhyW2AQWl2CE",
+  authDomain: "event-checkin-175c6.firebaseapp.com",
+  projectId: "event-checkin-175c6",
+  storageBucket: "event-checkin-175c6.firebasestorage.app",
+  messagingSenderId: "844473449801",
+  appId: "1:844473449801:web:10134c9a8150add7ee6e98",
+};
+const FIRESTORE_DB_ID = "(default)";
+
+// Init Firebase (avoid double-init in serverless hot reload)
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-const db = getFirestore(app, (firebaseConfig as any).firestoreDatabaseId || '(default)');
+const db = getFirestore(app, FIRESTORE_DB_ID);
 
 const DEFAULT_HTML = `
 <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e5e7eb; border-radius: 24px; overflow: hidden; background-color: #ffffff; color: #1f2937;">
