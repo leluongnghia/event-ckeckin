@@ -143,7 +143,7 @@ export default function UserSettings() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 lg:space-y-8">
+    <div className="max-w-6xl mx-auto space-y-6 lg:space-y-8">
       <div className="bg-white p-5 lg:p-8 rounded-2xl lg:rounded-3xl border border-stone-200 shadow-sm space-y-6 lg:space-y-8">
         <div className="flex items-center gap-3 border-b border-stone-100 pb-4 lg:pb-6">
           <SettingsIcon className="w-5 h-5 lg:w-6 lg:h-6 text-emerald-600" />
