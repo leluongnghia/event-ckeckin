@@ -19,6 +19,7 @@ export default function EmailCampaign() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
@@ -67,10 +68,12 @@ export default function EmailCampaign() {
       }
       
       setStatus('success');
+      setErrorMessage('');
       setTimeout(() => setStatus('idle'), 3000);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to send emails", error);
       setStatus('error');
+      setErrorMessage(error.response?.data?.error || "Lỗi không xác định khi gọi API");
     } finally {
       setSending(false);
     }
@@ -115,8 +118,8 @@ export default function EmailCampaign() {
 
       {status === 'error' && (
         <div className="bg-red-50 border border-red-200 p-4 rounded-2xl flex items-center gap-3 text-red-700 animate-in slide-in-from-top-4 duration-300">
-          <AlertCircle className="w-5 h-5" />
-          <p className="font-medium">Đã có lỗi xảy ra trong quá trình gửi email.</p>
+          <AlertCircle className="w-5 h-5 flex-shrink-0" />
+          <p className="font-medium">Thất bại: {errorMessage}</p>
         </div>
       )}
 
