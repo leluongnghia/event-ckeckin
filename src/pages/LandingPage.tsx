@@ -268,10 +268,10 @@ export default function LandingPage() {
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-full text-sm font-bold border border-emerald-100">
               <CheckCircle2 className="w-4 h-4" /> Siêu đơn giản
             </div>
-            <h2 className="text-4xl md:text-5xl font-black text-stone-900 tracking-tight">Chạy trong 4 bước</h2>
+            <h2 className="text-4xl md:text-5xl font-black text-stone-900 tracking-tight">Chạy trong 5 bước</h2>
             <p className="text-stone-500 font-medium">Từ lúc tạo tài khoản đến check-in vị khách đầu tiên, chỉ mất 5 phút.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
             {howItWorks.map((step, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="relative">
                 {i < howItWorks.length - 1 && (
