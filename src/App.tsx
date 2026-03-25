@@ -9,6 +9,7 @@ import Settings from './pages/Settings';
 import TicketDesign from './pages/TicketDesign';
 import PublicRegistration from './pages/PublicRegistration';
 import PublicCheckIn from './pages/PublicCheckIn';
+import PublicTicket from './pages/PublicTicket';
 import KioskMode from './pages/KioskMode';
 import Sessions from './pages/Sessions';
 import SessionCheckIn from './pages/SessionCheckIn';
@@ -67,6 +68,7 @@ export default function App() {
           <Route path="/register/:eventId" element={<PublicRegistration />} />
           <Route path="/register" element={<PublicRegistration />} />
           <Route path="/checkin/:eventId" element={<PublicCheckIn />} />
+          <Route path="/ticket/:eventId/:attendeeId" element={<PublicTicket />} />
           <Route path="/kiosk/:eventId" element={<KioskMode />} />
           <Route path="/guide" element={<Guide />} />
 

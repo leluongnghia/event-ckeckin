@@ -126,6 +126,9 @@ async function startServer() {
     <div style="background-color: #ecfdf5; border-radius: 12px; padding: 16px; margin-bottom: 30px;">
       <p style="margin: 0; font-size: 14px; color: #065f46; line-height: 1.5;">💡 <b>Mẹo nhỏ:</b> Bạn có thể chụp ảnh màn hình hoặc tải file đính kèm để dùng khi không có mạng Internet.</p>
     </div>
+    <div style="text-align: center; margin-bottom: 16px;">
+      <a href="{{TICKET_URL}}" style="display: inline-block; background-color: #111827; color: #ffffff; padding: 16px 32px; border-radius: 14px; font-size: 16px; font-weight: 700; text-decoration: none; box-shadow: 0 10px 15px -3px rgba(17, 24, 39, 0.3);">🎫 Tải Thẻ Tham Dự (Bản Ảnh Đẹp)</a>
+    </div>
     <div style="text-align: center;">
       <a href="https://maps.google.com/?q={{EVENT_LOCATION}}" style="display: inline-block; background-color: #059669; color: #ffffff; padding: 16px 32px; border-radius: 14px; font-size: 16px; font-weight: 700; text-decoration: none; box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.3);">📍 Xem đường đi trên bản đồ</a>
     </div>
@@ -137,6 +140,9 @@ async function startServer() {
 </div>`;
 
         let emailHtml = settings.emailTemplateHTML || defaultRawHtml;
+        const originUrl = req.headers.origin || `https://${req.headers.host}`;
+        const ticketUrl = `${originUrl}/ticket/${eventId}/${attendee.id}`;
+        
         emailHtml = emailHtml.replace(/\{\{ATTENDEE_NAME\}\}/g, attendee.name || '');
         emailHtml = emailHtml.replace(/\{\{EVENT_NAME\}\}/g, settings.name || 'THƯ MỜI THAM GIA');
         emailHtml = emailHtml.replace(/\{\{QR_CODE_IMG\}\}/g, 'cid:qrcode');
@@ -145,6 +151,7 @@ async function startServer() {
         emailHtml = emailHtml.replace(/\{\{EVENT_TIME\}\}/g, settings.time || '');
         emailHtml = emailHtml.replace(/\{\{EVENT_LOCATION\}\}/g, settings.location || 'Tại địa điểm sự kiện');
         emailHtml = emailHtml.replace(/\{\{EVENT_DESC\}\}/g, settings.customEmailMessage || 'Chúng tôi rất vui mừng xác nhận bạn đã đăng ký thành công cho sự kiện sắp tới. Dưới đây là Vé mời điện tử chính thức của bạn.');
+        emailHtml = emailHtml.replace(/\{\{TICKET_URL\}\}/g, ticketUrl);
 
         const mailOptions = {
           from: fromEmail,
