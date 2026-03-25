@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Users, CheckCircle, Clock, Mail, Loader2, QrCode, X, Calendar, Sparkles, BrainCircuit } from 'lucide-react';
+import { Users, CheckCircle, Clock, Mail, Loader2, QrCode, X, Calendar, Sparkles, BrainCircuit, Download } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { collection, onSnapshot, query, doc, getDoc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import axios from 'axios';
+import * as XLSX from 'xlsx';
 import { GoogleGenAI } from "@google/genai";
 import Markdown from 'react-markdown';
 import { motion } from 'motion/react';
@@ -146,6 +147,27 @@ export default function Dashboard() {
     }
   };
 
+  const exportToExcel = () => {
+    if (attendeesData.length === 0) {
+      alert("Không có dữ liệu để xuất báo cáo.");
+      return;
+    }
+    const worksheet = XLSX.utils.json_to_sheet(attendeesData.map(a => ({
+      'Tên': a.name,
+      'Email': a.email,
+      'Số điện thoại': a.phone || '',
+      'Công ty': a.company || '',
+      'VIP': a.isVIP ? 'Có' : 'Không',
+      'Trạng thái': a.status === 'checked_in' ? 'Đã tham gia' : 'Chưa tham gia',
+      'Thời gian Check-in': a.checkinTime ? (a.checkinTime.toDate ? a.checkinTime.toDate().toLocaleString('vi-VN') : new Date(a.checkinTime).toLocaleString('vi-VN')) : 'N/A',
+      'Mã QR': a.qrCode
+    })));
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Báo cáo");
+    const fileName = `Bao_cao_${eventSettings?.name || 'su_kien'}_${new Date().toLocaleDateString('vi-VN').replace(/\//g, '-')}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+  };
+
   if (loading) {
     return (
       <div className="h-64 flex items-center justify-center">
@@ -178,14 +200,23 @@ export default function Dashboard() {
             )}
           </div>
         </div>
-        <button
-          onClick={handleAIAnalysis}
-          disabled={isAnalyzing}
-          className="flex items-center justify-center gap-2 px-6 py-3.5 bg-stone-900 text-white rounded-2xl font-bold hover:bg-stone-800 transition-all shadow-lg shadow-stone-900/20 disabled:opacity-50 w-full lg:w-auto text-sm lg:text-base"
-        >
-          {isAnalyzing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5 text-amber-400" />}
-          Phân tích bằng AI
-        </button>
+        <div className="flex gap-3 w-full lg:w-auto">
+          <button
+            onClick={exportToExcel}
+            className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 py-3.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-2xl font-bold hover:bg-emerald-100 transition-all text-sm lg:text-base"
+          >
+            <Download className="w-5 h-5" />
+            Xuất báo cáo
+          </button>
+          <button
+            onClick={handleAIAnalysis}
+            disabled={isAnalyzing}
+            className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 py-3.5 bg-stone-900 text-white rounded-2xl font-bold hover:bg-stone-800 transition-all shadow-lg shadow-stone-900/20 disabled:opacity-50 text-sm lg:text-base"
+          >
+            {isAnalyzing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5 text-amber-400" />}
+            Phân tích bằng AI
+          </button>
+        </div>
       </div>
 
       {aiAnalysis && (
