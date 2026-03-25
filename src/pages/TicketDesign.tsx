@@ -366,19 +366,24 @@ export default function TicketDesign() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Editor Side */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm space-y-6">
-            <h4 className="font-bold text-stone-900 text-lg border-b border-stone-100 pb-4">Chọn mẫu vé mời</h4>
-            <div className="grid grid-cols-2 gap-4">
+          <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4">
+            <h4 className="font-bold text-stone-900 text-lg border-b border-stone-100 pb-3">Chọn mẫu vé mời</h4>
+            <div className="grid grid-cols-3 gap-3">
               {TICKETS_TEMPLATES.map(template => (
                 <button
                   key={template.id}
                   onClick={() => setEventData({ ...eventData, ...template.config })}
-                  className={`relative aspect-[3/4] rounded-2xl overflow-hidden border-2 transition-all hover:scale-[1.02] active:scale-95 group ${eventData.ticketBgImage === template.config.ticketBgImage ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-stone-100'}`}
+                  className={`relative aspect-[3/4.5] rounded-xl overflow-hidden border-2 transition-all hover:scale-[1.05] active:scale-95 group ${eventData.ticketBgImage === template.config.ticketBgImage ? 'border-emerald-500 ring-2 ring-emerald-500/20 shadow-md' : 'border-stone-50'}`}
                 >
                   <img src={template.thumbnail} alt={template.name} className="w-full h-full object-cover" />
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3">
-                    <p className="text-[10px] font-bold text-white uppercase tracking-wider">{template.name}</p>
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-1.5 pt-4">
+                    <p className="text-[8px] font-bold text-white uppercase tracking-tighter text-center leading-tight truncate">{template.name}</p>
                   </div>
+                  {eventData.ticketBgImage === template.config.ticketBgImage && (
+                    <div className="absolute top-1 right-1 bg-emerald-500 text-white rounded-full p-0.5">
+                      <Save className="w-2 h-2" />
+                    </div>
+                  )}
                 </button>
               ))}
             </div>
