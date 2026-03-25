@@ -129,8 +129,67 @@ export default function Auth() {
       } else {
         const result = await createUserWithEmailAndPassword(auth, email, password);
         await updateProfile(result.user, { displayName: name });
+        // Check if admin - skip verification
+        if (ADMIN_EMAILS.includes(email)) {
+          await setDoc(doc(db, 'users', result.user.uid), {
+            name, email, phone, company: '',
+            isEmailVerified: true,
+            isPhoneVerified: false,
+            createdAt: serverTimestamp(),
+            role: 'admin'
+          });
+          navigate('/');
+          return;
+        }
+        // Send verification email and save a pending profile
         await sendEmailVerification(result.user);
-        setStep(2);
+        // Save pending profile with phone number already captured
+        await setDoc(doc(db, 'users', result.user.uid), {
+          name, email, phone, company: '',
+          isEmailVerified: false,
+          isPhoneVerified: false,
+          createdAt: serverTimestamp(),
+          role: 'user',
+          status: 'pending_verification'
+        });
+        setStep(2); // Show email verification pending screen
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCheckVerification = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      await auth.currentUser?.reload();
+      if (auth.currentUser?.emailVerified) {
+        // Mark as verified in Firestore
+        await setDoc(doc(db, 'users', auth.currentUser.uid), {
+          isEmailVerified: true,
+          status: 'active'
+        }, { merge: true });
+        navigate('/');
+      } else {
+        setError('Email chưa được xác thực. Vui lòng kiểm tra hộp thư và nhấn vào đường link.');
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    setLoading(true);
+    try {
+      if (auth.currentUser) {
+        await sendEmailVerification(auth.currentUser);
+        setError(null);
+        alert('Email xác thực đã được gửi lại!');
       }
     } catch (err: any) {
       setError(err.message);
@@ -230,11 +289,11 @@ export default function Auth() {
           </Link>
           <h1 className="text-2xl sm:text-3xl font-black text-stone-900 uppercase tracking-tight">
             {step === 1 ? (isLogin ? 'Đăng nhập' : 'Đăng ký tài khoản') : 
-             step === 2 ? 'Thông tin cá nhân' : 'Xác thực số điện thoại'}
+             step === 2 ? 'Xác thực Email' : 'Xác thực số điện thoại'}
           </h1>
           <p className="text-stone-500 text-sm sm:text-base font-medium mt-1 sm:mt-2 px-4">
             {step === 1 ? 'Bắt đầu hành trình tổ chức sự kiện của bạn' : 
-             step === 2 ? 'Vui lòng cung cấp thêm thông tin để tiếp tục' : 'Chúng tôi đã gửi mã xác thực đến số điện thoại của bạn'}
+             step === 2 ? 'Kiểm tra email và xác thực tài khoản' : 'Chúng tôi đã gửi mã xác thực đến số điện thoại của bạn'}
           </p>
         </div>
 
@@ -264,20 +323,36 @@ export default function Auth() {
 
                 <form onSubmit={handleEmailAuth} className="space-y-4">
                   {!isLogin && (
-                    <div className="space-y-1">
-                      <label className="text-xs font-black text-stone-500 uppercase tracking-widest ml-1">Họ và tên</label>
-                      <div className="relative">
-                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
-                        <input
-                          type="text"
-                          required
-                          placeholder="Nguyễn Văn A"
-                          className="w-full pl-12 pr-4 py-4 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all font-medium"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                        />
+                    <>
+                      <div className="space-y-1">
+                        <label className="text-xs font-black text-stone-500 uppercase tracking-widest ml-1">Họ và tên</label>
+                        <div className="relative">
+                          <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
+                          <input
+                            type="text"
+                            required
+                            placeholder="Nguyễn Văn A"
+                            className="w-full pl-12 pr-4 py-4 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all font-medium"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                          />
+                        </div>
                       </div>
-                    </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-black text-stone-500 uppercase tracking-widest ml-1">Số điện thoại</label>
+                        <div className="relative">
+                          <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
+                          <input
+                            type="tel"
+                            required
+                            placeholder="091 234 5678"
+                            className="w-full pl-12 pr-4 py-4 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all font-medium"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </>
                   )}
                   <div className="space-y-1">
                     <label className="text-xs font-black text-stone-500 uppercase tracking-widest ml-1">Email</label>
@@ -341,45 +416,42 @@ export default function Auth() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
+                className="space-y-6 text-center"
               >
-                <form onSubmit={handleProfileSubmit} className="space-y-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-stone-500 uppercase tracking-widest ml-1">Số điện thoại</label>
-                    <div className="relative">
-                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
-                      <input
-                        type="tel"
-                        required
-                        placeholder="+84 123 456 789"
-                        className="w-full pl-12 pr-4 py-4 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all font-medium"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-stone-500 uppercase tracking-widest ml-1">Tên công ty</label>
-                    <div className="relative">
-                      <Building className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
-                      <input
-                        type="text"
-                        required
-                        placeholder="EventCheck Inc."
-                        className="w-full pl-12 pr-4 py-4 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all font-medium"
-                        value={company}
-                        onChange={(e) => setCompany(e.target.value)}
-                      />
-                    </div>
-                  </div>
+                <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto">
+                  <Mail className="w-10 h-10 text-emerald-600" />
+                </div>
+                <div className="space-y-2">
+                  <p className="font-bold text-stone-900">Email xác thực đã được gửi tới</p>
+                  <p className="text-sm text-stone-500 font-medium">
+                    Chúng tôi vừa gửi link xác thực đến <strong className="text-stone-800">{email}</strong>.
+                    Vui lòng mở email và nhấn vào đường link để kích hoạt tài khoản.
+                  </p>
+                </div>
 
-                  <button
-                    type="submit"
-                    className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black text-lg hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2"
-                  >
-                    Tiếp tục xác thực <ArrowRight className="w-5 h-5" />
-                  </button>
-                </form>
+                {error && (
+                  <div className="p-4 bg-red-50 border border-red-100 rounded-2xl flex items-start gap-3 text-red-600 text-sm font-medium text-left">
+                    <AlertCircle className="w-5 h-5 shrink-0" />
+                    <p>{error}</p>
+                  </div>
+                )}
+
+                <button
+                  onClick={handleCheckVerification}
+                  disabled={loading}
+                  className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black text-lg hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <><CheckCircle2 className="w-5 h-5" /> Tôi đã xác thực Email</>}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleResendVerification}
+                  disabled={loading}
+                  className="w-full text-sm font-bold text-stone-400 hover:text-stone-600 transition-colors"
+                >
+                  Gửi lại email xác thực
+                </button>
               </motion.div>
             )}
 

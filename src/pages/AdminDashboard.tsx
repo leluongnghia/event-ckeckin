@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, collectionGroup, doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db, auth, handleFirestoreError, OperationType } from '../firebase';
-import { Users, Mail, ShieldCheck, Download, Search, Loader2, Calendar, LayoutGrid, Settings as SettingsIcon, ToggleLeft, ToggleRight, MessageSquareWarning } from 'lucide-react';
+import { Users, Mail, ShieldCheck, Download, Search, Loader2, Calendar, LayoutGrid, Settings as SettingsIcon, ToggleLeft, ToggleRight, MessageSquareWarning, Phone, CheckCircle2, XCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 
 const ADMIN_EMAILS = ['leluongnghia90@gmail.com', 'leluongnghia91@gmail.com'];
@@ -23,6 +23,8 @@ export default function AdminDashboard() {
   const [globalSettings, setGlobalSettings] = useState<any>(null);
   const [updatingSettings, setUpdatingSettings] = useState(false);
   const [feedbacks, setFeedbacks] = useState<any[]>([]);
+  const [allUsers, setAllUsers] = useState<any[]>([]);
+  const [userSearch, setUserSearch] = useState('');
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -64,7 +66,13 @@ export default function AdminDashboard() {
         feedbackList.sort((a: any, b: any) => b.createdAt?.toMillis() - a.createdAt?.toMillis());
         setFeedbacks(feedbackList);
 
-        // 4. Fetch global settings
+        // 4. Fetch all users
+        const usersSnapshot = await getDocs(collection(db, 'users'));
+        const userList = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        userList.sort((a: any, b: any) => b.createdAt?.toMillis?.() - a.createdAt?.toMillis?.());
+        setAllUsers(userList);
+
+        // 5. Fetch global settings
         const settingsDoc = await getDoc(doc(db, 'settings', 'global'));
         if (settingsDoc.exists()) {
           setGlobalSettings(settingsDoc.data());
@@ -190,7 +198,7 @@ export default function AdminDashboard() {
               <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
                 <Mail className="w-6 h-6" />
               </div>
-              <p className="text-sm font-bold text-stone-400 uppercase tracking-widest">Email đã gửi</p>
+              <p className="text-sm font-bold text-stone-400 uppercase tracking-widest">Email đã gữi</p>
             </div>
             <h3 className="text-4xl font-black text-stone-900">{stats.totalEmailsSent}</h3>
           </div>
@@ -323,6 +331,101 @@ export default function AdminDashboard() {
             {filteredAttendees.length === 0 && (
               <div className="p-20 text-center">
                 <p className="text-stone-400 font-medium italic">Không tìm thấy dữ liệu nào</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* System Users Section */}
+        <div className="bg-white rounded-[2.5rem] border border-stone-200 shadow-sm overflow-hidden">
+          <div className="p-8 border-b border-stone-100 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
+                <Users className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-stone-900">Danh sách User toàn hệ thống</h3>
+                <p className="text-sm text-stone-400 font-medium">{allUsers.length} tài khoản</p>
+              </div>
+            </div>
+            <div className="relative max-w-sm w-full">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
+              <input
+                type="text"
+                placeholder="Tìm kiếm tên, email, sđt..."
+                className="w-full pl-12 pr-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                value={userSearch}
+                onChange={(e) => setUserSearch(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-stone-50/50">
+                  <th className="px-8 py-5 text-xs font-bold text-stone-400 uppercase tracking-widest">User</th>
+                  <th className="px-8 py-5 text-xs font-bold text-stone-400 uppercase tracking-widest">Liên hệ</th>
+                  <th className="px-8 py-5 text-xs font-bold text-stone-400 uppercase tracking-widest">Xác thực Email</th>
+                  <th className="px-8 py-5 text-xs font-bold text-stone-400 uppercase tracking-widest">Ngày đăng ký</th>
+                  <th className="px-8 py-5 text-xs font-bold text-stone-400 uppercase tracking-widest">Role</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-stone-100">
+                {allUsers
+                  .filter(u =>
+                    u.name?.toLowerCase().includes(userSearch.toLowerCase()) ||
+                    u.email?.toLowerCase().includes(userSearch.toLowerCase()) ||
+                    u.phone?.includes(userSearch)
+                  )
+                  .map((u, idx) => (
+                  <tr key={idx} className="hover:bg-stone-50/50 transition-colors">
+                    <td className="px-8 py-5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center font-black text-sm">
+                          {u.name?.[0] || '?'}
+                        </div>
+                        <div>
+                          <p className="font-bold text-stone-900">{u.name || 'N/A'}</p>
+                          <p className="text-xs text-stone-400">{u.company || ''}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-8 py-5">
+                      <p className="text-sm font-medium text-stone-700">{u.email}</p>
+                      <p className="text-xs text-stone-400 flex items-center gap-1 mt-0.5">
+                        <Phone className="w-3 h-3" />{u.phone || 'Chưa có'}
+                      </p>
+                    </td>
+                    <td className="px-8 py-5">
+                      {u.isEmailVerified ? (
+                        <div className="flex items-center gap-1.5 text-emerald-600">
+                          <CheckCircle2 className="w-4 h-4" />
+                          <span className="text-xs font-bold">Xác thực</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1.5 text-amber-500">
+                          <XCircle className="w-4 h-4" />
+                          <span className="text-xs font-bold">Chưa xác thực</span>
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-8 py-5 text-xs text-stone-500 font-medium">
+                      {u.createdAt?.toDate ? u.createdAt.toDate().toLocaleDateString('vi-VN') : 'N/A'}
+                    </td>
+                    <td className="px-8 py-5">
+                      <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                        u.role === 'admin' ? 'bg-stone-900 text-white' : 'bg-stone-100 text-stone-500'
+                      }`}>
+                        {u.role || 'user'}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {allUsers.length === 0 && (
+              <div className="p-16 text-center">
+                <p className="text-stone-400 font-medium italic">Chưa có tài khoản nào.</p>
               </div>
             )}
           </div>
