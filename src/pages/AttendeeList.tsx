@@ -272,7 +272,12 @@ export default function AttendeeList() {
       });
       alert(`Đã gửi lại email thành công cho ${attendee.name}!`);
     } catch (err: any) {
-      alert(`Gửi thất bại: ${err.response?.data?.error || err.message}`);
+      const errMsg = err?.response?.data?.error
+        ? String(err.response.data.error)
+        : err?.message
+        ? String(err.message)
+        : 'Lỗi không xác định';
+      alert(`Gửi thất bại: ${errMsg}`);
     } finally {
       setResendingEmail(false);
     }
