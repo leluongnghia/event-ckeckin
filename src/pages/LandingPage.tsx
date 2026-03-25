@@ -153,6 +153,72 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Firebase Technology Section (Công nghệ lõi) */}
+      <section className="py-24 px-4 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center space-y-4 mb-16">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-full text-sm font-bold border border-emerald-100 shadow-sm"
+            >
+              <ShieldCheck className="w-4 h-4" /> Tại sao chọn Công nghệ Firebase?
+            </motion.div>
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="text-4xl md:text-5xl font-black text-stone-900 tracking-tight leading-tight"
+            >
+              Công nghệ lõi từ Google <br />
+              <span className="text-emerald-600">Sức mạnh bên trong EventCheck</span>
+            </motion.h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { 
+                title: 'Đồng bộ Real-time', 
+                desc: 'Mọi dữ liệu check-in được cập nhật ngay lập tức trên tất cả thiết bị của ban tổ chức.',
+                icon: Zap 
+              },
+              { 
+                title: 'Hoạt động Offline', 
+                desc: 'Tự động đồng bộ lại ngay khi có mạng trở lại, đảm bảo quy trình không bao giờ gián đoạn.',
+                icon: Smartphone 
+              },
+              { 
+                title: 'Bảo mật Tuyệt đối', 
+                desc: 'Dữ liệu được bảo vệ bởi hạ tầng Cloud của Google, cam kết an toàn thông tin khách mời.',
+                icon: ShieldCheck 
+              },
+              { 
+                title: 'Tốc độ Phản hồi', 
+                desc: 'Phản lục quét QR trong phần nghìn giây, loại bỏ hoàn toàn việc xếp hàng chờ đợi.',
+                icon: Clock 
+              }
+            ].map((benefit, bIdx) => (
+              <motion.div 
+                key={bIdx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: bIdx * 0.1 }}
+                className="bg-stone-50 p-8 rounded-3xl border border-stone-100 hover:border-emerald-300 transition-all group shadow-sm hover:bg-white"
+              >
+                <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 shadow-sm transition-transform">
+                  <benefit.icon className="w-6 h-6 text-emerald-600" />
+                </div>
+                <h4 className="font-black text-stone-900 text-lg mb-3 tracking-tight">{benefit.title}</h4>
+                <p className="text-stone-500 font-medium text-sm leading-relaxed">{benefit.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Features Detail */}
       <section id="features" className="py-24 px-4">
         <div className="max-w-6xl mx-auto space-y-28">
@@ -294,71 +360,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Firebase Technology Section */}
-      <section className="py-24 px-4 bg-stone-50/50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center space-y-4 mb-16">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-full text-sm font-bold border border-emerald-100 shadow-sm"
-            >
-              <ShieldCheck className="w-4 h-4" /> Tại sao chọn Công nghệ Firebase?
-            </motion.div>
-            <motion.h2 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="text-4xl md:text-5xl font-black text-stone-900 tracking-tight leading-tight"
-            >
-              Sức mạnh công nghệ Google <br />
-              <span className="text-emerald-600">trong lòng EventCheck</span>
-            </motion.h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { 
-                title: 'Đồng bộ Real-time', 
-                desc: 'Mọi dữ liệu check-in được cập nhật ngay lập tức trên tất cả thiết bị của ban tổ chức.',
-                icon: Zap 
-              },
-              { 
-                title: 'Hoạt động Offline', 
-                desc: 'Tự động đồng bộ lại ngay khi có mạng trở lại, đảm bảo quy trình không bao giờ gián đoạn.',
-                icon: Smartphone 
-              },
-              { 
-                title: 'Bảo mật Tuyệt đối', 
-                desc: 'Dữ liệu được bảo vệ bởi hạ tầng Cloud của Google, cam kết an toàn thông tin khách mời.',
-                icon: ShieldCheck 
-              },
-              { 
-                title: 'Tốc độ Phản hồi', 
-                desc: 'Phản lục quét QR trong phần nghìn giây, loại bỏ hoàn toàn việc xếp hàng chờ đợi.',
-                icon: Clock 
-              }
-            ].map((benefit, bIdx) => (
-              <motion.div 
-                key={bIdx}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: bIdx * 0.1 }}
-                className="bg-white p-8 rounded-3xl border border-stone-200 hover:border-emerald-300 transition-all group shadow-sm"
-              >
-                <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <benefit.icon className="w-6 h-6 text-emerald-600" />
-                </div>
-                <h4 className="font-black text-stone-900 text-lg mb-3 tracking-tight">{benefit.title}</h4>
-                <p className="text-stone-500 font-medium text-sm leading-relaxed">{benefit.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* CTA */}
       <section className="py-20 px-4 bg-stone-50">

@@ -180,7 +180,8 @@ export default function GuidePage() {
                 <ShieldCheck className="w-4 h-4" /> Tại sao chọn Công nghệ Firebase?
               </div>
               <h2 className="text-3xl md:text-4xl font-black text-stone-900 tracking-tight leading-tight">
-                Sức mạnh công nghệ Google <span className="text-emerald-600">trong lòng EventCheck</span>
+                Công nghệ lõi từ Google <br />
+                <span className="text-emerald-600">Sức mạnh bên trong EventCheck</span>
               </h2>
             </div>
             
