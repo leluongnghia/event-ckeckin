@@ -311,73 +311,51 @@ export default function Dashboard() {
               <X className="w-5 h-5 lg:w-6 lg:h-6" />
             </button>
             
-            <div 
-              id="printable-ticket" 
-              className="bg-white relative"
-              style={{ backgroundColor: eventSettings?.ticketBodyBgColor || '#ffffff', color: eventSettings?.ticketBodyTextColor || '#1c1917' }}
-            >
-              {/* Background Image Layer */}
+            <div id="printable-ticket" className="bg-stone-100 relative mx-auto overflow-hidden shadow-sm border border-stone-200" style={{ width: '100%', maxWidth: '400px', aspectRatio: '9/16' }}>
               {eventSettings?.ticketBgImage && (
-                <div className="absolute inset-0 z-0">
-                  <img src={eventSettings.ticketBgImage} alt="Background" className="w-full h-full object-cover opacity-20" />
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/80 to-white/40" />
-                </div>
+                <img src={eventSettings.ticketBgImage} alt="Background" className="w-full h-full object-cover select-none pointer-events-none" />
               )}
-
-              <div className="relative z-10">
-                <div 
-                  className="p-8 lg:p-12 text-white text-center space-y-2"
-                  style={{ backgroundColor: eventSettings?.ticketColor || '#059669' }}
+              
+              <div 
+                className="absolute flex items-center justify-center"
+                style={{
+                  left: `${eventSettings?.namePositionX ?? 50}%`,
+                  top: `${eventSettings?.namePositionY ?? 30}%`,
+                  transform: 'translate(-50%, -50%)',
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: eventSettings?.ticketNameFont || "'Inter', sans-serif",
+                    color: eventSettings?.ticketNameColor || '#1c1917',
+                    fontSize: `${eventSettings?.nameFontSize || 24}px`,
+                    whiteSpace: 'nowrap',
+                    lineHeight: 1
+                  }}
+                  className="font-bold drop-shadow-md"
                 >
-                  <div className="w-12 h-12 lg:w-16 lg:h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-2 lg:mb-4">
-                    <QrCode className="w-6 h-6 lg:w-8 lg:h-8" />
-                  </div>
-                  <h3 className="text-xl lg:text-3xl font-bold tracking-tight uppercase">{eventSettings?.ticketTitle || 'VÉ MỜI SỰ KIỆN'}</h3>
-                  <p className="text-xs lg:text-sm text-emerald-100 font-medium">{eventSettings?.ticketSubtitle || 'EventCheck SaaS Experience'}</p>
-                </div>
+                  {previewAttendee.name}
+                </span>
+              </div>
 
-                <div className="p-6 lg:p-10 space-y-6 lg:space-y-8">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-8 text-left">
-                    <div className="space-y-1">
-                      <p className="text-[10px] lg:text-xs font-bold uppercase tracking-widest" style={{ opacity: 0.5 }}>Khách mời</p>
-                      <p 
-                        className="text-xl lg:text-2xl font-bold truncate"
-                        style={{ 
-                          fontFamily: eventSettings?.ticketNameFont || 'inherit',
-                          color: eventSettings?.ticketNameColor || '#1c1917'
-                        }}
-                      >
-                        {previewAttendee.name}
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-[10px] lg:text-xs font-bold uppercase tracking-widest" style={{ opacity: 0.5 }}>Công ty</p>
-                      <p className="text-base lg:text-lg font-bold truncate">{previewAttendee.company || 'N/A'}</p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-[10px] lg:text-xs font-bold uppercase tracking-widest" style={{ opacity: 0.5 }}>Email</p>
-                      <p className="text-sm lg:text-base truncate" style={{ opacity: 0.7 }}>{previewAttendee.email}</p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-[10px] lg:text-xs font-bold uppercase tracking-widest" style={{ opacity: 0.5 }}>Mã vé</p>
-                      <p className="text-sm lg:text-base font-mono" style={{ opacity: 0.7 }}>{previewAttendee.qrCode}</p>
-                    </div>
-                  </div>
-
-                  <div 
-                    className="flex flex-col items-center justify-center p-6 lg:p-8 backdrop-blur-sm rounded-3xl border-2 border-dashed"
-                    style={{ borderColor: `${eventSettings?.ticketBodyTextColor || '#1c1917'}20`, backgroundColor: `${eventSettings?.ticketBodyTextColor || '#1c1917'}05` }}
-                  >
-                    {qrImage ? (
-                      <div className="space-y-4 text-center">
-                        <img src={qrImage} alt="QR Code" className="w-32 h-32 lg:w-48 lg:h-48 mx-auto" />
-                        <p className="text-[10px] lg:text-xs" style={{ opacity: 0.4 }}>Vui lòng xuất trình mã này tại cổng</p>
-                      </div>
-                    ) : (
-                      <Loader2 className="w-8 h-8 lg:w-10 lg:h-10 text-emerald-500 animate-spin" />
-                    )}
-                  </div>
-                </div>
+              <div 
+                className="absolute bg-white p-2 rounded-lg shadow-lg flex items-center justify-center"
+                style={{
+                  left: `${eventSettings?.qrPositionX ?? 50}%`,
+                  top: `${eventSettings?.qrPositionY ?? 60}%`,
+                  transform: 'translate(-50%, -50%)',
+                }}
+              >
+                {qrImage ? (
+                  <img 
+                    src={qrImage} 
+                    alt="QR Code" 
+                    className="block" 
+                    style={{ width: `${eventSettings?.qrSize || 150}px`, height: `${eventSettings?.qrSize || 150}px` }} 
+                  />
+                ) : (
+                  <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
+                )}
               </div>
             </div>
 

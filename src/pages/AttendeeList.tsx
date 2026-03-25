@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search, Filter, Download, Plus, Mail, Trash2, Loader2, QrCode, X, Edit2, FileSpreadsheet, Link as LinkIcon, FileText, Eye, CheckSquare, Square, Zap, Users, Crown } from 'lucide-react';
+import { Search, Filter, Download, Plus, Mail, Trash2, Loader2, QrCode, X, Edit2, FileSpreadsheet, Link as LinkIcon, FileText, Eye, CheckSquare, Square, Zap, Users, Crown, Image as ImageIcon } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
@@ -805,104 +805,57 @@ export default function AttendeeList() {
             {/* Scrollable content */}
             <div className="overflow-y-auto flex-1">
 
-            <div id="printable-ticket" className="bg-white relative">
-              {(!eventSettings?.ticketTemplateId || eventSettings?.ticketTemplateId === 'default') ? (
-                <>
-                  {/* Background Image Layer */}
-              {eventSettings?.ticketBgImage && (
-                <div className="absolute inset-0 z-0">
-                  <img src={eventSettings.ticketBgImage} alt="Background" className="w-full h-full object-cover opacity-20" />
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/80 to-white/40" />
+            <div id="printable-ticket" className="bg-stone-100 relative mx-auto overflow-hidden shadow-sm border border-stone-200" style={{ width: '100%', maxWidth: '400px', aspectRatio: '9/16' }}>
+              {eventSettings?.ticketBgImage ? (
+                <img src={eventSettings.ticketBgImage} alt="Background" className="w-full h-full object-cover select-none pointer-events-none" />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center text-stone-300">
+                  <ImageIcon className="w-20 h-20 opacity-20" />
                 </div>
               )}
-
-              <div className="relative z-10">
-                <div 
-                  className="p-8 lg:p-12 text-white text-center space-y-2"
-                  style={{ backgroundColor: eventSettings?.ticketColor || '#059669' }}
-                >
-                  <div className="w-12 h-12 lg:w-16 lg:h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-2 lg:mb-4">
-                    <QrCode className="w-6 h-6 lg:w-8 lg:h-8" />
-                  </div>
-                  <h3 className="text-xl lg:text-3xl font-bold tracking-tight uppercase">{eventSettings?.ticketTitle || 'VÉ MỜI SỰ KIỆN'}</h3>
-                  <p className="text-xs lg:text-sm text-emerald-100 font-medium">{eventSettings?.ticketSubtitle || 'EventCheck SaaS Experience'}</p>
-                </div>
-
-                <div className="p-6 lg:p-10 space-y-6 lg:space-y-8">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-8">
-                    <div className="space-y-1">
-                      <p className="text-[10px] lg:text-xs font-bold text-stone-400 uppercase tracking-widest">Khách mời</p>
-                      <div className="flex items-center gap-2">
-                        <p 
-                          className="text-xl lg:text-2xl font-bold truncate"
-                          style={{ 
-                            fontFamily: eventSettings?.ticketNameFont || 'inherit',
-                            color: eventSettings?.ticketNameColor || '#1c1917'
-                          }}
-                        >
-                          {previewAttendee.name}
-                        </p>
-                        {previewAttendee.isVIP && (
-                          <Star className="w-5 h-5 lg:w-6 lg:h-6 fill-amber-400 text-amber-400 shrink-0" />
-                        )}
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-[10px] lg:text-xs font-bold text-stone-400 uppercase tracking-widest">Công ty</p>
-                      <p className="text-base lg:text-lg font-bold text-stone-900 truncate">{previewAttendee.company || 'N/A'}</p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-[10px] lg:text-xs font-bold text-stone-400 uppercase tracking-widest">Email</p>
-                      <p className="text-sm lg:text-base text-stone-600 truncate">{previewAttendee.email}</p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-[10px] lg:text-xs font-bold text-stone-400 uppercase tracking-widest">Mã vé</p>
-                      <p className="text-sm lg:text-base text-stone-600 font-mono">{previewAttendee.qrCode}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col items-center justify-center p-6 lg:p-8 bg-white/50 backdrop-blur-sm rounded-3xl border-2 border-dashed border-stone-200">
-                    {qrImage ? (
-                      <div className="space-y-4 text-center">
-                        <img src={qrImage} alt="QR Code" className="w-32 h-32 lg:w-48 lg:h-48 mx-auto" />
-                        <p className="text-[10px] lg:text-xs text-stone-400">Vui lòng xuất trình mã này tại cổng</p>
-                      </div>
-                    ) : (
-                      <Loader2 className="w-8 h-8 lg:w-10 lg:h-10 text-emerald-500 animate-spin" />
-                    )}
-                  </div>
-                </div>
-              </div>
-              </>
-            ) : (
+              
               <div 
-                className="w-full relative min-h-[500px] flex items-stretch justify-stretch bg-white"
-              >
-                {eventSettings?.ticketBgImage && (
-                  <div className="absolute inset-0 z-0">
-                    <img src={eventSettings.ticketBgImage} alt="Background" className="w-full h-full object-cover opacity-50" />
-                    <div className="absolute inset-0 bg-white/30 backdrop-blur-[2px]" />
-                  </div>
-                )}
-                <div className="relative z-10 w-full min-h-[500px] flex items-center justify-center"
-                dangerouslySetInnerHTML={{
-                  __html: renderTemplate(
-                    TEMPLATES.find(t => t.id === eventSettings.ticketTemplateId)?.html || '',
-                    {
-                      company: eventSettings?.organizerName || Object.keys(eventSettings || {}).length ? eventSettings?.organizerName || 'Ban Tổ Chức' : 'EventCheck Co.',
-                      name: previewAttendee.name,
-                      event_name: eventSettings?.name || 'Sự kiện Giao lưu 2026',
-                      time: `${eventSettings?.startDate || '20/05/2026'} - ${eventSettings?.startTime || '08:00'}`,
-                      location: eventSettings?.location || 'Trung tâm Hội nghị Quốc gia',
-                      qr: qrImage || ''
-                    }
-                  )
+                className="absolute flex items-center justify-center"
+                style={{
+                  left: `${eventSettings?.namePositionX ?? 50}%`,
+                  top: `${eventSettings?.namePositionY ?? 30}%`,
+                  transform: 'translate(-50%, -50%)',
                 }}
-                />
+              >
+                <span
+                  style={{
+                    fontFamily: eventSettings?.ticketNameFont || "'Inter', sans-serif",
+                    color: eventSettings?.ticketNameColor || '#1c1917',
+                    fontSize: `${eventSettings?.nameFontSize || 24}px`,
+                    whiteSpace: 'nowrap',
+                    lineHeight: 1
+                  }}
+                  className="font-bold drop-shadow-md"
+                >
+                  {previewAttendee.name}
+                </span>
               </div>
-            )}
-            </div>
 
+              <div 
+                className="absolute bg-white p-2 rounded-lg shadow-lg flex items-center justify-center"
+                style={{
+                  left: `${eventSettings?.qrPositionX ?? 50}%`,
+                  top: `${eventSettings?.qrPositionY ?? 60}%`,
+                  transform: 'translate(-50%, -50%)',
+                }}
+              >
+                {qrImage ? (
+                  <img 
+                    src={qrImage} 
+                    alt="QR Code" 
+                    className="block" 
+                    style={{ width: `${eventSettings?.qrSize || 150}px`, height: `${eventSettings?.qrSize || 150}px` }} 
+                  />
+                ) : (
+                  <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
+                )}
+              </div>
+            </div> {/* end printable ticket */}
             </div> {/* end scrollable content */}
 
             <div className="p-4 lg:p-6 border-t border-stone-100 flex flex-col sm:flex-row gap-3 no-print shrink-0">
