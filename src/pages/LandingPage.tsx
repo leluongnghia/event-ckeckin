@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { QrCode, CheckCircle2, Users, Mail, ShieldCheck, ArrowRight, Sparkles, Zap, Smartphone, LayoutDashboard, MessageCircle, BarChart, Clock, Star, ChevronRight, Menu, X as CloseIcon } from 'lucide-react';
 import { motion } from 'motion/react';
-import { auth } from '../firebase';
 import { Link } from 'react-router-dom';
 import PublicNavbar from '../components/PublicNavbar';
 
@@ -48,15 +47,13 @@ const howItWorks = [
   { step: '04', title: 'Check-in bằng camera', desc: 'Dùng bất kỳ thiết bị nào có camera, hướng vào mã QR, xác nhận trong chưa tới 2 giây.' },
 ];
 
-
-
 const testimonials = [
   { name: 'Nguyễn Thị Lan', role: 'Giám đốc Sự kiện, TechCorp VN', avatar: 'L', text: 'EventCheck giúp chúng tôi check-in 800 khách trong 20 phút đầu. Trước đây làm thủ công mất cả buổi sáng. Tuyệt vời!' },
   { name: 'Trần Văn Minh', role: 'Founder, EventPro Agency', avatar: 'M', text: 'Tính năng gửi vé Zalo ZNS là thứ chúng tôi chờ đợi từ lâu. Tỷ lệ mở vé tăng lên 94% so với chỉ gửi email.' },
   { name: 'Phạm Thu Hà', role: 'Marketing Manager, Startup Hub', avatar: 'H', text: 'Dashboard thời gian thực cực kỳ hữu ích. Ban lãnh đạo nhìn số khách check-in live mà không cần hỏi nhân viên liên tục.' },
 ];
 
-function FeatureCard({ feature, index }: { feature: typeof features[0]; index: number; key?: number }) {
+function FeatureCard({ feature, index }: { feature: any; index: number }) {
   const Icon = feature.icon;
   const isReversed = index % 2 !== 0;
   return (
@@ -80,17 +77,20 @@ function FeatureCard({ feature, index }: { feature: typeof features[0]; index: n
       </div>
       <div className="flex-1 relative">
         <div className="absolute -inset-4 bg-emerald-500/10 blur-3xl rounded-[3rem] -z-10" />
-        <img src={feature.img} alt={feature.title} className="w-full rounded-[2rem] shadow-2xl object-cover aspect-[4/3]" />
+        <img src={feature.img} alt={`${feature.title} - Giải pháp EventCheck by AZEvent`} className="w-full rounded-[2rem] shadow-2xl object-cover aspect-[4/3] border-4 border-white" />
       </div>
     </motion.div>
   );
 }
 
 export default function LandingPage() {
+  React.useEffect(() => {
+    document.title = "EventCheck by AZEvent - Giải pháp Check-in & Quản lý Sự kiện 4.0";
+  }, []);
+
   return (
     <div className="min-h-screen bg-white font-sans overflow-x-hidden">
       <PublicNavbar />
-
 
       {/* Hero */}
       <section className="pt-28 md:pt-36 pb-16 px-4">
@@ -115,7 +115,7 @@ export default function LandingPage() {
               </a>
             </motion.div>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="flex items-center justify-center gap-6 pt-2 text-sm text-stone-400 font-medium">
-              <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Miễn phí vĩnh viễn</span>
+              <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Miễn phí cho 50 khách đầu</span>
               <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Không cần thẻ tín dụng</span>
               <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Cài đặt trong 5 phút</span>
             </motion.div>
@@ -124,7 +124,11 @@ export default function LandingPage() {
           {/* Hero Image */}
           <motion.div initial={{ opacity: 0, y: 60 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="mt-14 relative">
             <div className="absolute -inset-6 bg-gradient-to-b from-emerald-500/10 to-transparent blur-3xl rounded-[3rem] -z-10" />
-            <img src={CHECKIN_IMG} alt="Nhân viên check-in khách mời bằng QR Code tại sự kiện chuyên nghiệp" className="w-full rounded-[2rem] shadow-2xl border border-stone-200 object-cover max-h-[560px]" />
+            <img 
+              src={CHECKIN_IMG} 
+              alt="Nhân viên check-in khách mời bằng QR Code tại sự kiện của AZEvent" 
+              className="w-full rounded-[2rem] shadow-2xl border border-stone-200 object-cover max-h-[560px]" 
+            />
             <div className="absolute top-6 right-6 bg-white/95 backdrop-blur-sm px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 border border-stone-100">
               <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse" />
               <span className="text-sm font-bold text-stone-800">1,248 khách đã check-in</span>
@@ -289,9 +293,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
-      {/* Pricing */}
-
 
       {/* CTA */}
       <section className="py-20 px-4 bg-stone-50">

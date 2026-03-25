@@ -33,23 +33,26 @@ const guideSteps = [
     id: 'step2',
     icon: Palette,
     title: '2. Thiết kế Vé mời (Kéo & Thả)',
-    description: 'Đây là tính năng độc đáo giúp bạn tạo ra những chiếc vé mời chuyên nghiệp theo ý muốn.',
+    description: 'Tạo ra những chiếc vé mời chuyên nghiệp theo ý muốn với công nghệ kéo thả trực quan.',
     details: [
-      'Vào mục "Thiết kế vé", tải lên hình nền thiết kế của bạn (kích thước đề xuất 1080x1920).',
-      'Sử dụng chuột để Kéo - Thả vị trí "Tên khách mời" và "Mã QR" vào chỗ trống trên ảnh nền.',
+      'Vào mục "Thiết kế vé mời", tải lên hình nền thiết kế của bạn (kích thước đề xuất 1080x1920).',
+      'Phần mềm tự động nhận diện tỷ lệ ảnh để dàn trang chính xác.',
+      'Sử dụng chuột để Kéo - Thả vị trí "Tên khách mời" và "Mã QR" vào chỗ trống trên nền ảnh.',
+      'Bạn có thể kéo góc của Mã QR hoặc Tên để thay đổi kích thước to/nhỏ trực tiếp.',
       'Tùy chỉnh Font chữ, màu sắc và cỡ chữ để phù hợp với phong cách thương hiệu.',
-      'Nhấn "Lưu thiết kế" để áp dụng cho toàn bộ khách mời.'
+      'Nhấn "Lưu thiết kế" để áp dụng cho toàn bộ khách mời ngay lập tức.'
     ]
   },
   {
     id: 'step3',
     icon: FileSpreadsheet,
     title: '3. Quản lý Danh sách Khách mời',
-    description: 'Đưa dữ liệu khách mời vào hệ thống một cách nhanh chóng.',
+    description: 'Đưa dữ liệu khách mời vào hệ thống một cách nhanh chóng và an toàn.',
     details: [
-      'Bạn có thể thêm từng khách mời hoặc nhập hàng loạt từ file Excel (.xlsx).',
+      'Thêm từng khách mời hoặc nhập hàng loạt từ file Excel (.xlsx).',
       'Hệ thống tự động sinh mã QR định danh duy nhất cho từng khách mời.',
-      'Phân loại khách VIP để có chế độ đón tiếp đặc biệt.'
+      'Phân loại khách VIP để có chế độ đón tiếp đặc biệt.',
+      'Dữ liệu được lưu trữ bảo mật trên môi trường Cloud.'
     ]
   },
   {
@@ -58,9 +61,10 @@ const guideSteps = [
     title: '4. Chiến dịch gửi Vé & Email',
     description: 'Phát hành vé điện tử đến tận tay khách mời chỉ với một cú click.',
     details: [
-      'Cấu hình hòm thư gửi đi (SMTP) trong phần Cài đặt nếu bạn muốn dùng email thương hiệu riêng.',
-      'Sử dụng tính năng "Gửi email hàng loạt", hệ thống sẽ tự động lọc những người chưa nhận vé.',
-      'Khách mời sẽ nhận được email chứa vé mời kèm mã QR và hướng dẫn check-in.'
+      'Cấu hình SMTP Gmail của bạn trong phần "Cài đặt chung" (hạn mức ~500 email/ngày).',
+      'Sử dụng tính năng "Gửi email hàng loạt", hệ thống tự động lọc những người chưa nhận vé.',
+      'Khách mời nhận được email chứa nút "Tải vé" link trực tiếp đến file ảnh chất lượng cao.',
+      'Tính năng này giúp tránh việc email bị rơi vào hòm thư rác do đính kèm file nặng.'
     ]
   },
   {
@@ -69,10 +73,10 @@ const guideSteps = [
     title: '5. Thực hiện Check-in tại sự kiện',
     description: 'Quy trình check-in siêu tốc giúp loại bỏ tình trạng ùn tắc tại cổng.',
     details: [
-      'Sử dụng máy tính bảng, điện thoại hoặc máy quét có kết nối internet.',
       'Truy cập mục "Quét mã QR", hướng camera vào mã QR của khách mời.',
-      'Màn hình hiện xanh và thông báo "Thành công" trong < 2 giây.',
-      'Theo dõi số lượng khách đang vào trực tiếp trên bảng điều khiển.'
+      'Hệ thống phản hồi xanh (Thành công) hoặc đỏ (Kèm lỗi) trong < 2 giây.',
+      'Dữ liệu check-in đồng bộ ngay lập tức lên Dashboard quản lý.',
+      'Hỗ trợ chế độ offline: Nếu mất mạng đột ngột, dữ liệu sẽ tự đồng bộ ngay khi có kết nối trở lại.'
     ]
   }
 ];
@@ -163,6 +167,49 @@ export default function GuidePage() {
               </div>
             </motion.div>
           ))}
+
+          {/* Firebase Benefits Section */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="bg-emerald-50 border border-emerald-100 rounded-[3rem] p-10 md:p-16 space-y-10"
+          >
+            <div className="text-center space-y-4">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white text-emerald-700 rounded-full text-sm font-bold border border-emerald-100 shadow-sm">
+                <ShieldCheck className="w-4 h-4" /> Tại sao chọn Công nghệ Firebase?
+              </div>
+              <h2 className="text-3xl md:text-4xl font-black text-stone-900 tracking-tight leading-tight">
+                Sức mạnh công nghệ Google <span className="text-emerald-600">trong lòng EventCheck</span>
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {[
+                { 
+                  title: 'Đồng bộ Thời gian thực (Real-time)', 
+                  desc: 'Khi một khách mời check-in tại cổng, trạng thái trên Dashboard và tất cả các thiết bị khác sẽ được cập nhật ngay lập tức mà không cần tải lại trang.' 
+                },
+                { 
+                  title: 'Hỗ trợ Hoạt động Ngoại tuyến', 
+                  desc: 'Công nghệ Firestore cho phép hệ thống vẫn hoạt động ngay cả khi kết nối Internet bị mất đột ngột. Dữ liệu sẽ tự động đẩy lên Cloud ngay khi có mạng trở lại.' 
+                },
+                { 
+                  title: 'Bảo mật & Độ tin cậy cao', 
+                  desc: 'Dữ liệu được lưu trữ trên hạ tầng Cloud của Google, đảm bảo an toàn tuyệt đối và tính sẵn sàng cao nhất cho các sự kiện quan trọng.' 
+                },
+                { 
+                  title: 'Tốc độ xử lý ưu việt', 
+                  desc: 'Các tác vụ tính toán, sinh mã QR và quản lý tệp tin được tối ưu hóa để phản hồi trong phần nghìn giây, giúp quy trình đón tiếp luôn mượt mà.' 
+                }
+              ].map((benefit, bIdx) => (
+                <div key={bIdx} className="bg-white p-6 rounded-2xl border border-emerald-100 shadow-sm space-y-2">
+                  <h4 className="font-black text-emerald-700 text-lg">{benefit.title}</h4>
+                  <p className="text-stone-500 font-medium text-sm leading-relaxed">{benefit.desc}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
           
         </div>
       </section>
@@ -196,8 +243,18 @@ export default function GuidePage() {
         </div>
       </section>
 
-      <footer className="py-12 border-t border-stone-100 text-center text-stone-400 text-sm font-medium">
-        © 2026 EventCheck SaaS. Tài liệu dành cho người dùng.
+      <footer className="py-12 border-t border-stone-100">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6 text-stone-400 text-sm font-medium leading-relaxed">
+          <div className="flex items-center gap-2">
+            <QrCode className="w-5 h-5 text-emerald-600" />
+            <span className="font-black text-stone-800">EventCheck SaaS</span>
+          </div>
+          <p className="text-center md:text-left">© 2026 AZEvent.vn — Được phát triển bởi đội ngũ kỹ thuật AZEvent.</p>
+          <div className="flex gap-6">
+            <a href="https://azevent.vn" target="_blank" rel="noreferrer" className="hover:text-emerald-600 transition-colors">azevent.vn</a>
+            <a href="https://luckydraw.azevent.vn" target="_blank" rel="noreferrer" className="hover:text-emerald-600 transition-colors">luckydraw.pro</a>
+          </div>
+        </div>
       </footer>
     </div>
   );

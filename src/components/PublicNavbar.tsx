@@ -19,7 +19,7 @@ export default function PublicNavbar() {
             <div className="p-2 bg-emerald-600 rounded-xl shadow-lg shadow-emerald-500/30">
               <QrCode className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-black text-stone-900 tracking-tight">EventCheck</span>
+                            <span className="text-xl font-black text-stone-900 tracking-tight">EventCheck <span className="text-emerald-600">by AZEvent</span></span>
           </Link>
           <div className="hidden md:flex items-center gap-8">
             <a href={`${anchorPrefix}#features`} className="text-sm font-semibold text-stone-500 hover:text-emerald-600 transition-colors">Tính năng</a>
