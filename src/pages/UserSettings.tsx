@@ -229,41 +229,35 @@ export default function UserSettings() {
               <input type="password" placeholder="SMTP Password (App Password)" value={userData.smtpPass || ''} onChange={(e) => setUserData({...userData, smtpPass: e.target.value})} className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl" />
               <input type="email" placeholder="Email người gửi (From Email)" value={userData.smtpFrom || ''} onChange={(e) => setUserData({...userData, smtpFrom: e.target.value})} className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl md:col-span-2" />
               
+              <div className="md:col-span-2 bg-stone-100 p-4 rounded-xl border border-stone-200 text-xs text-stone-700 space-y-2 mb-2">
+                <p className="font-bold text-stone-900 border-b border-stone-300 pb-1 inline-block mb-1">Hướng dẫn cấu hình gửi mail bằng Gmail:</p>
+                <ol className="list-decimal list-inside space-y-1.5 ml-1">
+                  <li><strong>SMTP Host:</strong> <code className="bg-white px-1 py-0.5 rounded text-rose-500 font-mono">smtp.gmail.com</code> và <strong>SMTP Port:</strong> <code className="bg-white px-1 py-0.5 rounded text-rose-500 font-mono">587</code>.</li>
+                  <li><strong>SMTP User:</strong> Địa chỉ Gmail của bạn làm mail vãng lai gửi đi.</li>
+                  <li><strong>SMTP Password:</strong> BẮT BUỘC dùng <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noreferrer" className="text-emerald-600 font-bold hover:underline">Mật khẩu Ứng dụng</a> 16 chữ số do Google cấp.</li>
+                </ol>
+              </div>
+
               <div className="md:col-span-2 border-t border-stone-100 pt-4 mt-2">
                 <label className="text-sm font-semibold text-stone-700 flex items-center gap-2 mb-2">
-                  <Mail className="w-4 h-4" /> Nội dung gốc của thư (Mã HTML Tùy chỉnh Cao cấp)
+                  <Mail className="w-4 h-4" /> Bản xem trước Giao diện Email Gửi Khách
                 </label>
-                <div className="flex gap-2 justify-end mb-2">
-                  <button onClick={() => setUserData({ ...userData, emailTemplateHTML: defaultEmailTemplateHTML })} className="text-xs text-stone-500 hover:text-emerald-600 transition-colors font-semibold">Khôi phục giao diện gốc</button>
-                </div>
-                <textarea 
-                  rows={20} 
-                  className="w-full px-4 py-3 bg-stone-900 border border-stone-800 rounded-2xl focus:ring-2 focus:ring-emerald-500/50 outline-none transition-all text-sm font-mono text-emerald-400"
-                  placeholder="Mã HTML cho sự kiện của bạn..."
-                  value={userData.emailTemplateHTML || ''} 
-                  onChange={e => setUserData({ ...userData, emailTemplateHTML: e.target.value })} 
+                <p className="text-[10px] lg:text-xs text-stone-400 italic mb-4">Đây là giao diện mặc định hệ thống sẽ tự động tạo và gửi cho khách mời của bạn (thông tin bên dưới chỉ là minh họa mẫu). Nội dung "Lời mở đầu" bạn nhập ở trên sẽ được chèn vào ngay bên dưới câu chào "Chào Tên Khách".</p>
+                <div 
+                  className="w-full bg-stone-50 border border-stone-200 rounded-2xl p-4 lg:p-8 overflow-x-auto shadow-inner"
+                  dangerouslySetInnerHTML={{
+                    __html: (userData.emailTemplateHTML || defaultEmailTemplateHTML)
+                      .replace(/\{\{ATTENDEE_NAME\}\}/g, 'Nguyễn Văn A')
+                      .replace(/\{\{EVENT_NAME\}\}/g, 'TÊN SỰ KIỆN MẪU')
+                      .replace(/\{\{EVENT_DATE\}\}/g, '25/12/2026')
+                      .replace(/\{\{EVENT_TIME\}\}/g, '08:00 AM')
+                      .replace(/\{\{EVENT_LOCATION\}\}/g, 'Trung tâm Hội nghị Quốc gia')
+                      .replace(/\{\{EVENT_DESC\}\}/g, userData.customEmailMessage || 'Nội dung lời mở đầu của bạn sẽ xuất hiện tại đây...')
+                      .replace(/\{\{QR_CODE_VAL\}\}/g, 'VIP-123456')
+                      .replace(/src="\{\{QR_CODE_IMG\}\}"/g, 'src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=VIP-123456"') // Fake QR code for visual preview
+                  }}
                 />
-                <div className="text-[10px] lg:text-xs text-stone-500 space-y-1 mt-2">
-                  <p className="font-bold text-stone-700">Các biến hỗ trợ:</p>
-                  <p><code>{'{'}{'{'}ATTENDEE_NAME{'}'}{'}'}</code> : Tên khách mời</p>
-                  <p><code>{'{'}{'{'}EVENT_NAME{'}'}{'}'}</code> : Tên sự kiện</p>
-                  <p><code>{'{'}{'{'}QR_CODE_IMG{'}'}{'}'}</code> : Mã QR đính kèm ảnh (Chữ kí cid:qrcode)</p>
-                  <p><code>{'{'}{'{'}QR_CODE_VAL{'}'}{'}'}</code> : Mã số code</p>
-                  <p><code>{'{'}{'{'}EVENT_DATE{'}'}{'}'}</code> : Ngày tổ chức</p>
-                  <p><code>{'{'}{'{'}EVENT_TIME{'}'}{'}'}</code> : Giờ tổ chức</p>
-                  <p><code>{'{'}{'{'}EVENT_LOCATION{'}'}{'}'}</code> : Địa điểm tổ chức</p>
-                  <p><code>{'{'}{'{'}EVENT_DESC{'}'}{'}'}</code> : Nội dung mô tả sự kiện (tự động lấy "Lời mở đầu" nếu có)</p>
-                </div>
               </div>
-            </div>
-            
-            <div className="mt-3 bg-stone-100 p-4 rounded-xl border border-stone-200 text-xs text-stone-700 space-y-2">
-              <p className="font-bold text-stone-900 border-b border-stone-300 pb-1 inline-block mb-1">Hướng dẫn cấu hình gửi mail bằng Gmail:</p>
-              <ol className="list-decimal list-inside space-y-1.5 ml-1">
-                <li><strong>SMTP Host:</strong> <code className="bg-white px-1 py-0.5 rounded text-rose-500 font-mono">smtp.gmail.com</code> và <strong>SMTP Port:</strong> <code className="bg-white px-1 py-0.5 rounded text-rose-500 font-mono">587</code>.</li>
-                <li><strong>SMTP User:</strong> Địa chỉ Gmail của bạn làm mail vãng lai gửi đi.</li>
-                <li><strong>SMTP Password:</strong> BẮT BUỘC dùng <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noreferrer" className="text-emerald-600 font-bold hover:underline">Mật khẩu Ứng dụng</a> 16 chữ số do Google cấp.</li>
-              </ol>
             </div>
           </div>
         </div>
