@@ -3,6 +3,63 @@ import { Settings as SettingsIcon, Save, Mail, Send, QrCode, ExternalLink, Loade
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db, auth, handleFirestoreError, OperationType } from '../firebase';
 
+const defaultEmailTemplateHTML = `
+<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e5e7eb; border-radius: 24px; overflow: hidden; background-color: #ffffff; color: #1f2937;">
+  <!-- Header with branding -->
+  <div style="background: linear-gradient(135deg, #059669 0%, #10b981 100%); padding: 40px 20px; text-align: center;">
+    <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.025em; text-transform: uppercase;">
+      {{EVENT_NAME}}
+    </h1>
+    <p style="color: #d1fae5; margin-top: 10px; font-size: 16px; font-weight: 500;">Xác nhận tham gia sự kiện chuyên nghiệp</p>
+  </div>
+
+  <div style="padding: 40px 30px;">
+    <h2 style="color: #111827; font-size: 20px; font-weight: 700; margin-bottom: 16px;">Chào {{ATTENDEE_NAME}},</h2>
+    <p style="font-size: 16px; line-height: 1.6; color: #4b5563; margin-bottom: 30px; white-space: pre-wrap;">{{EVENT_DESC}}</p>
+
+    <!-- Ticket Card -->
+    <div style="background-color: #f9fafb; border: 2px dashed #d1d5db; border-radius: 20px; padding: 30px; text-align: center; margin-bottom: 30px;">
+      <div style="margin-bottom: 20px;">
+        <img src="{{QR_CODE_IMG}}" style="width: 220px; height: 220px; border: 8px solid #ffffff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);" />
+      </div>
+      <div style="display: inline-block; background-color: #111827; color: #ffffff; padding: 8px 20px; border-radius: 99px; font-size: 14px; font-weight: 700; font-family: monospace; letter-spacing: 2px;">
+        {{QR_CODE_VAL}}
+      </div>
+    </div>
+
+    <!-- Event Details Grid -->
+    <div style="display: grid; gap: 20px; margin-bottom: 30px;">
+      <div style="border-left: 4px solid #059669; padding-left: 16px;">
+        <p style="margin: 0; font-size: 12px; font-weight: 800; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">Thời gian tổ chức</p>
+        <p style="margin: 4px 0 0; font-size: 16px; font-weight: 600; color: #111827;">{{EVENT_DATE}} | {{EVENT_TIME}}</p>
+      </div>
+      <div style="border-left: 4px solid #059669; padding-left: 16px; margin-top: 15px;">
+        <p style="margin: 0; font-size: 12px; font-weight: 800; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">Địa điểm</p>
+        <p style="margin: 4px 0 0; font-size: 16px; font-weight: 600; color: #111827;">{{EVENT_LOCATION}}</p>
+      </div>
+    </div>
+
+    <div style="background-color: #ecfdf5; border-radius: 12px; padding: 16px; margin-bottom: 30px;">
+      <p style="margin: 0; font-size: 14px; color: #065f46; line-height: 1.5;">
+        💡 <b>Mẹo nhỏ:</b> Bạn có thể chụp ảnh màn hình hoặc tải file đính kèm để dùng khi không có mạng Internet.
+      </p>
+    </div>
+
+    <div style="text-align: center;">
+      <a href="https://maps.google.com/?q={{EVENT_LOCATION}}" style="display: inline-block; background-color: #059669; color: #ffffff; padding: 16px 32px; border-radius: 14px; font-size: 16px; font-weight: 700; text-decoration: none; box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.3);">
+        📍 Xem đường đi trên bản đồ
+      </a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="background-color: #f3f4f6; padding: 24px; text-align: center; border-top: 1px solid #e5e7eb;">
+    <p style="margin: 0; font-size: 12px; color: #9ca3af;">Đây là email tự động từ hệ thống <b>EventCheck</b></p>
+    <p style="margin: 4px 0 0; font-size: 12px; color: #9ca3af;">Vui lòng không phản hồi lại email này.</p>
+  </div>
+</div>
+`.trim();
+
 export default function UserSettings() {
   const [userData, setUserData] = useState({
     telegramBotToken: '',
@@ -14,7 +71,8 @@ export default function UserSettings() {
     smtpUser: '',
     smtpPass: '',
     smtpFrom: '',
-    customEmailMessage: ''
+    customEmailMessage: '',
+    emailTemplateHTML: ''
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -35,7 +93,8 @@ export default function UserSettings() {
             smtpPort: data.smtpPort || '587',
             smtpUser: data.smtpUser || auth.currentUser?.email || '',
             smtpFrom: data.smtpFrom || auth.currentUser?.email || '',
-            customEmailMessage: data.customEmailMessage || 'Chúng tôi rất vui mừng xác nhận bạn đã đăng ký thành công cho sự kiện sắp tới. Dưới đây là Vé mời điện tử chính thức của bạn. Vui lòng lưu lại mã này để thực hiện check-in nhanh chóng tại cổng.'
+            customEmailMessage: data.customEmailMessage || 'Chúng tôi rất vui mừng xác nhận bạn đã đăng ký thành công cho sự kiện sắp tới. Dưới đây là Vé mời điện tử chính thức của bạn. Vui lòng lưu lại mã này để thực hiện check-in nhanh chóng tại cổng.',
+            emailTemplateHTML: data.emailTemplateHTML || defaultEmailTemplateHTML
           }));
         } else {
           // New user, set defaults
@@ -45,7 +104,8 @@ export default function UserSettings() {
             smtpPort: '587',
             smtpUser: auth.currentUser?.email || '',
             smtpFrom: auth.currentUser?.email || '',
-            customEmailMessage: 'Chúng tôi rất vui mừng xác nhận bạn đã đăng ký thành công cho sự kiện sắp tới. Dưới đây là Vé mời điện tử chính thức của bạn. Vui lòng lưu lại mã này để thực hiện check-in nhanh chóng tại cổng.'
+            customEmailMessage: 'Chúng tôi rất vui mừng xác nhận bạn đã đăng ký thành công cho sự kiện sắp tới. Dưới đây là Vé mời điện tử chính thức của bạn. Vui lòng lưu lại mã này để thực hiện check-in nhanh chóng tại cổng.',
+            emailTemplateHTML: defaultEmailTemplateHTML
           }));
         }
       } catch (error) {
@@ -171,16 +231,29 @@ export default function UserSettings() {
               
               <div className="md:col-span-2 border-t border-stone-100 pt-4 mt-2">
                 <label className="text-sm font-semibold text-stone-700 flex items-center gap-2 mb-2">
-                  <Mail className="w-4 h-4" /> Lời mở đầu trong Email (Dùng chung cho mọi sự kiện)
+                  <Mail className="w-4 h-4" /> Nội dung gốc của thư (Mã HTML Tùy chỉnh Cao cấp)
                 </label>
+                <div className="flex gap-2 justify-end mb-2">
+                  <button onClick={() => setUserData({ ...userData, emailTemplateHTML: defaultEmailTemplateHTML })} className="text-xs text-stone-500 hover:text-emerald-600 transition-colors font-semibold">Khôi phục giao diện gốc</button>
+                </div>
                 <textarea 
-                  rows={4} 
-                  className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm"
-                  placeholder="VD: Chào mừng bạn đến với sự kiện..."
-                  value={userData.customEmailMessage || ''} 
-                  onChange={e => setUserData({ ...userData, customEmailMessage: e.target.value })} 
+                  rows={20} 
+                  className="w-full px-4 py-3 bg-stone-900 border border-stone-800 rounded-2xl focus:ring-2 focus:ring-emerald-500/50 outline-none transition-all text-sm font-mono text-emerald-400"
+                  placeholder="Mã HTML cho sự kiện của bạn..."
+                  value={userData.emailTemplateHTML || ''} 
+                  onChange={e => setUserData({ ...userData, emailTemplateHTML: e.target.value })} 
                 />
-                <p className="text-[10px] lg:text-xs text-stone-400 italic mt-1">Đoạn văn này sẽ được chèn vào ngay bên dưới lời chào "Chào [Tên Khách]" trong giao diện khuôn mẫu của vé mời điện tử cho tất cả sự kiện.</p>
+                <div className="text-[10px] lg:text-xs text-stone-500 space-y-1 mt-2">
+                  <p className="font-bold text-stone-700">Các biến hỗ trợ:</p>
+                  <p><code>{'{'}{'{'}ATTENDEE_NAME{'}'}{'}'}</code> : Tên khách mời</p>
+                  <p><code>{'{'}{'{'}EVENT_NAME{'}'}{'}'}</code> : Tên sự kiện</p>
+                  <p><code>{'{'}{'{'}QR_CODE_IMG{'}'}{'}'}</code> : Mã QR đính kèm ảnh (Chữ kí cid:qrcode)</p>
+                  <p><code>{'{'}{'{'}QR_CODE_VAL{'}'}{'}'}</code> : Mã số code</p>
+                  <p><code>{'{'}{'{'}EVENT_DATE{'}'}{'}'}</code> : Ngày tổ chức</p>
+                  <p><code>{'{'}{'{'}EVENT_TIME{'}'}{'}'}</code> : Giờ tổ chức</p>
+                  <p><code>{'{'}{'{'}EVENT_LOCATION{'}'}{'}'}</code> : Địa điểm tổ chức</p>
+                  <p><code>{'{'}{'{'}EVENT_DESC{'}'}{'}'}</code> : Nội dung mô tả sự kiện (tự động lấy "Lời mở đầu" nếu có)</p>
+                </div>
               </div>
             </div>
             
