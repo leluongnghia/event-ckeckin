@@ -82,6 +82,10 @@ const guideSteps = [
 ];
 
 export default function GuidePage() {
+  React.useEffect(() => {
+    document.title = "Hướng dẫn sử dụng — EventCheck by AZEvent";
+  }, []);
+
   return (
     <div className="min-h-screen bg-white">
       <PublicNavbar />

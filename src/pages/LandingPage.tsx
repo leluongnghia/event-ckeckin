@@ -396,7 +396,9 @@ export default function LandingPage() {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-8 text-sm">
               <div className="space-y-3">
                 <div className="font-black text-stone-900 uppercase tracking-widest text-xs">Sản phẩm</div>
-                {['Tính năng', 'Bảng giá', 'Lộ trình phát triển'].map(l => <a key={l} href="#" className="block text-stone-500 hover:text-stone-900 font-medium transition-colors">{l}</a>)}
+                <a href="#features" className="block text-stone-500 hover:text-stone-900 font-medium transition-colors">Tính năng</a>
+                <Link to="/roadmap" className="block text-stone-500 hover:text-stone-900 font-medium transition-colors">Lộ trình phát triển</Link>
+                <Link to="/guide" className="block text-emerald-600 hover:text-emerald-700 font-bold transition-colors">Hướng dẫn sử dụng</Link>
               </div>
               <div className="space-y-3">
                 <div className="font-black text-stone-900 uppercase tracking-widest text-xs">Sản phẩm khác</div>
@@ -414,8 +416,8 @@ export default function LandingPage() {
           <div className="border-t border-stone-200 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-stone-400 text-sm font-medium">© 2026 AZEvent.vn — EventCheck SaaS. Bảo lưu mọi quyền.</p>
             <div className="flex items-center gap-6 text-sm text-stone-400">
-              <a href="#" className="hover:text-stone-900 font-medium transition-colors">Điều khoản</a>
-              <a href="#" className="hover:text-stone-900 font-medium transition-colors">Bảo mật</a>
+              <Link to="/terms" className="hover:text-stone-900 font-medium transition-colors">Điều khoản</Link>
+              <Link to="/privacy" className="hover:text-stone-900 font-medium transition-colors">Bảo mật</Link>
               <a href="https://azevent.vn" target="_blank" rel="noreferrer" className="hover:text-emerald-600 font-medium transition-colors">azevent.vn</a>
             </div>
           </div>

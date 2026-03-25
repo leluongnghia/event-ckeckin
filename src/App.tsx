@@ -21,6 +21,9 @@ import Auth from './pages/Auth';
 import UserSettings from './pages/UserSettings';
 import Feedback from './pages/Feedback';
 import Guide from './pages/Guide';
+import Roadmap from './pages/Roadmap';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
 import { auth, db } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -71,6 +74,9 @@ export default function App() {
           <Route path="/ticket/:eventId/:attendeeId" element={<PublicTicket />} />
           <Route path="/kiosk/:eventId" element={<KioskMode />} />
           <Route path="/guide" element={<Guide />} />
+          <Route path="/roadmap" element={<Roadmap />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
 
           {/* Protected Routes */}
           <Route
