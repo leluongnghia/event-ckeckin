@@ -109,13 +109,43 @@ export default function TicketDesign() {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 2 * 1024 * 1024) { // 2MB limit
-        alert("Hình ảnh quá lớn. Vui lòng chọn hình ảnh dưới 2MB.");
+      if (file.size > 5 * 1024 * 1024) { // 5MB max check before compress
+        alert("Hình ảnh quá lớn. Vui lòng chọn hình ảnh dưới 5MB.");
         return;
       }
       const reader = new FileReader();
       reader.onloadend = () => {
-        setEventData({ ...eventData, ticketBgImage: reader.result as string });
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          
+          const MAX_WIDTH = 800;
+          const MAX_HEIGHT = 1200;
+          
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height = Math.round((height * MAX_WIDTH) / width);
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width = Math.round((width * MAX_HEIGHT) / height);
+              height = MAX_HEIGHT;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          
+          // Compress to JPEG 80% quality to avoid Firestore 1MB limit and fix UX lag
+          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
+          setEventData({ ...eventData, ticketBgImage: compressedBase64 });
+        };
+        img.src = reader.result as string;
       };
       reader.readAsDataURL(file);
     }
