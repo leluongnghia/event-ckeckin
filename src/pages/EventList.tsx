@@ -58,6 +58,7 @@ export default function EventList() {
         smtpUser: userSettings.smtpUser || '',
         smtpPass: userSettings.smtpPass || '',
         smtpFrom: userSettings.smtpFrom || '',
+        customEmailMessage: userSettings.customEmailMessage || ''
       });
       setIsAdding(false);
       setNewEvent({ name: '', startDate: '', endDate: '', location: '', description: '', bannerImage: '' });

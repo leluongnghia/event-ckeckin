@@ -13,7 +13,8 @@ export default function UserSettings() {
     smtpPort: '587',
     smtpUser: '',
     smtpPass: '',
-    smtpFrom: ''
+    smtpFrom: '',
+    customEmailMessage: ''
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -33,7 +34,8 @@ export default function UserSettings() {
             smtpHost: data.smtpHost || 'smtp.gmail.com',
             smtpPort: data.smtpPort || '587',
             smtpUser: data.smtpUser || auth.currentUser?.email || '',
-            smtpFrom: data.smtpFrom || auth.currentUser?.email || ''
+            smtpFrom: data.smtpFrom || auth.currentUser?.email || '',
+            customEmailMessage: data.customEmailMessage || 'Chúng tôi rất vui mừng xác nhận bạn đã đăng ký thành công cho sự kiện sắp tới. Dưới đây là Vé mời điện tử chính thức của bạn. Vui lòng lưu lại mã này để thực hiện check-in nhanh chóng tại cổng.'
           }));
         } else {
           // New user, set defaults
@@ -42,7 +44,8 @@ export default function UserSettings() {
             smtpHost: 'smtp.gmail.com',
             smtpPort: '587',
             smtpUser: auth.currentUser?.email || '',
-            smtpFrom: auth.currentUser?.email || ''
+            smtpFrom: auth.currentUser?.email || '',
+            customEmailMessage: 'Chúng tôi rất vui mừng xác nhận bạn đã đăng ký thành công cho sự kiện sắp tới. Dưới đây là Vé mời điện tử chính thức của bạn. Vui lòng lưu lại mã này để thực hiện check-in nhanh chóng tại cổng.'
           }));
         }
       } catch (error) {
@@ -165,6 +168,20 @@ export default function UserSettings() {
               <input type="text" placeholder="SMTP User (Email)" value={userData.smtpUser || ''} onChange={(e) => setUserData({...userData, smtpUser: e.target.value})} className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl" />
               <input type="password" placeholder="SMTP Password (App Password)" value={userData.smtpPass || ''} onChange={(e) => setUserData({...userData, smtpPass: e.target.value})} className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl" />
               <input type="email" placeholder="Email người gửi (From Email)" value={userData.smtpFrom || ''} onChange={(e) => setUserData({...userData, smtpFrom: e.target.value})} className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl md:col-span-2" />
+              
+              <div className="md:col-span-2 border-t border-stone-100 pt-4 mt-2">
+                <label className="text-sm font-semibold text-stone-700 flex items-center gap-2 mb-2">
+                  <Mail className="w-4 h-4" /> Lời mở đầu trong Email (Dùng chung cho mọi sự kiện)
+                </label>
+                <textarea 
+                  rows={4} 
+                  className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm"
+                  placeholder="VD: Chào mừng bạn đến với sự kiện..."
+                  value={userData.customEmailMessage || ''} 
+                  onChange={e => setUserData({ ...userData, customEmailMessage: e.target.value })} 
+                />
+                <p className="text-[10px] lg:text-xs text-stone-400 italic mt-1">Đoạn văn này sẽ được chèn vào ngay bên dưới lời chào "Chào [Tên Khách]" trong giao diện khuôn mẫu của vé mời điện tử cho tất cả sự kiện.</p>
+              </div>
             </div>
             
             <div className="mt-3 bg-stone-100 p-4 rounded-xl border border-stone-200 text-xs text-stone-700 space-y-2">

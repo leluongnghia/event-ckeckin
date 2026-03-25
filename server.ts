@@ -15,7 +15,15 @@ const db = getFirestore(appFirebase, firebaseConfig.firestoreDatabaseId);
 
 async function getTransporter(eventId: string) {
   const eventDoc = await getDoc(doc(db, 'events', eventId));
-  const settings = eventDoc.exists() ? eventDoc.data() : {};
+  let settings = eventDoc.exists() ? eventDoc.data() : {};
+
+  if (settings.ownerId) {
+    const userDoc = await getDoc(doc(db, 'users', settings.ownerId));
+    if (userDoc.exists()) {
+      const u = userDoc.data();
+      settings = { ...settings, smtpHost: u.smtpHost || settings.smtpHost, smtpPort: u.smtpPort || settings.smtpPort, smtpUser: u.smtpUser || settings.smtpUser, smtpPass: u.smtpPass || settings.smtpPass, smtpFrom: u.smtpFrom || settings.smtpFrom };
+    }
+  }
 
   if (settings.smtpHost && settings.smtpUser && settings.smtpPass) {
     return nodemailer.createTransport({
@@ -71,9 +79,18 @@ async function startServer() {
     console.log(`Starting email batch for ${attendees.length} attendees...`);
     const mailer = await getTransporter(eventId);
     
-    // Fetch event settings to get 'from' email
+    // Fetch event settings and global user settings to get configurations
     const eventDoc = await getDoc(doc(db, 'events', eventId));
-    const settings = eventDoc.exists() ? eventDoc.data() : {};
+    let settings = eventDoc.exists() ? eventDoc.data() : {};
+    
+    if (settings.ownerId) {
+      const userDoc = await getDoc(doc(db, 'users', settings.ownerId));
+      if (userDoc.exists()) {
+        const u = userDoc.data();
+        settings = { ...settings, customEmailMessage: u.customEmailMessage || settings.customEmailMessage, smtpFrom: u.smtpFrom || settings.smtpFrom };
+      }
+    }
+    
     const fromEmail = settings.smtpFrom || '"EventCheck" <noreply@eventcheck.com>';
     
     try {
