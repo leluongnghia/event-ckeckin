@@ -36,6 +36,9 @@ export default function Auth() {
   const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
 
   useEffect(() => {
+    // Set language to Vietnamese for emails
+    auth.languageCode = 'vi';
+    
     // Fetch global settings
     const fetchSettings = async () => {
       try {
@@ -224,6 +227,7 @@ export default function Auth() {
   };
 
   const handleResendVerification = async () => {
+    auth.languageCode = 'vi';
     setLoading(true);
     setError(null);
     try {
