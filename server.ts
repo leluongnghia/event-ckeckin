@@ -97,8 +97,8 @@ async function startServer() {
 
               <div style="padding: 40px 30px;">
                 <h2 style="color: #111827; font-size: 20px; font-weight: 700; margin-bottom: 16px;">Chào ${attendee.name},</h2>
-                <p style="font-size: 16px; line-height: 1.6; color: #4b5563; margin-bottom: 30px;">
-                  Chúng tôi rất vui mừng xác nhận bạn đã đăng ký thành công cho sự kiện sắp tới. Dưới đây là <b>Vé mời điện tử</b> chính thức của bạn. Vui lòng lưu lại mã này để thực hiện check-in nhanh chóng tại cổng.
+                <p style="font-size: 16px; line-height: 1.6; color: #4b5563; margin-bottom: 30px; white-space: pre-wrap;">
+                  ${settings.customEmailMessage || 'Chúng tôi rất vui mừng xác nhận bạn đã đăng ký thành công cho sự kiện sắp tới. Dưới đây là <b>Vé mời điện tử</b> chính thức của bạn. Vui lòng lưu lại mã này để thực hiện check-in nhanh chóng tại cổng.'}
                 </p>
 
                 <!-- Ticket Card -->

@@ -31,7 +31,8 @@ export default function Settings() {
     bannerImage: '',
     organizerName: '',
     organizerDesc: '',
-    organizerLogo: ''
+    organizerLogo: '',
+    customEmailMessage: 'Chúng tôi rất vui mừng xác nhận bạn đã đăng ký thành công cho sự kiện sắp tới. Dưới đây là Vé mời điện tử chính thức của bạn. Vui lòng lưu lại mã này để thực hiện check-in nhanh chóng tại cổng.'
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -192,8 +193,23 @@ export default function Settings() {
 
           {/* Description */}
           <div className="space-y-2 md:col-span-2">
-            <label className="text-sm font-semibold text-stone-700">Mô tả sự kiện</label>
+            <label className="text-sm font-semibold text-stone-700">Mô tả sự kiện (Dành cho trang Đăng ký)</label>
             <textarea rows={4} className={inputCls} value={eventData.description || ''} onChange={e => setEventData({ ...eventData, description: e.target.value })} />
+          </div>
+
+          {/* Email Custom Message */}
+          <div className="space-y-2 md:col-span-2 pt-6 border-t border-stone-100">
+            <label className="text-sm font-semibold text-stone-700 flex items-center gap-2">
+              <Mail className="w-4 h-4" /> Nội dung lời mở đầu trong Email gửi vé
+            </label>
+            <textarea 
+              rows={4} 
+              className={inputCls} 
+              placeholder="VD: Chào mừng bạn đến với sự kiện... Mặc định nếu để trống sẽ dùng thông báo chuẩn."
+              value={eventData.customEmailMessage || ''} 
+              onChange={e => setEventData({ ...eventData, customEmailMessage: e.target.value })} 
+            />
+            <p className="text-[10px] lg:text-xs text-stone-400 italic">Đoạn văn này sẽ được chèn vào ngay bên dưới lời chào "Chào [Tên Khách]" trong giao diện khuôn mẫu của vé mời điện tử.</p>
           </div>
 
           {/* Banner Image */}
